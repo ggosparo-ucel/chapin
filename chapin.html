@@ -1,0 +1,2865 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChapinFlow - Diseñador de Diagramas de Chapín (Nassi-Shneiderman)</title>
+    <!-- Google Fonts: Outfit (modern, sleek) & Fira Code (monospaced for pseudocode) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Client-Side PDF Export Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        /* --- DISEÑO SISTEMA / VARIABLES CSS --- */
+        :root {
+            --font-main: 'Outfit', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            --font-mono: 'Fira Code', 'Consolas', monospace;
+
+            /* Configuración del tema (Sobrescribible por clases de tema) */
+            --bg-app: #0b0f17;
+            --bg-sidebar: rgba(17, 24, 39, 0.85);
+            --border-sidebar: rgba(255, 255, 255, 0.05);
+            --bg-main: #0f172a;
+            --bg-card: rgba(30, 41, 59, 0.4);
+            --border-card: rgba(255, 255, 255, 0.08);
+            
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --text-inverse: #0f172a;
+
+            /* Diagram Colors (Sleek dark theme blocks by default) */
+            --ns-bg: #1e293b;
+            --ns-border: #475569;
+            --ns-header-bg: #334155;
+            --ns-sidebar-bg: #182235;
+            --ns-spacer-glow: rgba(99, 102, 241, 0.15);
+            --ns-actions-bg: rgba(15, 23, 42, 0.9);
+            --ns-actions-border: rgba(255, 255, 255, 0.15);
+            --ns-edit-focus-bg: rgba(99, 102, 241, 0.2);
+
+            /* Accents */
+            --primary: #6366f1; /* Indigo default */
+            --primary-glow: rgba(99, 102, 241, 0.4);
+            --primary-hover: #4f46e5;
+            --emerald: #10b981;
+            --cyan: #06b6d4;
+            --rose: #f43f5e;
+            --amber: #f59e0b;
+
+            /* Dynamic Scaling */
+            --ns-scale: 1;
+            
+            /* Shadows & Effects */
+            --shadow-lg: 0 10px 25px -5px rgba(0, 0, 0, 0.3), 0 8px 10px -6px rgba(0, 0, 0, 0.3);
+            --shadow-glow: 0 0 15px var(--primary-glow);
+            --glass-blur: blur(12px);
+        }
+
+        /* --- PRESETS DE TEMAS LUMINOSOS --- */
+        body.theme-light {
+            --bg-app: #f1f5f9;
+            --bg-sidebar: rgba(255, 255, 255, 0.9);
+            --border-sidebar: rgba(0, 0, 0, 0.06);
+            --bg-main: #f8fafc;
+            --bg-card: #ffffff;
+            --border-card: rgba(0, 0, 0, 0.08);
+
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --text-inverse: #ffffff;
+
+            /* Diagram Colors (Classic black & white look for readability) */
+            --ns-bg: #ffffff;
+            --ns-border: #0f172a;
+            --ns-header-bg: #f8fafc;
+            --ns-sidebar-bg: #f1f5f9;
+            --ns-spacer-glow: rgba(99, 102, 241, 0.1);
+            --ns-actions-bg: rgba(255, 255, 255, 0.95);
+            --ns-actions-border: rgba(0, 0, 0, 0.15);
+            --ns-edit-focus-bg: rgba(99, 102, 241, 0.1);
+            
+            --shadow-lg: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+        }
+
+        /* --- ACCENT COLORS PRESETS --- */
+        body.accent-indigo {
+            --primary: #6366f1;
+            --primary-glow: rgba(99, 102, 241, 0.35);
+            --primary-hover: #4f46e5;
+        }
+        body.accent-emerald {
+            --primary: #10b981;
+            --primary-glow: rgba(16, 185, 129, 0.35);
+            --primary-hover: #059669;
+        }
+        body.accent-cyan {
+            --primary: #06b6d4;
+            --primary-glow: rgba(6, 182, 212, 0.35);
+            --primary-hover: #0891b2;
+        }
+        body.accent-orange {
+            --primary: #f97316;
+            --primary-glow: rgba(249, 115, 22, 0.35);
+            --primary-hover: #ea580c;
+        }
+        body.accent-rose {
+            --primary: #f43f5e;
+            --primary-glow: rgba(244, 63, 94, 0.35);
+            --primary-hover: #e11d48;
+        }
+
+        /* --- GLOBAL ESTILOS --- */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: var(--font-main);
+            background-color: var(--bg-app);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            overflow: hidden;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        /* --- LAYOUT DE LA APLICACIÓN --- */
+        .app-layout {
+            display: flex;
+            width: 100%;
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* --- COLLAPSIBLE SIDEBAR --- */
+        .sidebar {
+            width: 320px;
+            background-color: var(--bg-sidebar);
+            border-right: 1px solid var(--border-sidebar);
+            display: flex;
+            flex-direction: column;
+            transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1), transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 40;
+            backdrop-filter: var(--glass-blur);
+            flex-shrink: 0;
+        }
+        .sidebar.collapsed {
+            margin-left: -320px;
+        }
+
+        .sidebar-header {
+            padding: 24px;
+            border-bottom: 1px solid var(--border-sidebar);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, var(--primary), var(--cyan));
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 800;
+            box-shadow: var(--shadow-glow);
+        }
+        .logo-text {
+            font-size: 20px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #ffffff 30%, var(--text-muted));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.5px;
+        }
+        body.theme-light .logo-text {
+            background: linear-gradient(135deg, var(--text-main) 30%, var(--text-muted));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .sidebar-scroll {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        /* --- SIDEBAR SECTIONS --- */
+        .sidebar-section-title {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--text-muted);
+            font-weight: 700;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        /* Botón de crear función */
+        .btn-add-function {
+            background-color: transparent;
+            border: 1px dashed var(--primary);
+            color: var(--primary);
+            width: 100%;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+        }
+        .btn-add-function:hover {
+            background-color: var(--primary);
+            color: white;
+            box-shadow: var(--shadow-glow);
+            border-style: solid;
+        }
+
+        /* Lista de funciones */
+        .function-list {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-top: 10px;
+        }
+        .function-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 12px;
+            border-radius: 8px;
+            background-color: rgba(255, 255, 255, 0.02);
+            border: 1px solid transparent;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .function-item:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.05);
+        }
+        .function-item.active {
+            background-color: rgba(99, 102, 241, 0.08);
+            border-color: rgba(99, 102, 241, 0.2);
+        }
+        body.theme-light .function-item.active {
+            background-color: rgba(99, 102, 241, 0.05);
+            border-color: rgba(99, 102, 241, 0.25);
+        }
+        .function-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            min-width: 0;
+        }
+        .function-icon {
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+        .function-name {
+            font-size: 13px;
+            font-weight: 600;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .function-type-pill {
+            font-size: 9px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        .pill-main {
+            background-color: rgba(99, 102, 241, 0.2);
+            color: #818cf8;
+        }
+        .pill-aux {
+            background-color: rgba(16, 185, 129, 0.2);
+            color: #34d399;
+        }
+        .function-actions {
+            display: flex;
+            gap: 4px;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+        .function-item:hover .function-actions {
+            opacity: 1;
+        }
+        .btn-func-action {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            width: 24px;
+            height: 24px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+        .btn-func-action:hover {
+            color: var(--text-main);
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        .btn-func-action.delete:hover {
+            color: var(--rose);
+            background-color: rgba(244, 63, 94, 0.15);
+        }
+
+        /* Lista de plantillas / Ejemplos */
+        .template-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 8px;
+        }
+        .template-item {
+            background-color: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-sidebar);
+            border-radius: 8px;
+            padding: 12px;
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.2s ease;
+            width: 100%;
+        }
+        .template-item:hover {
+            background-color: rgba(255, 255, 255, 0.06);
+            border-color: var(--primary);
+            transform: translateY(-1px);
+        }
+        .template-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-main);
+            margin-bottom: 2px;
+        }
+        .template-desc {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        /* Configuración / Temas */
+        .settings-list {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+        .setting-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .setting-label {
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--text-muted);
+        }
+        
+        /* Toggle Switch */
+        .theme-toggle-group {
+            display: flex;
+            background-color: rgba(0, 0, 0, 0.2);
+            padding: 2px;
+            border-radius: 8px;
+            border: 1px solid var(--border-sidebar);
+        }
+        .theme-toggle-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            padding: 6px 12px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .theme-toggle-btn.active {
+            background-color: var(--bg-card);
+            color: var(--text-main);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        /* Selector de acentos */
+        .accent-picker {
+            display: flex;
+            gap: 6px;
+        }
+        .accent-btn {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            border: 2px solid transparent;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+        .accent-btn:hover {
+            transform: scale(1.2);
+        }
+        .accent-btn.active {
+            border-color: var(--text-main);
+        }
+        .accent-btn.indigo { background-color: #6366f1; }
+        .accent-btn.emerald { background-color: #10b981; }
+        .accent-btn.cyan { background-color: #06b6d4; }
+        .accent-btn.orange { background-color: #f97316; }
+        .accent-btn.rose { background-color: #f43f5e; }
+
+        /* Guía rápida de Bloques */
+        .guide-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .guide-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            font-size: 12px;
+        }
+        .guide-symbol {
+            font-weight: bold;
+            background-color: var(--ns-header-bg);
+            border: 1px solid var(--ns-border);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: var(--font-mono);
+            font-size: 11px;
+            flex-shrink: 0;
+        }
+        .guide-text {
+            color: var(--text-muted);
+            line-height: 1.4;
+        }
+
+        /* Footer Sidebar */
+        .sidebar-footer {
+            padding: 16px 24px;
+            border-top: 1px solid var(--border-sidebar);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        /* --- MAIN WORKSPACE CONTENT --- */
+        .main-content {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            background-color: var(--bg-main);
+            position: relative;
+        }
+
+        /* --- HEADER & TOOLBAR --- */
+        .header {
+            height: 70px;
+            padding: 0 24px;
+            border-bottom: 1px solid var(--border-sidebar);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background-color: var(--bg-sidebar);
+            z-index: 30;
+            backdrop-filter: var(--glass-blur);
+        }
+        
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        .btn-sidebar-toggle {
+            background-color: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-sidebar);
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: var(--text-muted);
+            transition: all 0.2s ease;
+        }
+        .btn-sidebar-toggle:hover {
+            color: var(--text-main);
+            background-color: rgba(255, 255, 255, 0.08);
+        }
+
+        .function-title-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .current-function-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+        .btn-rename-func {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: color 0.2s ease;
+            display: flex;
+            align-items: center;
+        }
+        .btn-rename-func:hover {
+            color: var(--primary);
+        }
+
+        /* Toolbar Actions */
+        .toolbar {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .toolbar-group {
+            display: flex;
+            align-items: center;
+            background-color: rgba(0,0,0,0.15);
+            border: 1px solid var(--border-sidebar);
+            border-radius: 8px;
+            padding: 3px;
+        }
+        body.theme-light .toolbar-group {
+            background-color: rgba(0,0,0,0.03);
+        }
+
+        /* Botones del toolbar */
+        .btn-tool {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            padding: 6px 12px;
+            font-size: 12px;
+            font-weight: 600;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s ease;
+        }
+        .btn-tool:hover:not(:disabled) {
+            color: var(--text-main);
+            background-color: rgba(255,255,255,0.06);
+        }
+        .btn-tool:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+        
+        .btn-action-primary {
+            background-color: var(--primary);
+            color: var(--text-inverse) !important;
+            box-shadow: var(--shadow-glow);
+        }
+        .btn-action-primary:hover {
+            background-color: var(--primary-hover) !important;
+            box-shadow: 0 0 20px var(--primary-glow);
+        }
+
+        /* Toggle Mode (Editar vs Vista Previa) */
+        .mode-toggle-group {
+            display: flex;
+            background-color: rgba(0,0,0,0.15);
+            border: 1px solid var(--border-sidebar);
+            border-radius: 8px;
+            padding: 3px;
+        }
+        body.theme-light .mode-toggle-group {
+            background-color: rgba(0,0,0,0.03);
+        }
+        .mode-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            padding: 6px 12px;
+            font-size: 12px;
+            font-weight: 600;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .mode-btn.active {
+            background-color: var(--primary);
+            color: var(--text-inverse);
+            box-shadow: var(--shadow-glow);
+        }
+
+        /* Zoom Label Indicator */
+        .zoom-val {
+            font-size: 12px;
+            font-family: var(--font-mono);
+            color: var(--text-muted);
+            padding: 0 8px;
+            min-width: 48px;
+            text-align: center;
+        }
+
+        /* --- THE CANVAS WORKSPACE --- */
+        .canvas-area {
+            flex-grow: 1;
+            overflow: auto;
+            padding: 60px 40px;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            background-color: var(--bg-main);
+            /* Radial Engineering Dot Grid Background */
+            background-image: radial-gradient(var(--border-card) 1px, transparent 1px);
+            background-size: 24px 24px;
+            transition: background-color 0.3s ease;
+        }
+
+        /* Contenedor responsivo del diagrama actual */
+        .diagram-container {
+            width: 100%;
+            max-width: 900px;
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-card);
+            border-radius: 16px;
+            padding: 32px;
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            flex-direction: column;
+            transition: all 0.3s ease;
+            transform-origin: top center;
+        }
+        body.theme-light .diagram-container {
+            box-shadow: var(--shadow-lg);
+        }
+
+        /* --- NASSI-SHNEIDERMAN ELEMENT GRID SYSTEM --- */
+        .ns-container {
+            width: 100%;
+            background-color: var(--ns-bg);
+            border: 3px solid var(--ns-border);
+            box-sizing: border-box;
+            color: var(--text-main);
+            font-size: calc(14px * var(--ns-scale));
+            transition: font-size 0.1s ease;
+        }
+
+        /* Modos de Función Exigidos */
+        .ns-main-mode {
+            border-radius: 0px !important;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        }
+        .ns-main-mode * {
+            border-radius: 0px !important;
+        }
+        
+        .ns-func-mode {
+            border-radius: 16px !important;
+            overflow: hidden; /* Recorta las esquinas de los hijos */
+            box-shadow: 0 8px 32px rgba(16, 185, 129, 0.08);
+        }
+
+        /* --- BLOQUES --- */
+        .ns-block {
+            border-bottom: 2px solid var(--ns-border);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            box-sizing: border-box;
+            background-color: var(--ns-bg);
+        }
+        .ns-block:last-child {
+            border-bottom: none;
+        }
+
+        /* Acción simple */
+        .ns-action-inner {
+            padding: calc(14px * var(--ns-scale)) calc(18px * var(--ns-scale));
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        /* Editable inline */
+        .ns-editable {
+            font-family: var(--font-mono);
+            font-size: calc(14px * var(--ns-scale));
+            padding: 4px 6px;
+            border: 1px transparent;
+            outline: none;
+            width: 100%;
+            box-sizing: border-box;
+            white-space: pre-wrap;
+            word-break: break-all;
+            min-height: 24px;
+            color: var(--text-main);
+            transition: background-color 0.2s ease;
+            text-align: left;
+        }
+        .ns-editable:focus {
+            background-color: var(--ns-edit-focus-bg);
+            border-radius: 4px;
+        }
+        .ns-editable:empty::before {
+            content: attr(placeholder);
+            color: var(--text-muted);
+            opacity: 0.5;
+            font-style: italic;
+        }
+
+        /* --- CONDICIONAL IF-ELSE (Triángulo Chapín) --- */
+        .ns-if-wrapper {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+        }
+        .ns-if-header {
+            position: relative;
+            height: calc(75px * var(--ns-scale));
+            border-bottom: 2px solid var(--ns-border);
+            background-color: var(--ns-header-bg);
+            width: 100%;
+            overflow: hidden;
+        }
+        .ns-if-svg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+        .ns-if-cond-container {
+            position: absolute;
+            top: 6px;
+            left: 20%;
+            width: 60%;
+            height: calc(42px * var(--ns-scale));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+        }
+        .ns-cond-edit {
+            text-align: center;
+            font-weight: 700;
+        }
+        
+        .ns-if-label {
+            position: absolute;
+            bottom: 4px;
+            font-size: calc(11px * var(--ns-scale));
+            font-weight: 800;
+            z-index: 10;
+            padding: 2px 8px;
+            pointer-events: none;
+            font-family: var(--font-main);
+        }
+        .ns-if-yes {
+            left: calc(10px * var(--ns-scale));
+            color: #34d399; /* Green True */
+        }
+        body.theme-light .ns-if-yes {
+            color: #059669;
+        }
+        .ns-if-no {
+            right: calc(10px * var(--ns-scale));
+            color: #f87171; /* Red False */
+        }
+        body.theme-light .ns-if-no {
+            color: #dc2626;
+        }
+
+        /* Columnas de decisión */
+        .ns-if-branches {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            width: 100%;
+        }
+        .ns-branch {
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+            background-color: var(--ns-bg);
+        }
+        .ns-branch-true {
+            border-right: 2px solid var(--ns-border);
+        }
+
+        /* Representación académica de ramas vacías en Vista Previa */
+        .ns-branch.is-empty {
+            background-image: linear-gradient(to top right, transparent calc(50% - 1px), var(--ns-border) 50%, transparent calc(50% + 1px)) !important;
+            min-height: calc(50px * var(--ns-scale));
+        }
+
+        /* --- BUCLE MIENTRAS (WHILE / FOR) --- */
+        .ns-loop-wrapper {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+        }
+        .ns-loop-header {
+            background-color: var(--ns-header-bg);
+            border-bottom: 2px solid var(--ns-border);
+            padding: calc(12px * var(--ns-scale)) calc(16px * var(--ns-scale));
+            font-weight: 700;
+        }
+        .ns-loop-edit {
+            font-weight: 700;
+        }
+        .ns-loop-body-container {
+            display: flex;
+            width: 100%;
+        }
+        .ns-loop-side-bar {
+            width: calc(30px * var(--ns-scale));
+            background-color: var(--ns-sidebar-bg);
+            border-right: 2px solid var(--ns-border);
+            flex-shrink: 0;
+            position: relative;
+        }
+        .ns-loop-content {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+        }
+
+        /* --- BUCLE REPETIR-HASTA (REPEAT-UNTIL) --- */
+        .ns-repeat-wrapper {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+        }
+        .ns-repeat-body-container {
+            display: flex;
+            width: 100%;
+        }
+        .ns-repeat-side-bar {
+            width: calc(30px * var(--ns-scale));
+            background-color: var(--ns-sidebar-bg);
+            border-right: 2px solid var(--ns-border);
+            flex-shrink: 0;
+            position: relative;
+        }
+        .ns-repeat-content {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+        }
+        .ns-repeat-footer {
+            background-color: var(--ns-header-bg);
+            border-top: 2px solid var(--ns-border);
+            padding: calc(12px * var(--ns-scale)) calc(16px * var(--ns-scale));
+            font-weight: 700;
+        }
+        .ns-repeat-edit {
+            font-weight: 700;
+        }
+
+        /* --- DISPARADORES DE EDICIÓN FLOTANTES ("+") --- */
+        .ns-spacer {
+            height: 6px;
+            position: relative;
+            background-color: transparent;
+            transition: all 0.2s ease;
+            z-index: 20;
+            margin: -3px 0; /* Solapa ligeramente el borde para facilitar hover */
+        }
+        .ns-spacer:hover {
+            height: 14px;
+            background-color: var(--ns-spacer-glow);
+            margin: 0;
+        }
+        .ns-spacer-btn {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background-color: var(--primary);
+            color: var(--text-inverse);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 0 10px var(--primary-glow);
+            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 25;
+        }
+        .ns-spacer:hover .ns-spacer-btn {
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        /* Placeholders de bloque vacío */
+        .ns-placeholder {
+            padding: 24px;
+            text-align: center;
+            border: 2px dashed rgba(255, 255, 255, 0.08);
+            border-radius: 8px;
+            margin: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            background-color: rgba(255,255,255,0.01);
+        }
+        body.theme-light .ns-placeholder {
+            border-color: rgba(0,0,0,0.08);
+            background-color: rgba(0,0,0,0.01);
+        }
+        .ns-placeholder-text {
+            font-size: 12px;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+        .ns-placeholder-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            justify-content: center;
+        }
+        .ns-placeholder-btn {
+            background-color: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border-sidebar);
+            color: var(--text-main);
+            padding: 6px 12px;
+            font-size: 11px;
+            font-weight: 600;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        body.theme-light .ns-placeholder-btn {
+            background-color: rgba(0, 0, 0, 0.02);
+        }
+        .ns-placeholder-btn:hover {
+            border-color: var(--primary);
+            background-color: var(--primary);
+            color: var(--text-inverse);
+            box-shadow: var(--shadow-glow);
+        }
+
+        /* --- BOTONES DE ACCIÓN FLOTANTES POR BLOQUE --- */
+        .ns-actions-bar {
+            position: absolute;
+            top: 6px;
+            right: 8px;
+            display: flex;
+            gap: 4px;
+            background-color: var(--ns-actions-bg);
+            border: 1px solid var(--ns-actions-border);
+            border-radius: 6px;
+            padding: 3px;
+            box-shadow: var(--shadow-lg);
+            opacity: 0;
+            transform: translateY(-4px);
+            transition: opacity 0.2s ease, transform 0.2s ease;
+            z-index: 30;
+            backdrop-filter: blur(4px);
+        }
+        .ns-block:hover > .ns-actions-bar {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .ns-action-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            width: 24px;
+            height: 24px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .ns-action-btn:hover {
+            color: var(--text-main);
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        body.theme-light .ns-action-btn:hover {
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+        .ns-action-btn.btn-delete:hover {
+            color: var(--rose);
+            background-color: rgba(244, 63, 94, 0.15);
+        }
+
+        /* --- CONTEXT MENU (Selector de Bloques) --- */
+        .context-menu {
+            position: absolute;
+            background-color: var(--ns-actions-bg);
+            border: 1px solid var(--ns-actions-border);
+            border-radius: 12px;
+            padding: 6px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            z-index: 1000;
+            width: 220px;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            backdrop-filter: blur(8px);
+            transition: opacity 0.15s ease;
+        }
+        body.theme-light .context-menu {
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        }
+        .context-menu.hidden {
+            display: none !important;
+        }
+        .context-menu-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-main);
+            padding: 8px 12px;
+            font-size: 13px;
+            font-weight: 500;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-align: left;
+            transition: all 0.2s ease;
+            width: 100%;
+        }
+        .context-menu-btn:hover {
+            background-color: var(--primary);
+            color: var(--text-inverse);
+        }
+        .context-menu-icon {
+            font-size: 14px;
+        }
+
+        /* --- CUSTOM MODALS --- */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            backdrop-filter: blur(8px);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        .modal-overlay.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .modal-card {
+            background-color: #1e293b;
+            border: 1px solid var(--border-card);
+            width: 90%;
+            max-width: 450px;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: var(--shadow-lg);
+            transform: scale(0.9);
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            backdrop-filter: blur(16px);
+        }
+        body.theme-light .modal-card {
+            background-color: #ffffff;
+            border-color: rgba(0,0,0,0.1);
+        }
+        .modal-overlay.show .modal-card {
+            transform: scale(1);
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .modal-header h3 {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+        .modal-close-btn {
+            background: transparent;
+            border: none;
+            font-size: 24px;
+            color: var(--text-muted);
+            cursor: pointer;
+            line-height: 1;
+        }
+        .modal-close-btn:hover {
+            color: var(--text-main);
+        }
+        .modal-body {
+            font-size: 14px;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+        .modal-input {
+            width: 100%;
+            background-color: rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--border-card);
+            color: var(--text-main);
+            padding: 10px 14px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-family: var(--font-main);
+            outline: none;
+            margin-top: 10px;
+        }
+        body.theme-light .modal-input {
+            background-color: rgba(0,0,0,0.03);
+            border-color: rgba(0,0,0,0.1);
+            color: var(--text-main);
+        }
+        .modal-input:focus {
+            border-color: var(--primary);
+        }
+        .modal-input.hidden {
+            display: none;
+        }
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+        .btn-modal-primary {
+            background-color: var(--primary);
+            color: var(--text-inverse);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+        .btn-modal-primary:hover {
+            background-color: var(--primary-hover);
+        }
+        .btn-modal-secondary {
+            background-color: rgba(255, 255, 255, 0.05);
+            color: var(--text-main);
+            border: 1px solid var(--border-sidebar);
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        body.theme-light .btn-modal-secondary {
+            background-color: rgba(0, 0, 0, 0.02);
+            border-color: rgba(0, 0, 0, 0.08);
+        }
+        .btn-modal-secondary:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        body.theme-light .btn-modal-secondary:hover {
+            background-color: rgba(0, 0, 0, 0.06);
+        }
+
+        /* --- NOTIFICATION TOAST SYSTEM --- */
+        #notification-container {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 9999;
+        }
+        .toast {
+            background-color: rgba(15, 23, 42, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #ffffff;
+            padding: 12px 20px;
+            border-radius: 10px;
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 13px;
+            font-weight: 600;
+            transform: translateX(120%);
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s ease;
+            backdrop-filter: blur(8px);
+            opacity: 0;
+        }
+        .toast.show {
+            transform: translateX(0);
+            opacity: 1;
+        }
+        .toast-success { border-left: 4px solid var(--emerald); }
+        .toast-error { border-left: 4px solid var(--rose); }
+        .toast-warning { border-left: 4px solid var(--amber); }
+        .toast-info { border-left: 4px solid var(--primary); }
+
+        /* --- OVERRIDES DE EXPORTACIÓN A PDF (IMPRESIÓN LIMPIA) --- */
+        body.exporting {
+            background-color: #ffffff !important;
+            color: #000000 !important;
+            overflow: visible !important;
+            height: auto !important;
+        }
+        body.exporting .app-layout {
+            height: auto !important;
+            overflow: visible !important;
+        }
+        body.exporting .sidebar,
+        body.exporting .header,
+        body.exporting .ns-spacer,
+        body.exporting .ns-actions-bar,
+        body.exporting .ns-placeholder-actions {
+            display: none !important;
+        }
+        body.exporting .main-content {
+            background-color: #ffffff !important;
+            height: auto !important;
+            overflow: visible !important;
+        }
+        body.exporting .canvas-area {
+            padding: 0 !important;
+            background: #ffffff !important;
+            background-image: none !important;
+            overflow: visible !important;
+            display: block !important;
+        }
+        body.exporting .diagram-container {
+            max-width: 100% !important;
+            width: 100% !important;
+            padding: 0 !important;
+            border: none !important;
+            box-shadow: none !important;
+            background-color: #ffffff !important;
+            transform: none !important;
+        }
+        body.exporting .ns-container {
+            border-color: #000000 !important;
+            color: #000000 !important;
+            background-color: #ffffff !important;
+            width: 100% !important;
+            box-shadow: none !important;
+        }
+        body.exporting .ns-block {
+            border-color: #000000 !important;
+            background-color: #ffffff !important;
+        }
+        body.exporting .ns-editable {
+            color: #000000 !important;
+        }
+        body.exporting .ns-if-header {
+            border-color: #000000 !important;
+            background-color: #ffffff !important;
+        }
+        body.exporting .ns-branch-true {
+            border-color: #000000 !important;
+        }
+        body.exporting .ns-loop-side-bar,
+        body.exporting .ns-repeat-side-bar {
+            border-color: #000000 !important;
+            background-color: #ffffff !important;
+        }
+        body.exporting .ns-loop-header,
+        body.exporting .ns-repeat-footer {
+            border-color: #000000 !important;
+            background-color: #ffffff !important;
+        }
+        body.exporting .ns-if-yes { color: #000000 !important; }
+        body.exporting .ns-if-no { color: #000000 !important; }
+
+        /* --- NATIVE PRINT FALLBACK OVERRIDES (@media print) --- */
+        @media print {
+            body {
+                background-color: #ffffff !important;
+                color: #000000 !important;
+                overflow: visible !important;
+                height: auto !important;
+            }
+            .app-layout {
+                height: auto !important;
+                overflow: visible !important;
+                display: block !important;
+            }
+            .sidebar,
+            .header,
+            .ns-spacer,
+            .ns-actions-bar,
+            .ns-placeholder-actions {
+                display: none !important;
+            }
+            .main-content {
+                background-color: #ffffff !important;
+                height: auto !important;
+                overflow: visible !important;
+                padding: 0 !important;
+                margin: 0 !important;
+            }
+            .canvas-area {
+                padding: 0 !important;
+                background: #ffffff !important;
+                background-image: none !important;
+                overflow: visible !important;
+                display: block !important;
+            }
+            .diagram-container {
+                max-width: 100% !important;
+                width: 100% !important;
+                box-shadow: none !important;
+                border: none !important;
+                background: #ffffff !important;
+                padding: 0 !important;
+                margin: 0 !important;
+            }
+            #diagram-canvas {
+                padding: 0 !important;
+                margin: 0 !important;
+                border: none !important;
+            }
+            .ns-container {
+                border: 2px solid #000000 !important;
+                background-color: #ffffff !important;
+                color: #000000 !important;
+                border-radius: 0 !important;
+            }
+            .ns-block {
+                border-color: #000000 !important;
+                background-color: #ffffff !important;
+                color: #000000 !important;
+            }
+            .ns-editable {
+                color: #000000 !important;
+                background-color: transparent !important;
+                border-color: transparent !important;
+            }
+            .ns-if-svg line {
+                stroke: #000000 !important;
+            }
+            .ns-placeholder {
+                display: none !important;
+            }
+            .ns-if-yes { color: #000000 !important; }
+            .ns-if-no { color: #000000 !important; }
+        }
+    </style>
+</head>
+<body class="theme-dark accent-indigo">
+
+    <div class="app-layout">
+        
+        <!-- SIDEBAR DE NAVEGACIÓN Y CONFIGURACIÓN -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo-container">
+                    <div class="logo-icon">▢</div>
+                    <span class="logo-text">ChapinFlow</span>
+                </div>
+                <button class="btn-func-action" onclick="toggleSidebar()" title="Cerrar Panel">
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 19l-7-7 7-7"/></svg>
+                </button>
+            </div>
+
+            <div class="sidebar-scroll">
+                
+                <!-- SECCIÓN FUNCIONES -->
+                <div class="sidebar-section">
+                    <div class="sidebar-section-title">
+                        <span>Funciones del Proyecto</span>
+                        <span style="font-family: var(--font-mono); font-size: 9px;" id="func-count">1</span>
+                    </div>
+                    <button class="btn-add-function" onclick="createNewFunction()">
+                        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="3"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                        Nueva Función
+                    </button>
+                    <div class="function-list" id="function-list">
+                        <!-- Generado dinámicamente -->
+                    </div>
+                </div>
+
+                <!-- SECCIÓN PLANTILLAS -->
+                <div class="sidebar-section">
+                    <div class="sidebar-section-title">Plantillas Académicas</div>
+                    <div class="template-grid">
+                        <button class="template-item" onclick="loadTemplate('sumaN')">
+                            <div class="template-title">∑ Sumatoria de N números</div>
+                            <div class="template-desc">Ejemplo clásico de bucle WHILE.</div>
+                        </button>
+                        <button class="template-item" onclick="loadTemplate('mayorTres')">
+                            <div class="template-title">🔀 Mayor de 3 Números</div>
+                            <div class="template-desc">Uso de condicionales IF-ELSE anidados.</div>
+                        </button>
+                        <button class="template-item" onclick="loadTemplate('fibonacci')">
+                            <div class="template-title">🌀 Fibonacci + Recursividad</div>
+                            <div class="template-desc">Demuestra múltiples funciones auxiliares.</div>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- SECCIÓN DE AJUSTES -->
+                <div class="sidebar-section">
+                    <div class="sidebar-section-title">Configuración Visual</div>
+                    <div class="settings-list">
+                        
+                        <div class="setting-row">
+                            <span class="setting-label">Tema</span>
+                            <div class="theme-toggle-group">
+                                <button class="theme-toggle-btn active" id="theme-dark-btn" onclick="toggleTheme('dark')">
+                                    🌙 Oscuro
+                                </button>
+                                <button class="theme-toggle-btn" id="theme-light-btn" onclick="toggleTheme('light')">
+                                    ☀️ Claro
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="setting-row">
+                            <span class="setting-label">Acento de Color</span>
+                            <div class="accent-picker">
+                                <button class="accent-btn indigo active" onclick="setAccent('indigo')"></button>
+                                <button class="accent-btn emerald" onclick="setAccent('emerald')"></button>
+                                <button class="accent-btn cyan" onclick="setAccent('cyan')"></button>
+                                <button class="accent-btn orange" onclick="setAccent('orange')"></button>
+                                <button class="accent-btn rose" onclick="setAccent('rose')"></button>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- SECCIÓN GUÍA RÁPIDA -->
+                <div class="sidebar-section">
+                    <div class="sidebar-section-title">Guía de Estructuras</div>
+                    <div class="guide-list">
+                        <div class="guide-item">
+                            <span class="guide-symbol"> Action </span>
+                            <span class="guide-text">Línea de instrucción secuencial simple o asignación.</span>
+                        </div>
+                        <div class="guide-item">
+                            <span class="guide-symbol"> If/Else </span>
+                            <span class="guide-text">Doble triángulo superior. Bifurcación SÍ/NO (IF-ELSE).</span>
+                        </div>
+                        <div class="guide-item">
+                            <span class="guide-symbol"> FOR/WHILE </span>
+                            <span class="guide-text">Estructura iterativa FOR / WHILE con condición de parada superior.</span>
+                        </div>
+                        <div class="guide-item">
+                            <span class="guide-symbol"> Until </span>
+                            <span class="guide-text">Estructura iterativa REPETIR/UNTIL con condición en la parte inferior.</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="sidebar-footer">
+                <span>Versión Estática 1.2.0</span>
+                <span>Gabriel @ UCEL</span>
+            </div>
+        </aside>
+
+        <!-- ESPACIO DE TRABAJO PRINCIPAL -->
+        <main class="main-content">
+            
+            <!-- HEADER DE CONTROL -->
+            <header class="header">
+                <div class="header-left">
+                    <button class="btn-sidebar-toggle" id="btn-sidebar-toggle" onclick="toggleSidebar()" title="Alternar panel lateral">
+                        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+                    </button>
+                    <div class="function-title-container">
+                        <span class="current-function-title" id="current-function-title">principal()</span>
+                        <button class="btn-rename-func" onclick="renameCurrentFunction()" title="Renombrar función">
+                            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 20h9M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- TOOLBAR -->
+                <div class="toolbar">
+                    
+                    <!-- Deshacer / Rehacer -->
+                    <div class="toolbar-group">
+                        <button class="btn-tool" id="btn-undo" onclick="undo()" title="Deshacer (Ctrl+Z)" disabled>
+                            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 7v6h6M21 17a9 9 0 00-9-9 9 9 0 00-6 2.3L3 13"/></svg>
+                        </button>
+                        <button class="btn-tool" id="btn-redo" onclick="redo()" title="Rehacer (Ctrl+Y)" disabled>
+                            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 7v6h-6M3 17a9 9 0 019-9 9 9 0 016 2.3l3 2.7"/></svg>
+                        </button>
+                    </div>
+
+                    <!-- Proyecto JSON -->
+                    <div class="toolbar-group">
+                        <button class="btn-tool" onclick="clearProject()" title="Limpiar todo el proyecto">
+                            🧹 Nuevo
+                        </button>
+                        <input type="file" id="import-file" style="display: none;" onchange="handleImportJSON(event)" accept=".json">
+                        <button class="btn-tool" onclick="document.getElementById('import-file').click()" title="Importar proyecto JSON">
+                            📥 Importar
+                        </button>
+                        <button class="btn-tool" onclick="exportJSON()" title="Exportar proyecto en JSON">
+                            📤 Exportar
+                        </button>
+                    </div>
+
+                    <!-- Modo de Visualización -->
+                    <div class="mode-toggle-group">
+                        <button class="mode-btn active" id="mode-edit" onclick="setEditMode(true)" title="Modo interactivo para agregar y editar">
+                            ✏️ Editar
+                        </button>
+                        <button class="mode-btn" id="mode-preview" onclick="setEditMode(false)" title="Vista previa para ver cómo se verá el diagrama limpio">
+                            👁️ Vista Previa
+                        </button>
+                    </div>
+
+                    <!-- Escalamiento / Zoom -->
+                    <div class="toolbar-group">
+                        <button class="btn-tool" onclick="zoomOut()" title="Alejar (Zoom Out)">
+                            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                        </button>
+                        <span class="zoom-val" id="zoom-val">100%</span>
+                        <button class="btn-tool" onclick="zoomIn()" title="Acercar (Zoom In)">
+                            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                        </button>
+                    </div>
+
+                    <!-- Botón PDF -->
+                    <button class="btn-tool btn-action-primary" id="btn-export-pdf" onclick="exportToPDF()" title="Exportar diagrama a PDF">
+                        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8zM14 3v5h5M16 13H8M16 17H8M10 9H8"/></svg>
+                        Exportar a PDF
+                    </button>
+                </div>
+            </header>
+
+            <!-- ÁREA DEL CANVASES -->
+            <div class="canvas-area">
+                <div class="diagram-container" id="diagram-container">
+                    <div id="diagram-canvas">
+                        <!-- El renderizador de Chapín colocará aquí el árbol del DOM -->
+                    </div>
+                </div>
+            </div>
+
+        </main>
+
+    </div>
+
+    <!-- CONTEXT MENU PARA INSERTAR BLOQUES -->
+    <div id="context-menu" class="context-menu hidden">
+        <button class="context-menu-btn" data-type="action">
+            <span class="context-menu-icon">📝</span> Acción / Instrucción
+        </button>
+        <button class="context-menu-btn" data-type="if">
+            <span class="context-menu-icon">🔀</span> Condicional (IF-ELSE)
+        </button>
+        <button class="context-menu-btn" data-type="WHILE">
+            <span class="context-menu-icon">🔁</span> Bucle Para/Mientras (FOR/WHILE)
+        </button>
+        <button class="context-menu-btn" data-type="repeat">
+            <span class="context-menu-icon">🔄</span> Bucle Repetir (REPEAT-UNTIL)
+        </button>
+    </div>
+
+    <!-- DIÁLOGOS Y MODALES PERSONALIZADOS -->
+    <div id="custom-modal" class="modal-overlay hidden">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3 id="modal-title">Título del Diálogo</h3>
+                <button class="modal-close-btn" id="modal-close-btn-x">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p id="modal-message">Mensaje del diálogo aquí...</p>
+                <input type="text" id="modal-input" class="modal-input hidden" placeholder="Escriba aquí...">
+            </div>
+            <div class="modal-footer">
+                <button id="modal-btn-cancel" class="btn-modal-secondary">Cancelar</button>
+                <button id="modal-btn-confirm" class="btn-modal-primary">Confirmar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- CONTENEDOR DE NOTIFICACIONES TOAST -->
+    <div id="notification-container"></div>
+
+    <!-- LÓGICA DE ESTADO Y CONTROLADORES -->
+    <script>
+        // --- 1. CONFIGURACIÓN DEL ESTADO DE LA SPA ---
+        let appState = {
+            activeFunctionId: 'main',
+            editMode: true,
+            theme: 'dark',
+            accent: 'indigo',
+            functions: {
+                'main': {
+                    id: 'main',
+                    name: 'main()',
+                    type: 'main',
+                    structures: [
+                        { id: 'b1', type: 'action', code: 'Suma = 0' },
+                        {
+                            id: 'b2',
+                            type: 'while',
+                            condition: 'WHILE x < 10',
+                            body: [
+                                {
+                                    id: 'b3',
+                                    type: 'if',
+                                    condition: '¿x % 2 == 0?',
+                                    trueBranch: [{ id: 'b4', type: 'action', code: 'Imprimir "El valor es par: ", x' }],
+                                    falseBranch: []
+                                }
+                            ]
+                        }
+                    ]
+                }
+            }
+        };
+
+        // --- 2. HISTORIAL DE ACCIONES (DESHACER / REHACER) ---
+        let undoStack = [];
+        let redoStack = [];
+
+        function saveToHistory() {
+            // Guardamos una copia en formato JSON para evitar clonación por referencia
+            const stateCopy = JSON.stringify(appState.functions);
+            undoStack.push(stateCopy);
+            if (undoStack.length > 50) {
+                undoStack.shift(); // Límite de 50 pasos
+            }
+            redoStack = []; // Se limpia el redo al hacer una nueva acción
+            updateHistoryButtons();
+        }
+
+        function undo() {
+            if (undoStack.length === 0) return;
+            const currentState = JSON.stringify(appState.functions);
+            redoStack.push(currentState);
+            
+            const prev = undoStack.pop();
+            appState.functions = JSON.parse(prev);
+            
+            // Garantizar que la función activa siga existiendo
+            if (!appState.functions[appState.activeFunctionId]) {
+                appState.activeFunctionId = 'main';
+            }
+            
+            renderSidebar();
+            renderDiagram();
+            updateHistoryButtons();
+            showNotification('Acción deshecha', 'info');
+        }
+
+        function redo() {
+            if (redoStack.length === 0) return;
+            const currentState = JSON.stringify(appState.functions);
+            undoStack.push(currentState);
+            
+            const next = redoStack.pop();
+            appState.functions = JSON.parse(next);
+            
+            if (!appState.functions[appState.activeFunctionId]) {
+                appState.activeFunctionId = 'main';
+            }
+            
+            renderSidebar();
+            renderDiagram();
+            updateHistoryButtons();
+            showNotification('Acción rehecha', 'info');
+        }
+
+        function updateHistoryButtons() {
+            document.getElementById('btn-undo').disabled = undoStack.length === 0;
+            document.getElementById('btn-redo').disabled = redoStack.length === 0;
+        }
+
+        // --- 3. CUSTOM MODAL PROMISE SYSTEM (Elimina confirm/prompt bloqueantes de Puppeteer) ---
+        function showCustomConfirm(title, message) {
+            return new Promise((resolve) => {
+                const modal = document.getElementById('custom-modal');
+                const mTitle = document.getElementById('modal-title');
+                const mMsg = document.getElementById('modal-message');
+                const mInput = document.getElementById('modal-input');
+                const btnConfirm = document.getElementById('modal-btn-confirm');
+                const btnCancel = document.getElementById('modal-btn-cancel');
+                const btnCloseX = document.getElementById('modal-close-btn-x');
+                
+                mTitle.innerText = title;
+                mMsg.innerText = message;
+                mInput.classList.add('hidden'); // ocultar input field
+                
+                modal.classList.remove('hidden');
+                setTimeout(() => modal.classList.add('show'), 10);
+                
+                const cleanUp = () => {
+                    modal.classList.remove('show');
+                    setTimeout(() => modal.classList.add('hidden'), 300);
+                };
+                
+                btnConfirm.onclick = () => {
+                    cleanUp();
+                    resolve(true);
+                };
+                
+                btnCancel.onclick = () => {
+                    cleanUp();
+                    resolve(false);
+                };
+                
+                btnCloseX.onclick = () => {
+                    cleanUp();
+                    resolve(false);
+                };
+            });
+        }
+
+        function showCustomPrompt(title, message, defaultValue = '') {
+            return new Promise((resolve) => {
+                const modal = document.getElementById('custom-modal');
+                const mTitle = document.getElementById('modal-title');
+                const mMsg = document.getElementById('modal-message');
+                const mInput = document.getElementById('modal-input');
+                const btnConfirm = document.getElementById('modal-btn-confirm');
+                const btnCancel = document.getElementById('modal-btn-cancel');
+                const btnCloseX = document.getElementById('modal-close-btn-x');
+                
+                mTitle.innerText = title;
+                mMsg.innerText = message;
+                mInput.classList.remove('hidden'); // mostrar input field
+                mInput.value = defaultValue;
+                
+                modal.classList.remove('hidden');
+                setTimeout(() => modal.classList.add('show'), 10);
+                mInput.focus();
+                
+                const cleanUp = () => {
+                    modal.classList.remove('show');
+                    setTimeout(() => modal.classList.add('hidden'), 300);
+                };
+                
+                btnConfirm.onclick = () => {
+                    const val = mInput.value;
+                    cleanUp();
+                    resolve(val);
+                };
+                
+                btnCancel.onclick = () => {
+                    cleanUp();
+                    resolve(null);
+                };
+                
+                btnCloseX.onclick = () => {
+                    cleanUp();
+                    resolve(null);
+                };
+
+                // Confirmar con la tecla Enter
+                mInput.onkeydown = (e) => {
+                    if (e.key === 'Enter') {
+                        const val = mInput.value;
+                        cleanUp();
+                        resolve(val);
+                    }
+                };
+            });
+        }
+
+        // --- 4. GESTIÓN DE PLANTILLAS ACADÉMICAS ---
+        const templates = {
+            sumaN: {
+                title: 'Sumatoria de N números',
+                data: {
+                    'main': {
+                        id: 'main',
+                        name: 'main()',
+                        type: 'main',
+                        structures: [
+                            { id: 't1_1', type: 'action', code: 'Suma = 0' },
+                            { id: 't1_2', type: 'action', code: 'OUTPUT "Ingrese cantidad de números a sumar (N):"' },
+                            { id: 't1_3', type: 'action', code: 'INPUT N' },
+                            { id: 't1_4', type: 'action', code: 'i = 1' },
+                            {
+                                id: 't1_5',
+                                type: 'WHILE',
+                                condition: 'WHILE i <= N',
+                                body: [
+                                    { id: 't1_6', type: 'action', code: 'OUTPUT "Ingrese número:"' },
+                                    { id: 't1_7', type: 'action', code: 'INPUT Num' },
+                                    { id: 't1_8', type: 'action', code: 'Suma = Suma + Num' },
+                                    { id: 't1_9', type: 'action', code: 'i = i + 1' }
+                                ]
+                            },
+                            { id: 't1_10', type: 'action', code: 'OUTPUT "La suma total es: ", Suma' }
+                        ]
+                    }
+                }
+            },
+            mayorTres: {
+                title: 'Mayor de Tres Números',
+                data: {
+                    'main': {
+                        id: 'main',
+                        name: 'main()',
+                        type: 'main',
+                        structures: [
+                            { id: 't2_1', type: 'action', code: 'OUTPUT "Ingrese A, B y C:"' },
+                            { id: 't2_2', type: 'action', code: 'INPUT A, B, C' },
+                            {
+                                id: 't2_3',
+                                type: 'if',
+                                condition: '¿A > B?',
+                                trueBranch: [
+                                    {
+                                        id: 't2_4',
+                                        type: 'if',
+                                        condition: '¿A > C?',
+                                        trueBranch: [{ id: 't2_5', type: 'action', code: 'Mayor = A' }],
+                                        falseBranch: [{ id: 't2_6', type: 'action', code: 'Mayor = C' }]
+                                    }
+                                ],
+                                falseBranch: [
+                                    {
+                                        id: 't2_7',
+                                        type: 'if',
+                                        condition: '¿B > C?',
+                                        trueBranch: [{ id: 't2_8', type: 'action', code: 'Mayor = B' }],
+                                        falseBranch: [{ id: 't2_9', type: 'action', code: 'Mayor = C' }]
+                                    }
+                                ]
+                            },
+                            { id: 't2_10', type: 'action', code: 'OUTPUT "El número mayor es: ", Mayor' }
+                        ]
+                    }
+                }
+            },
+            fibonacci: {
+                title: 'Fibonacci Recursivo',
+                data: {
+                    'main': {
+                        id: 'main',
+                        name: 'main()',
+                        type: 'main',
+                        structures: [
+                            { id: 't3_1', type: 'action', code: 'OUTPUT "Ingrese número de términos:"' },
+                            { id: 't3_2', type: 'action', code: 'INPUT Limite' },
+                            { id: 't3_3', type: 'action', code: 'i = 0' },
+                            {
+                                id: 't3_4',
+                                type: 'WHILE',
+                                condition: 'WHILE i < Limite',
+                                body: [
+                                    { id: 't3_5', type: 'action', code: 'OUTPUT fibonacci(i)' },
+                                    { id: 't3_6', type: 'action', code: 'i = i + 1' }
+                                ]
+                            }
+                        ]
+                    },
+                    'func_fibo': {
+                        id: 'func_fibo',
+                        name: 'fibonacci(n)',
+                        type: 'auxiliar',
+                        structures: [
+                            {
+                                id: 't3_7',
+                                type: 'if',
+                                condition: '¿n <= 1?',
+                                trueBranch: [
+                                    { id: 't3_8', type: 'action', code: 'Retornar n' }
+                                ],
+                                falseBranch: [
+                                    { id: 't3_9', type: 'action', code: 'Retornar fibonacci(n - 1) + fibonacci(n - 2)' }
+                                ]
+                            }
+                        ]
+                    }
+                }
+            }
+        };
+
+        function loadTemplate(key) {
+            showCustomConfirm('Cargar Plantilla', `¿Cargar la plantilla "${templates[key].title}"? Se descartará el trabajo actual.`).then(confirmed => {
+                if (confirmed) {
+                    saveToHistory();
+                    appState.functions = JSON.parse(JSON.stringify(templates[key].data));
+                    appState.activeFunctionId = 'main';
+                    renderSidebar();
+                    renderDiagram();
+                    showNotification('Plantilla cargada exitosamente', 'success');
+                }
+            });
+        }
+
+        // --- 5. RENDERIZADOR DEL DIAGRAMA DE CHAPÍN (DOM DIRECTO) ---
+        let currentInsertPath = null;
+        let currentInsertIndex = 0;
+        let zoomLevel = 1.0;
+
+        function renderDiagram() {
+            const canvas = document.getElementById('diagram-canvas');
+            const currentFunc = appState.functions[appState.activeFunctionId];
+            
+            // Actualizar interfaz del Workspace
+            document.getElementById('current-function-title').innerText = currentFunc.name;
+            
+            canvas.innerHTML = '';
+            
+            // Contenedor principal que encapsula todo el diagrama
+            const rootWrapper = document.createElement('div');
+            // Diferenciación de bordes exigida por el arquitecto
+            rootWrapper.className = `ns-container ${currentFunc.type === 'main' ? 'ns-main-mode' : 'ns-func-mode'}`;
+            
+            // Llamado recursivo para construir la estructura
+            buildStructureDOM(currentFunc.structures, rootWrapper, 'root');
+            
+            canvas.appendChild(rootWrapper);
+        }
+
+        // --- RECURSIVIDAD PURA EN DOM ---
+        function buildStructureDOM(structures, parentDOM, path) {
+            // Caso 0: Rama vacía
+            if (!structures || structures.length === 0) {
+                if (appState.editMode) {
+                    const placeholder = document.createElement('div');
+                    placeholder.className = 'ns-placeholder';
+                    placeholder.innerHTML = `
+                        <div class="ns-placeholder-text">Bloque de instrucciones vacío</div>
+                        <div class="ns-placeholder-actions">
+                            <button class="ns-placeholder-btn" data-path="${path}" data-index="0" data-type="action">📝 Action</button>
+                            <button class="ns-placeholder-btn" data-path="${path}" data-index="0" data-type="if">🔀 IF-ELSE</button>
+                            <button class="ns-placeholder-btn" data-path="${path}" data-index="0" data-type="WHILE">🔁 FOR / WHILE</button>
+                            <button class="ns-placeholder-btn" data-path="${path}" data-index="0" data-type="UNTIL">🔄 UNTIL</button>
+                        </div>
+                    `;
+                    parentDOM.appendChild(placeholder);
+                } else {
+                    // Modo vista previa / impresión: representa visualmente la caja con una diagonal
+                    parentDOM.classList.add('is-empty');
+                }
+                return;
+            }
+
+            parentDOM.classList.remove('is-empty');
+
+            structures.forEach((block, index) => {
+                // A. Insertar Trigger flotante ("+") superior en modo edición
+                if (appState.editMode) {
+                    const spacerBefore = document.createElement('div');
+                    spacerBefore.className = 'ns-spacer';
+                    spacerBefore.dataset.path = path;
+                    spacerBefore.dataset.index = index.toString();
+                    spacerBefore.innerHTML = `
+                        <button class="ns-spacer-btn" data-path="${path}" data-index="${index}" title="Insertar bloque aquí">
+                            <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="3.5">
+                                <line x1="12" y1="5" x2="12" y2="19"></line>
+                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                            </svg>
+                        </button>
+                    `;
+                    parentDOM.appendChild(spacerBefore);
+                }
+
+                // B. Crear bloque visual
+                const blockDiv = document.createElement('div');
+                blockDiv.className = `ns-block block-${block.type}`;
+                blockDiv.dataset.id = block.id;
+
+                // Barra de herramientas flotante por bloque (solo en Edición)
+                if (appState.editMode) {
+                    const actionsBar = document.createElement('div');
+                    actionsBar.className = 'ns-actions-bar';
+                    
+                    const isFirst = index === 0;
+                    const isLast = index === structures.length - 1;
+
+                    actionsBar.innerHTML = `
+                        <button class="ns-action-btn btn-move-up" data-id="${block.id}" title="Subir bloque" ${isFirst ? 'disabled style="opacity: 0.25; cursor: not-allowed;"' : ''}>
+                            <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="3"><path d="M18 15l-6-6-6 6"/></svg>
+                        </button>
+                        <button class="ns-action-btn btn-move-down" data-id="${block.id}" title="Bajar bloque" ${isLast ? 'disabled style="opacity: 0.25; cursor: not-allowed;"' : ''}>
+                            <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="3"><path d="M6 9l6 6 6-6"/></svg>
+                        </button>
+                        <button class="ns-action-btn btn-duplicate" data-id="${block.id}" title="Duplicar bloque">
+                            <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                        </button>
+                        <button class="ns-action-btn btn-delete" data-id="${block.id}" title="Eliminar bloque">
+                            <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                        </button>
+                    `;
+                    blockDiv.appendChild(actionsBar);
+                }
+
+                // Renderizado interno según el tipo de bloque
+                if (block.type === 'action') {
+                    const inner = document.createElement('div');
+                    inner.className = 'ns-action-inner';
+                    
+                    const editable = document.createElement('div');
+                    editable.className = 'ns-editable';
+                    editable.contentEditable = appState.editMode;
+                    editable.dataset.id = block.id;
+                    editable.dataset.field = 'code';
+                    editable.setAttribute('placeholder', 'Escriba la acción o asignación (ej. x = 5)...');
+                    editable.innerText = block.code || '';
+                    
+                    inner.appendChild(editable);
+                    blockDiv.appendChild(inner);
+                } 
+                else if (block.type === 'if') {
+                    const ifWrapper = document.createElement('div');
+                    ifWrapper.className = 'ns-if-wrapper';
+
+                    // Cabecera triangular clásica usando SVG escalable
+                    const ifHeader = document.createElement('div');
+                    ifHeader.className = 'ns-if-header';
+                    ifHeader.innerHTML = `
+                        <svg class="ns-if-svg" viewBox="0 0 100 100" preserveAspectRatio="none">
+                            <line x1="0" y1="0" x2="50" y2="100" stroke="var(--ns-border)" stroke-width="2"/>
+                            <line x1="100" y1="0" x2="50" y2="100" stroke="var(--ns-border)" stroke-width="2"/>
+                        </svg>
+                        <div class="ns-if-cond-container">
+                            <div class="ns-editable ns-cond-edit" contenteditable="${appState.editMode}" data-id="${block.id}" data-field="condition" placeholder="¿Condición IF?">${block.condition || ''}</div>
+                        </div>
+                        <span class="ns-if-label ns-if-yes">SÍ</span>
+                        <span class="ns-if-label ns-if-no">NO</span>
+                    `;
+                    
+                    // Contenedor lateral para las ramas SI y NO
+                    const branches = document.createElement('div');
+                    branches.className = 'ns-if-branches';
+
+                    const branchTrue = document.createElement('div');
+                    branchTrue.className = 'ns-branch ns-branch-true';
+                    buildStructureDOM(block.trueBranch, branchTrue, `${block.id}:true`);
+
+                    const branchFalse = document.createElement('div');
+                    branchFalse.className = 'ns-branch ns-branch-false';
+                    buildStructureDOM(block.falseBranch, branchFalse, `${block.id}:false`);
+
+                    branches.appendChild(branchTrue);
+                    branches.appendChild(branchFalse);
+
+                    ifWrapper.appendChild(ifHeader);
+                    ifWrapper.appendChild(branches);
+                    blockDiv.appendChild(ifWrapper);
+                } 
+                else if (block.type === 'WHILE') {
+                    const loopWrapper = document.createElement('div');
+                    loopWrapper.className = 'ns-loop-wrapper';
+
+                    // Cabecera superior con condición de entrada
+                    const loopHeader = document.createElement('div');
+                    loopHeader.className = 'ns-loop-header';
+                    
+                    const editable = document.createElement('div');
+                    editable.className = 'ns-editable ns-loop-edit';
+                    editable.contentEditable = appState.editMode;
+                    editable.dataset.id = block.id;
+                    editable.dataset.field = 'condition';
+                    editable.setAttribute('placeholder', 'Bucle WHILE (ej. WHILE i <= 10)...');
+                    editable.innerText = block.condition || '';
+
+                    loopHeader.appendChild(editable);
+                    loopWrapper.appendChild(loopHeader);
+
+                    // Contenedor del Cuerpo (L invertida)
+                    const loopBody = document.createElement('div');
+                    loopBody.className = 'ns-loop-body-container';
+
+                    const sideBar = document.createElement('div');
+                    sideBar.className = 'ns-loop-side-bar';
+
+                    const loopContent = document.createElement('div');
+                    loopContent.className = 'ns-loop-content';
+                    buildStructureDOM(block.body, loopContent, `${block.id}:body`);
+
+                    loopBody.appendChild(sideBar);
+                    loopBody.appendChild(loopContent);
+                    loopWrapper.appendChild(loopBody);
+
+                    blockDiv.appendChild(loopWrapper);
+                }
+                else if (block.type === 'UNTIL') {
+                    const repeatWrapper = document.createElement('div');
+                    repeatWrapper.className = 'ns-repeat-wrapper';
+
+                    // Cuerpo arriba, condición abajo
+                    const repeatBody = document.createElement('div');
+                    repeatBody.className = 'ns-repeat-body-container';
+
+                    const sideBar = document.createElement('div');
+                    sideBar.className = 'ns-repeat-side-bar';
+
+                    const repeatContent = document.createElement('div');
+                    repeatContent.className = 'ns-repeat-content';
+                    buildStructureDOM(block.body, repeatContent, `${block.id}:body`);
+
+                    repeatBody.appendChild(sideBar);
+                    repeatBody.appendChild(repeatContent);
+                    repeatWrapper.appendChild(repeatBody);
+
+                    // Footer del bucle con condición al final
+                    const repeatFooter = document.createElement('div');
+                    repeatFooter.className = 'ns-repeat-footer';
+
+                    const editable = document.createElement('div');
+                    editable.className = 'ns-editable ns-repeat-edit';
+                    editable.contentEditable = appState.editMode;
+                    editable.dataset.id = block.id;
+                    editable.dataset.field = 'condition';
+                    editable.setAttribute('placeholder', 'FOR i = 0 TO 10 BY +1');
+                    editable.innerText = block.condition || '';
+
+                    repeatFooter.appendChild(editable);
+                    repeatWrapper.appendChild(repeatFooter);
+
+                    blockDiv.appendChild(repeatWrapper);
+                }
+
+                parentDOM.appendChild(blockDiv);
+
+                // C. Insertar Trigger flotante ("+") inferior en el último elemento
+                if (appState.editMode && index === structures.length - 1) {
+                    const spacerAfter = document.createElement('div');
+                    spacerAfter.className = 'ns-spacer';
+                    spacerAfter.dataset.path = path;
+                    spacerAfter.dataset.index = (index + 1).toString();
+                    spacerAfter.innerHTML = `
+                        <button class="ns-spacer-btn" data-path="${path}" data-index="${index + 1}" title="Insertar bloque al final">
+                            <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="3.5">
+                                <line x1="12" y1="5" x2="12" y2="19"></line>
+                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                            </svg>
+                        </button>
+                    `;
+                    parentDOM.appendChild(spacerAfter);
+                }
+            });
+        }
+
+        // --- 6. LÓGICA DE INSERCIÓN, EDICIÓN Y REORDENAMIENTO ---
+        
+        // Generador de UUIDs simples para bloques
+        function generateId() {
+            return 'b_' + Math.random().toString(36).substr(2, 9);
+        }
+
+        // Fábrica de bloques en formato JSON puro
+        function createBlockData(type) {
+            const id = generateId();
+            if (type === 'action') {
+                return { id, type: 'action', code: '' };
+            } else if (type === 'if') {
+                return { id, type: 'if', condition: '', trueBranch: [], falseBranch: [] };
+            } else if (type === 'WHILE') {
+                return { id, type: 'WHILE', condition: '', body: [] };
+            } else if (type === 'UNTIL') {
+                return { id, type: 'UNTIL', condition: '', body: [] };
+            }
+        }
+
+        // Resuelve recursivamente la ruta del árbol JSON dado un localizador (ej. 'b4_true')
+        function getArrayByPath(path) {
+            const currentFunc = appState.functions[appState.activeFunctionId];
+            if (path === 'root') {
+                return currentFunc.structures;
+            }
+            
+            const parts = path.split(':');
+            const blockId = parts[0];
+            const branch = parts[1]; // 'true', 'false', 'body'
+
+            let target = null;
+            function search(arr) {
+                for (let block of arr) {
+                    if (block.id === blockId) {
+                        target = block;
+                        return true;
+                    }
+                    if (block.type === 'if') {
+                        if (search(block.trueBranch) || search(block.falseBranch)) return true;
+                    }
+                    if (block.type === 'WHILE' || block.type === 'UNTIL') {
+                        if (search(block.body)) return true;
+                    }
+                }
+                return false;
+            }
+
+            search(currentFunc.structures);
+
+            if (target) {
+                if (branch === 'true') return target.trueBranch;
+                if (branch === 'false') return target.falseBranch;
+                if (branch === 'body') return target.body;
+            }
+            return null;
+        }
+
+        // Encuentra el array padre y la posición index de un bloque por su ID
+        function findParentArrayAndIndex(blockId) {
+            const currentFunc = appState.functions[appState.activeFunctionId];
+            let result = null;
+
+            function search(arr) {
+                for (let i = 0; i < arr.length; i++) {
+                    if (arr[i].id === blockId) {
+                        result = { array: arr, index: i };
+                        return true;
+                    }
+                    if (arr[i].type === 'if') {
+                        if (search(arr[i].trueBranch) || search(arr[i].falseBranch)) return true;
+                    }
+                    if (arr[i].type === 'WHILE' || arr[i].type === 'UNTIL') {
+                        if (search(arr[i].body)) return true;
+                    }
+                }
+                return false;
+            }
+
+            search(currentFunc.structures);
+            return result;
+        }
+
+        // Duplica un bloque de forma recursiva reasignando nuevos IDs para evitar colisiones
+        function deepCloneBlock(block) {
+            const clone = { ...block, id: generateId() };
+            if (block.type === 'if') {
+                clone.trueBranch = block.trueBranch.map(b => deepCloneBlock(b));
+                clone.falseBranch = block.falseBranch.map(b => deepCloneBlock(b));
+            } else if (block.type === 'WHILE' || block.type === 'UNTIL') {
+                clone.body = block.body.map(b => deepCloneBlock(b));
+            }
+            return clone;
+        }
+
+        // --- 7. ASOCIACIÓN DE EVENTOS EN EL ESPACIO DE TRABAJO ---
+        function initCanvasEvents() {
+            const canvas = document.getElementById('diagram-canvas');
+
+            // 1. Delegación de eventos para triggers flotantes "+" y placeholders vacíos
+            canvas.addEventListener('click', (e) => {
+                const spacerBtn = e.target.closest('.ns-spacer-btn');
+                const placeholderBtn = e.target.closest('.ns-placeholder-btn');
+                
+                if (spacerBtn) {
+                    e.stopPropagation();
+                    currentInsertPath = spacerBtn.dataset.path;
+                    currentInsertIndex = parseInt(spacerBtn.dataset.index);
+                    showContextMenu(spacerBtn);
+                } else if (placeholderBtn) {
+                    e.stopPropagation();
+                    const path = placeholderBtn.dataset.path;
+                    const index = parseInt(placeholderBtn.dataset.index);
+                    const type = placeholderBtn.dataset.type;
+                    
+                    if (type && path) {
+                        saveToHistory();
+                        const targetArray = getArrayByPath(path);
+                        if (targetArray) {
+                            const newBlock = createBlockData(type);
+                            targetArray.splice(index, 0, newBlock);
+                            renderDiagram();
+                            showNotification(`Bloque ${type.toUpperCase()} agregado`, 'success');
+                        }
+                    }
+                }
+
+                // Eventos de reordenamiento y duplicación/eliminación
+                const btnMoveUp = e.target.closest('.btn-move-up');
+                const btnMoveDown = e.target.closest('.btn-move-down');
+                const btnDuplicate = e.target.closest('.btn-duplicate');
+                const btnDelete = e.target.closest('.btn-delete');
+
+                if (btnMoveUp) {
+                    const id = btnMoveUp.dataset.id;
+                    const res = findParentArrayAndIndex(id);
+                    if (res && res.index > 0) {
+                        saveToHistory();
+                        const temp = res.array[res.index];
+                        res.array[res.index] = res.array[res.index - 1];
+                        res.array[res.index - 1] = temp;
+                        renderDiagram();
+                        showNotification('Bloque subido', 'info');
+                    }
+                }
+                else if (btnMoveDown) {
+                    const id = btnMoveDown.dataset.id;
+                    const res = findParentArrayAndIndex(id);
+                    if (res && res.index < res.array.length - 1) {
+                        saveToHistory();
+                        const temp = res.array[res.index];
+                        res.array[res.index] = res.array[res.index + 1];
+                        res.array[res.index + 1] = temp;
+                        renderDiagram();
+                        showNotification('Bloque bajado', 'info');
+                    }
+                }
+                else if (btnDuplicate) {
+                    const id = btnDuplicate.dataset.id;
+                    const res = findParentArrayAndIndex(id);
+                    if (res) {
+                        saveToHistory();
+                        const clone = deepCloneBlock(res.array[res.index]);
+                        res.array.splice(res.index + 1, 0, clone);
+                        renderDiagram();
+                        showNotification('Bloque duplicado', 'success');
+                    }
+                }
+                else if (btnDelete) {
+                    const id = btnDelete.dataset.id;
+                    const res = findParentArrayAndIndex(id);
+                    if (res) {
+                        saveToHistory();
+                        res.array.splice(res.index, 1);
+                        renderDiagram();
+                        showNotification('Bloque eliminado', 'warning');
+                    }
+                }
+            });
+
+            // 2. Sincronización en tiempo real del pseudocódigo usando contenteditable sin re-renderizado molesto
+            canvas.addEventListener('input', (e) => {
+                const editable = e.target.closest('.ns-editable');
+                if (editable) {
+                    const id = editable.dataset.id;
+                    const field = editable.dataset.field;
+                    const value = editable.innerText;
+
+                    // Búsqueda del elemento y actualización silenciosa del estado en memoria
+                    function updateInState(arr) {
+                        for (let i = 0; i < arr.length; i++) {
+                            if (arr[i].id === id) {
+                                arr[i][field] = value;
+                                return true;
+                            }
+                            if (arr[i].type === 'if') {
+                                if (updateInState(arr[i].trueBranch) || updateInState(arr[i].falseBranch)) return true;
+                            }
+                            if (arr[i].type === 'WHILE' || arr[i].type === 'UNTIL') {
+                                if (updateInState(arr[i].body)) return true;
+                            }
+                        }
+                        return false;
+                    }
+
+                    updateInState(appState.functions[appState.activeFunctionId].structures);
+                }
+            });
+
+            // Intercepta tecla Enter en condiciones para confirmar, pero permite salto de línea en acciones
+            canvas.addEventListener('keydown', (e) => {
+                const editable = e.target.closest('.ns-editable');
+                if (editable && e.key === 'Enter') {
+                    if (editable.dataset.field === 'condition') {
+                        e.preventDefault();
+                        editable.blur();
+                    }
+                }
+            });
+        }
+
+        // --- 8. MENÚ CONTEXTUAL FLOTANTE ---
+        function showContextMenu(button) {
+            const menu = document.getElementById('context-menu');
+            const rect = button.getBoundingClientRect();
+            
+            menu.style.left = `${rect.left + window.scrollX + rect.width / 2 - 110}px`;
+            menu.style.top = `${rect.top + window.scrollY + rect.height + 8}px`;
+            menu.classList.remove('hidden');
+        }
+
+        // Escuchador global de clics en el menú contextual
+        document.getElementById('context-menu').addEventListener('click', (e) => {
+            const btn = e.target.closest('.context-menu-btn');
+            if (!btn) return;
+            
+            const type = btn.dataset.type;
+            if (type && currentInsertPath) {
+                saveToHistory();
+                
+                const targetArray = getArrayByPath(currentInsertPath);
+                if (targetArray) {
+                    const newBlock = createBlockData(type);
+                    targetArray.splice(currentInsertIndex, 0, newBlock);
+                    
+                    renderDiagram();
+                    showNotification(`Bloque ${type.toUpperCase()} agregado`, 'success');
+                }
+            }
+
+            document.getElementById('context-menu').classList.add('hidden');
+            currentInsertPath = null;
+        });
+
+        // Ocultar menú contextual al hacer clic fuera de él
+        document.addEventListener('click', (e) => {
+            const menu = document.getElementById('context-menu');
+            if (!menu.classList.contains('hidden') && 
+                !e.target.closest('.ns-spacer-btn') && 
+                !e.target.closest('.ns-placeholder-btn') && 
+                !e.target.closest('#context-menu')) {
+                menu.classList.add('hidden');
+            }
+        });
+
+        // --- 9. CONTROL DE VISTA DE FUNCIONES ---
+        function renderSidebar() {
+            const list = document.getElementById('function-list');
+            list.innerHTML = '';
+            
+            const keys = Object.keys(appState.functions);
+            document.getElementById('func-count').innerText = keys.length;
+
+            keys.forEach(key => {
+                const func = appState.functions[key];
+                const isActive = key === appState.activeFunctionId;
+
+                const item = document.createElement('div');
+                item.className = `function-item ${isActive ? 'active' : ''}`;
+                item.onclick = () => {
+                    appState.activeFunctionId = key;
+                    renderSidebar();
+                    renderDiagram();
+                };
+
+                const info = document.createElement('div');
+                info.className = 'function-info';
+                info.innerHTML = `
+                    <span class="function-icon">${func.type === 'main' ? '🚀' : 'ƒ'}</span>
+                    <span class="function-name" title="${func.name}">${func.name}</span>
+                    <span class="function-type-pill ${func.type === 'main' ? 'pill-main' : 'pill-aux'}">${func.type}</span>
+                `;
+                item.appendChild(info);
+
+                // Botones de acción sólo para auxiliares
+                if (func.type === 'auxiliar') {
+                    const actions = document.createElement('div');
+                    actions.className = 'function-actions';
+                    actions.innerHTML = `
+                        <button class="btn-func-action" onclick="event.stopPropagation(); renameFunction('${key}')" title="Renombrar">
+                            <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 20h9M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+                        </button>
+                        <button class="btn-func-action delete" onclick="event.stopPropagation(); deleteFunction('${key}')" title="Eliminar">
+                            <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                        </button>
+                    `;
+                    item.appendChild(actions);
+                }
+
+                list.appendChild(item);
+            });
+        }
+
+        function createNewFunction() {
+            showCustomPrompt("Nueva Función", "Nombre de la nueva función auxiliar:", "calcularImpuesto").then(rawName => {
+                if (!rawName || rawName.trim() === '') return;
+
+                let clean = rawName.trim();
+                // Aseguramos formato estándar con paréntesis para las funciones auxiliares
+                if (!clean.endsWith('()')) {
+                    clean += '()';
+                }
+
+                saveToHistory();
+
+                const id = 'func_' + Date.now();
+                appState.functions[id] = {
+                    id: id,
+                    name: clean,
+                    type: 'auxiliar',
+                    structures: [
+                        { id: 'act_' + Date.now(), type: 'action', code: '// Inicie su codificación aquí...' }
+                    ]
+                };
+
+                appState.activeFunctionId = id;
+                renderSidebar();
+                renderDiagram();
+                showNotification(`Función ${clean} creada`, 'success');
+            });
+        }
+
+        function renameFunction(key) {
+            const func = appState.functions[key];
+            let nameClean = func.name.endsWith('()') ? func.name.slice(0, -2) : func.name;
+            
+            showCustomPrompt("Renombrar Función", "Nuevo nombre para la función:", nameClean).then(newName => {
+                if (!newName || newName.trim() === '') return;
+
+                saveToHistory();
+                
+                let finalName = newName.trim();
+                if (!finalName.endsWith('()')) finalName += '()';
+
+                func.name = finalName;
+                renderSidebar();
+                if (key === appState.activeFunctionId) {
+                    document.getElementById('current-function-title').innerText = finalName;
+                }
+                showNotification('Función renombrada', 'success');
+            });
+        }
+
+        function renameCurrentFunction() {
+            renameFunction(appState.activeFunctionId);
+        }
+
+        function deleteFunction(key) {
+            if (key === 'main') return;
+            const func = appState.functions[key];
+            
+            showCustomConfirm("Eliminar Función", `¿Eliminar definitivamente la función auxiliar "${func.name}"?`).then(confirmed => {
+                if (confirmed) {
+                    saveToHistory();
+                    delete appState.functions[key];
+                    
+                    if (appState.activeFunctionId === key) {
+                        appState.activeFunctionId = 'main';
+                    }
+                    
+                    renderSidebar();
+                    renderDiagram();
+                    showNotification('Función de baja', 'warning');
+                }
+            });
+        }
+
+        // --- 10. CONFIGURACIONES GENERALES & EXPORTACIÓN JSON ---
+
+        // Importación de archivo JSON local
+        function handleImportJSON(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const imported = JSON.parse(e.target.result);
+                    // Validación mínima de arquitectura exigida
+                    const keys = Object.keys(imported);
+                    if (keys.length > 0 && imported['main'] && imported['main'].structures) {
+                        saveToHistory();
+                        appState.functions = imported;
+                        appState.activeFunctionId = 'main';
+                        
+                        renderSidebar();
+                        renderDiagram();
+                        showNotification('Proyecto importado exitosamente', 'success');
+                    } else {
+                        throw new Error('Estructura de diagrama inválida.');
+                    }
+                } catch (error) {
+                    showNotification('Error al parsear el archivo JSON', 'error');
+                    console.error(error);
+                }
+            };
+            reader.readAsText(file);
+            event.target.value = ''; // resetea selector de archivos
+        }
+
+        // Descarga de proyecto JSON local
+        function exportJSON() {
+            try {
+                const jsonString = JSON.stringify(appState.functions, null, 2);
+                const blob = new Blob([jsonString], { type: 'application/json;charset=utf-8;' });
+                const url = URL.createObjectURL(blob);
+                
+                const dlAnchor = document.createElement('a');
+                dlAnchor.setAttribute("href", url);
+                
+                const currentFunc = appState.functions[appState.activeFunctionId];
+                dlAnchor.setAttribute("download", `proyecto-chapin-${currentFunc.name.replace(/[\(\)]/g, '')}.json`);
+                
+                document.body.appendChild(dlAnchor);
+                dlAnchor.click();
+                
+                // Limpieza de recursos
+                document.body.removeChild(dlAnchor);
+                URL.revokeObjectURL(url);
+                
+                showNotification('Proyecto JSON descargado', 'success');
+            } catch (error) {
+                console.error("Fallo al exportar JSON:", error);
+                showNotification('Error al exportar el proyecto JSON', 'error');
+            }
+        }
+
+        // Limpiar y resetear el proyecto completo
+        function clearProject() {
+            showCustomConfirm('Limpiar Todo', '¿Está seguro de que desea borrar todo el proyecto? Se perderán todas las funciones auxiliares y cambios no guardados.').then(confirmed => {
+                if (confirmed) {
+                    saveToHistory();
+                    appState.functions = {
+                        'main': {
+                            id: 'main',
+                            name: 'main()',
+                            type: 'main',
+                            structures: []
+                        }
+                    };
+                    appState.activeFunctionId = 'main';
+                    renderSidebar();
+                    renderDiagram();
+                    showNotification('Proyecto restablecido', 'warning');
+                }
+            });
+        }
+
+        // --- 11. CONTROL DE EDICIÓN Y VISTA PREVIA ---
+        function setEditMode(active) {
+            appState.editMode = active;
+            
+            const modeEdit = document.getElementById('mode-edit');
+            const modePreview = document.getElementById('mode-preview');
+
+            if (active) {
+                modeEdit.classList.add('active');
+                modePreview.classList.remove('active');
+            } else {
+                modeEdit.classList.remove('active');
+                modePreview.classList.add('active');
+            }
+
+            renderDiagram();
+        }
+
+        // --- 12. SISTEMA DE ZOOM VECTORIAL DYNAMIC ---
+        function zoomIn() {
+            if (zoomLevel < 1.8) {
+                zoomLevel += 0.1;
+                updateZoomStyles();
+            }
+        }
+
+        function zoomOut() {
+            if (zoomLevel > 0.6) {
+                zoomLevel -= 0.1;
+                updateZoomStyles();
+            }
+        }
+
+        function updateZoomStyles() {
+            document.documentElement.style.setProperty('--ns-scale', zoomLevel);
+            document.getElementById('zoom-val').innerText = `${Math.round(zoomLevel * 100)}%`;
+        }
+
+        // --- 13. AJUSTES VISUALES Y APARIENCIA ---
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('collapsed');
+        }
+
+        function toggleTheme(name) {
+            const darkBtn = document.getElementById('theme-dark-btn');
+            const lightBtn = document.getElementById('theme-light-btn');
+
+            if (name === 'dark') {
+                document.body.classList.remove('theme-light');
+                document.body.classList.add('theme-dark');
+                darkBtn.classList.add('active');
+                lightBtn.classList.remove('active');
+                appState.theme = 'dark';
+            } else {
+                document.body.classList.remove('theme-dark');
+                document.body.classList.add('theme-light');
+                lightBtn.classList.add('active');
+                darkBtn.classList.remove('active');
+                appState.theme = 'light';
+            }
+            localStorage.setItem('chapinflow-theme', name);
+            // Re-renderizamos para adaptar colores de SVG y placeholders
+            renderDiagram();
+        }
+
+        function setAccent(color) {
+            // Eliminar acentos previos
+            document.body.classList.remove('accent-indigo', 'accent-emerald', 'accent-cyan', 'accent-orange', 'accent-rose');
+            document.body.classList.add(`accent-${color}`);
+            
+            // Marcar botón activo
+            document.querySelectorAll('.accent-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.classList.contains(color)) btn.classList.add('active');
+            });
+
+            appState.accent = color;
+            localStorage.setItem('chapinflow-accent', color);
+        }
+
+        // --- 14. GENERADOR DE NOTIFICACIONES ---
+        function showNotification(msg, type = 'info') {
+            const container = document.getElementById('notification-container');
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+            
+            let icon = 'ℹ️';
+            if (type === 'success') icon = '✅';
+            if (type === 'error') icon = '❌';
+            if (type === 'warning') icon = '⚠️';
+            
+            toast.innerHTML = `<span class="toast-icon">${icon}</span> <span>${msg}</span>`;
+            container.appendChild(toast);
+
+            setTimeout(() => toast.classList.add('show'), 15);
+
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // --- 15. EXPORTACIÓN PROFESIONAL A PDF ---
+        function exportToPDF() {
+            const element = document.getElementById('diagram-canvas');
+            const exportBtn = document.getElementById('btn-export-pdf');
+            const originalText = exportBtn.innerHTML;
+
+            const prevScale = zoomLevel;
+
+            function triggerPrintFallback() {
+                showNotification('Usando el Generador Nativo de Impresión...', 'info');
+                
+                // Forzar zoom a 1.0 temporalmente para asegurar escala
+                zoomLevel = 1.0;
+                updateZoomStyles();
+                
+                setTimeout(() => {
+                    window.print();
+                    zoomLevel = prevScale;
+                    updateZoomStyles();
+                    
+                    exportBtn.innerHTML = originalText;
+                    exportBtn.disabled = false;
+                }, 500);
+            }
+
+            // Si la librería html2pdf no está disponible (ej. sin conexión u origin bloqueado)
+            if (typeof html2pdf === 'undefined') {
+                triggerPrintFallback();
+                return;
+            }
+
+            // Bloquear botón e indicar cargando
+            exportBtn.innerHTML = '⏳ Generando...';
+            exportBtn.disabled = true;
+
+            // 1. Activar clase de exportación en el body (aplica overrides de CSS estricto B/N)
+            document.body.classList.add('exporting');
+            
+            // 2. Conservar el nivel de escala anterior y forzar zoom a 1.0 para el exportador
+            zoomLevel = 1.0;
+            updateZoomStyles();
+
+            const currentFunc = appState.functions[appState.activeFunctionId];
+            // Sanitización del nombre del archivo
+            const cleanName = currentFunc.name.replace(/[^a-zA-Z0-9]/g, '_');
+            const filename = `Diagrama_NS_${cleanName}.pdf`;
+
+            const opt = {
+                margin: [15, 12, 15, 12],
+                filename: filename,
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { 
+                    scale: 2.5, // Mayor escala = mayor resolución en el vector final
+                    useCORS: true,
+                    backgroundColor: '#ffffff'
+                },
+                jsPDF: { 
+                    unit: 'mm', 
+                    format: 'a4', 
+                    orientation: 'portrait' 
+                }
+            };
+
+            // Ejecución asíncrona de html2pdf
+            try {
+                html2pdf().set(opt).from(element).save().then(() => {
+                    // Restaurar el estado interactivo del editor
+                    document.body.classList.remove('exporting');
+                    zoomLevel = prevScale;
+                    updateZoomStyles();
+                    
+                    exportBtn.innerHTML = originalText;
+                    exportBtn.disabled = false;
+                    showNotification('PDF descargado con éxito', 'success');
+                }).catch(err => {
+                    console.warn("html2pdf bloqueado o fallido, usando fallback de impresión:", err);
+                    document.body.classList.remove('exporting');
+                    triggerPrintFallback();
+                });
+            } catch (err) {
+                console.warn("Fallo crítico en html2pdf, usando fallback de impresión:", err);
+                document.body.classList.remove('exporting');
+                triggerPrintFallback();
+            }
+        }
+
+        // --- 16. INICIALIZACIÓN DE LA SPA ---
+        document.addEventListener('DOMContentLoaded', () => {
+            // Inicializar eventos de edición
+            initCanvasEvents();
+            
+            // Recuperar preferencias de almacenamiento local si existen
+            const savedTheme = localStorage.getItem('chapinflow-theme') || 'dark';
+            const savedAccent = localStorage.getItem('chapinflow-accent') || 'indigo';
+            
+            toggleTheme(savedTheme);
+            setAccent(savedAccent);
+            
+            // Carga inicial
+            renderSidebar();
+            renderDiagram();
+
+            // Teclas de acceso rápido globales (Ctrl+Z y Ctrl+Y)
+            document.addEventListener('keydown', (e) => {
+                if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') {
+                    e.preventDefault();
+                    undo();
+                }
+                if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'y') {
+                    e.preventDefault();
+                    redo();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
