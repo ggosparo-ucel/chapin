@@ -55,7 +55,7 @@ Optimiza tu flujo de trabajo en el canvas utilizando los siguientes atajos globa
 
 El código está estructurado en un único archivo autocontenido de arquitectura limpia:
 
-*   **`chapin.html`:** Archivo único SPA que contiene:
+*   **`index.html`:** Archivo único SPA que contiene:
     *   **Diseño y Estilos (CSS):** Variables de diseño, temas oscuro/claro de alto contraste, rejilla Nassi-Shneiderman adaptativa, diseño *glassmorphic*, animaciones de transición y reglas de impresión `@media print`.
     *   **Estructura (HTML5):** Sidebar lateral con gestión de funciones y plantillas académicas preconfiguradas (Sumatoria de N números, Mayor de Tres y Fibonacci Recursivo), barra superior de herramientas de edición y el lienzo principal (`canvas`).
     *   **Lógica de Negocio (JavaScript):** Motor recursivo nativo generador de DOM, pila de historia (`undo`/`redo`), sistema de modales asíncronos basados en Promesas y rutinas de exportación Blob/PDF.
@@ -67,10 +67,9 @@ El código está estructurado en un único archivo autocontenido de arquitectura
 Al ser una aplicación puramente estática de cliente (HTML/CSS/JS), su despliegue es sumamente sencillo:
 
 ### Despliegue Directo (Rápido)
-1. Sube el archivo `chapin.html` al repositorio de tu proyecto.
-2. Renómbralo como `index.html` para que el servidor de páginas estáticas lo sirva por defecto en la raíz.
-3. Activa el servicio de **Pages** en la configuración de tu repositorio (GitLab en `Settings -> Pages` o GitHub en `Settings -> Pages`).
-4. ¡Listo! Tu IDE estará en línea disponible para toda tu clase o equipo.
+1. Sube el archivo `index.html` al repositorio de tu proyecto.
+2. Activa el servicio de **Pages** en la configuración de tu repositorio (GitLab en `Settings -> Pages` o GitHub en `Settings -> Pages`).
+3. ¡Listo! Tu IDE estará en línea disponible para toda tu clase o equipo.
 
 ### Ejemplo de Configuración para GitLab CI (`.gitlab-ci.yml`)
 Si deseas automatizar la publicación en GitLab Pages en cada cambio, añade este simple script en la raíz de tu proyecto:
@@ -80,7 +79,7 @@ pages:
   stage: deploy
   script:
     - mkdir .public
-    - cp chapin.html .public/index.html
+    - cp index.html .public/index.html
     - mv .public public
   artifacts:
     paths:

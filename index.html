@@ -1633,23 +1633,7 @@
                     id: 'main',
                     name: 'main()',
                     type: 'main',
-                    structures: [
-                        { id: 'b1', type: 'action', code: 'Suma = 0' },
-                        {
-                            id: 'b2',
-                            type: 'while',
-                            condition: 'WHILE x < 10',
-                            body: [
-                                {
-                                    id: 'b3',
-                                    type: 'if',
-                                    condition: '¿x % 2 == 0?',
-                                    trueBranch: [{ id: 'b4', type: 'action', code: 'Imprimir "El valor es par: ", x' }],
-                                    falseBranch: []
-                                }
-                            ]
-                        }
-                    ]
+                    structures: []
                 }
             }
         };
