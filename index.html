@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,7 +8,9 @@
     <!-- Google Fonts: Outfit (modern, sleek) & Fira Code (monospaced for pseudocode) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Outfit:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
     <!-- Client-Side PDF Export Library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
@@ -23,7 +26,7 @@
             --bg-main: #0f172a;
             --bg-card: rgba(30, 41, 59, 0.4);
             --border-card: rgba(255, 255, 255, 0.08);
-            
+
             --text-main: #f8fafc;
             --text-muted: #94a3b8;
             --text-inverse: #0f172a;
@@ -39,7 +42,8 @@
             --ns-edit-focus-bg: rgba(99, 102, 241, 0.2);
 
             /* Accents */
-            --primary: #6366f1; /* Indigo default */
+            --primary: #6366f1;
+            /* Indigo default */
             --primary-glow: rgba(99, 102, 241, 0.4);
             --primary-hover: #4f46e5;
             --emerald: #10b981;
@@ -49,7 +53,7 @@
 
             /* Dynamic Scaling */
             --ns-scale: 1;
-            
+
             /* Shadows & Effects */
             --shadow-lg: 0 10px 25px -5px rgba(0, 0, 0, 0.3), 0 8px 10px -6px rgba(0, 0, 0, 0.3);
             --shadow-glow: 0 0 15px var(--primary-glow);
@@ -78,7 +82,7 @@
             --ns-actions-bg: rgba(255, 255, 255, 0.95);
             --ns-actions-border: rgba(0, 0, 0, 0.15);
             --ns-edit-focus-bg: rgba(99, 102, 241, 0.1);
-            
+
             --shadow-lg: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
         }
 
@@ -88,21 +92,25 @@
             --primary-glow: rgba(99, 102, 241, 0.35);
             --primary-hover: #4f46e5;
         }
+
         body.accent-emerald {
             --primary: #10b981;
             --primary-glow: rgba(16, 185, 129, 0.35);
             --primary-hover: #059669;
         }
+
         body.accent-cyan {
             --primary: #06b6d4;
             --primary-glow: rgba(6, 182, 212, 0.35);
             --primary-hover: #0891b2;
         }
+
         body.accent-orange {
             --primary: #f97316;
             --primary-glow: rgba(249, 115, 22, 0.35);
             --primary-hover: #ea580c;
         }
+
         body.accent-rose {
             --primary: #f43f5e;
             --primary-glow: rgba(244, 63, 94, 0.35);
@@ -115,6 +123,7 @@
             margin: 0;
             padding: 0;
         }
+
         body {
             font-family: var(--font-main);
             background-color: var(--bg-app);
@@ -146,6 +155,7 @@
             backdrop-filter: var(--glass-blur);
             flex-shrink: 0;
         }
+
         .sidebar.collapsed {
             margin-left: -320px;
         }
@@ -157,11 +167,13 @@
             align-items: center;
             justify-content: space-between;
         }
+
         .logo-container {
             display: flex;
             align-items: center;
             gap: 12px;
         }
+
         .logo-icon {
             width: 32px;
             height: 32px;
@@ -174,6 +186,7 @@
             font-weight: 800;
             box-shadow: var(--shadow-glow);
         }
+
         .logo-text {
             font-size: 20px;
             font-weight: 800;
@@ -182,6 +195,7 @@
             -webkit-text-fill-color: transparent;
             letter-spacing: -0.5px;
         }
+
         body.theme-light .logo-text {
             background: linear-gradient(135deg, var(--text-main) 30%, var(--text-muted));
             -webkit-background-clip: text;
@@ -227,6 +241,7 @@
             gap: 8px;
             transition: all 0.2s ease;
         }
+
         .btn-add-function:hover {
             background-color: var(--primary);
             color: white;
@@ -241,6 +256,7 @@
             gap: 6px;
             margin-top: 10px;
         }
+
         .function-item {
             display: flex;
             align-items: center;
@@ -252,28 +268,34 @@
             cursor: pointer;
             transition: all 0.2s ease;
         }
+
         .function-item:hover {
             background-color: rgba(255, 255, 255, 0.05);
             border-color: rgba(255, 255, 255, 0.05);
         }
+
         .function-item.active {
             background-color: rgba(99, 102, 241, 0.08);
             border-color: rgba(99, 102, 241, 0.2);
         }
+
         body.theme-light .function-item.active {
             background-color: rgba(99, 102, 241, 0.05);
             border-color: rgba(99, 102, 241, 0.25);
         }
+
         .function-info {
             display: flex;
             align-items: center;
             gap: 8px;
             min-width: 0;
         }
+
         .function-icon {
             font-size: 14px;
             flex-shrink: 0;
         }
+
         .function-name {
             font-size: 13px;
             font-weight: 600;
@@ -281,6 +303,7 @@
             text-overflow: ellipsis;
             white-space: nowrap;
         }
+
         .function-type-pill {
             font-size: 9px;
             padding: 2px 6px;
@@ -288,23 +311,28 @@
             font-weight: 700;
             text-transform: uppercase;
         }
+
         .pill-main {
             background-color: rgba(99, 102, 241, 0.2);
             color: #818cf8;
         }
+
         .pill-aux {
             background-color: rgba(16, 185, 129, 0.2);
             color: #34d399;
         }
+
         .function-actions {
             display: flex;
             gap: 4px;
             opacity: 0;
             transition: opacity 0.2s ease;
         }
+
         .function-item:hover .function-actions {
             opacity: 1;
         }
+
         .btn-func-action {
             background: transparent;
             border: none;
@@ -318,10 +346,12 @@
             justify-content: center;
             transition: all 0.2s ease;
         }
+
         .btn-func-action:hover {
             color: var(--text-main);
             background-color: rgba(255, 255, 255, 0.1);
         }
+
         .btn-func-action.delete:hover {
             color: var(--rose);
             background-color: rgba(244, 63, 94, 0.15);
@@ -333,6 +363,7 @@
             grid-template-columns: 1fr;
             gap: 8px;
         }
+
         .template-item {
             background-color: rgba(255, 255, 255, 0.03);
             border: 1px solid var(--border-sidebar);
@@ -343,17 +374,20 @@
             transition: all 0.2s ease;
             width: 100%;
         }
+
         .template-item:hover {
             background-color: rgba(255, 255, 255, 0.06);
             border-color: var(--primary);
             transform: translateY(-1px);
         }
+
         .template-title {
             font-size: 13px;
             font-weight: 600;
             color: var(--text-main);
             margin-bottom: 2px;
         }
+
         .template-desc {
             font-size: 11px;
             color: var(--text-muted);
@@ -365,17 +399,19 @@
             flex-direction: column;
             gap: 14px;
         }
+
         .setting-row {
             display: flex;
             align-items: center;
             justify-content: space-between;
         }
+
         .setting-label {
             font-size: 12px;
             font-weight: 500;
             color: var(--text-muted);
         }
-        
+
         /* Toggle Switch */
         .theme-toggle-group {
             display: flex;
@@ -384,6 +420,7 @@
             border-radius: 8px;
             border: 1px solid var(--border-sidebar);
         }
+
         .theme-toggle-btn {
             background: transparent;
             border: none;
@@ -398,10 +435,11 @@
             align-items: center;
             gap: 6px;
         }
+
         .theme-toggle-btn.active {
             background-color: var(--bg-card);
             color: var(--text-main);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
         /* Selector de acentos */
@@ -409,6 +447,7 @@
             display: flex;
             gap: 6px;
         }
+
         .accent-btn {
             width: 18px;
             height: 18px;
@@ -417,17 +456,34 @@
             cursor: pointer;
             transition: transform 0.2s ease;
         }
+
         .accent-btn:hover {
             transform: scale(1.2);
         }
+
         .accent-btn.active {
             border-color: var(--text-main);
         }
-        .accent-btn.indigo { background-color: #6366f1; }
-        .accent-btn.emerald { background-color: #10b981; }
-        .accent-btn.cyan { background-color: #06b6d4; }
-        .accent-btn.orange { background-color: #f97316; }
-        .accent-btn.rose { background-color: #f43f5e; }
+
+        .accent-btn.indigo {
+            background-color: #6366f1;
+        }
+
+        .accent-btn.emerald {
+            background-color: #10b981;
+        }
+
+        .accent-btn.cyan {
+            background-color: #06b6d4;
+        }
+
+        .accent-btn.orange {
+            background-color: #f97316;
+        }
+
+        .accent-btn.rose {
+            background-color: #f43f5e;
+        }
 
         /* Guía rápida de Bloques */
         .guide-list {
@@ -435,12 +491,14 @@
             flex-direction: column;
             gap: 8px;
         }
+
         .guide-item {
             display: flex;
             align-items: flex-start;
             gap: 8px;
             font-size: 12px;
         }
+
         .guide-symbol {
             font-weight: bold;
             background-color: var(--ns-header-bg);
@@ -451,6 +509,7 @@
             font-size: 11px;
             flex-shrink: 0;
         }
+
         .guide-text {
             color: var(--text-muted);
             line-height: 1.4;
@@ -489,12 +548,13 @@
             z-index: 30;
             backdrop-filter: var(--glass-blur);
         }
-        
+
         .header-left {
             display: flex;
             align-items: center;
             gap: 16px;
         }
+
         .btn-sidebar-toggle {
             background-color: rgba(255, 255, 255, 0.03);
             border: 1px solid var(--border-sidebar);
@@ -508,6 +568,7 @@
             color: var(--text-muted);
             transition: all 0.2s ease;
         }
+
         .btn-sidebar-toggle:hover {
             color: var(--text-main);
             background-color: rgba(255, 255, 255, 0.08);
@@ -518,11 +579,13 @@
             align-items: center;
             gap: 10px;
         }
+
         .current-function-title {
             font-size: 18px;
             font-weight: 700;
             color: var(--text-main);
         }
+
         .btn-rename-func {
             background: transparent;
             border: none;
@@ -532,6 +595,7 @@
             display: flex;
             align-items: center;
         }
+
         .btn-rename-func:hover {
             color: var(--primary);
         }
@@ -542,16 +606,18 @@
             align-items: center;
             gap: 12px;
         }
+
         .toolbar-group {
             display: flex;
             align-items: center;
-            background-color: rgba(0,0,0,0.15);
+            background-color: rgba(0, 0, 0, 0.15);
             border: 1px solid var(--border-sidebar);
             border-radius: 8px;
             padding: 3px;
         }
+
         body.theme-light .toolbar-group {
-            background-color: rgba(0,0,0,0.03);
+            background-color: rgba(0, 0, 0, 0.03);
         }
 
         /* Botones del toolbar */
@@ -569,20 +635,23 @@
             gap: 6px;
             transition: all 0.2s ease;
         }
+
         .btn-tool:hover:not(:disabled) {
             color: var(--text-main);
-            background-color: rgba(255,255,255,0.06);
+            background-color: rgba(255, 255, 255, 0.06);
         }
+
         .btn-tool:disabled {
             opacity: 0.3;
             cursor: not-allowed;
         }
-        
+
         .btn-action-primary {
             background-color: var(--primary);
             color: var(--text-inverse) !important;
             box-shadow: var(--shadow-glow);
         }
+
         .btn-action-primary:hover {
             background-color: var(--primary-hover) !important;
             box-shadow: 0 0 20px var(--primary-glow);
@@ -591,14 +660,16 @@
         /* Toggle Mode (Editar vs Vista Previa) */
         .mode-toggle-group {
             display: flex;
-            background-color: rgba(0,0,0,0.15);
+            background-color: rgba(0, 0, 0, 0.15);
             border: 1px solid var(--border-sidebar);
             border-radius: 8px;
             padding: 3px;
         }
+
         body.theme-light .mode-toggle-group {
-            background-color: rgba(0,0,0,0.03);
+            background-color: rgba(0, 0, 0, 0.03);
         }
+
         .mode-btn {
             background: transparent;
             border: none;
@@ -613,6 +684,7 @@
             align-items: center;
             gap: 6px;
         }
+
         .mode-btn.active {
             background-color: var(--primary);
             color: var(--text-inverse);
@@ -658,6 +730,7 @@
             transition: all 0.3s ease;
             transform-origin: top center;
         }
+
         body.theme-light .diagram-container {
             box-shadow: var(--shadow-lg);
         }
@@ -678,13 +751,15 @@
             border-radius: 0px !important;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
         }
+
         .ns-main-mode * {
             border-radius: 0px !important;
         }
-        
+
         .ns-func-mode {
             border-radius: 16px !important;
-            overflow: hidden; /* Recorta las esquinas de los hijos */
+            overflow: hidden;
+            /* Recorta las esquinas de los hijos */
             box-shadow: 0 8px 32px rgba(16, 185, 129, 0.08);
         }
 
@@ -698,6 +773,7 @@
             box-sizing: border-box;
             background-color: var(--ns-bg);
         }
+
         .ns-block:last-child {
             border-bottom: none;
         }
@@ -714,10 +790,12 @@
             position: relative;
             background: linear-gradient(90deg, rgba(168, 85, 247, 0.05) 0%, var(--ns-bg) 100%);
         }
+
         .block-action_input {
             position: relative;
             background: linear-gradient(90deg, rgba(6, 182, 212, 0.05) 0%, var(--ns-bg) 100%);
         }
+
         .block-action_output {
             position: relative;
             background: linear-gradient(90deg, rgba(245, 158, 11, 0.05) 0%, var(--ns-bg) 100%);
@@ -734,6 +812,7 @@
             background-color: #a855f7;
             box-shadow: 0 0 8px rgba(168, 85, 247, 0.4);
         }
+
         .block-action_input::before {
             content: '';
             position: absolute;
@@ -744,6 +823,7 @@
             background-color: var(--cyan);
             box-shadow: 0 0 8px var(--cyan);
         }
+
         .block-action_output::before {
             content: '';
             position: absolute;
@@ -814,10 +894,12 @@
             transition: background-color 0.2s ease;
             text-align: left;
         }
+
         .ns-editable:focus {
             background-color: var(--ns-edit-focus-bg);
             border-radius: 4px;
         }
+
         .ns-editable:empty::before {
             content: attr(placeholder);
             color: var(--text-muted);
@@ -831,6 +913,7 @@
             flex-direction: column;
             width: 100%;
         }
+
         .ns-if-header {
             position: relative;
             height: calc(75px * var(--ns-scale));
@@ -839,6 +922,7 @@
             width: 100%;
             overflow: hidden;
         }
+
         .ns-if-svg {
             position: absolute;
             top: 0;
@@ -847,6 +931,7 @@
             height: 100%;
             pointer-events: none;
         }
+
         .ns-if-cond-container {
             position: absolute;
             top: 6px;
@@ -858,11 +943,12 @@
             justify-content: center;
             z-index: 10;
         }
+
         .ns-cond-edit {
             text-align: center;
             font-weight: 700;
         }
-        
+
         .ns-if-label {
             position: absolute;
             bottom: 4px;
@@ -873,17 +959,23 @@
             pointer-events: none;
             font-family: var(--font-main);
         }
+
         .ns-if-yes {
             left: calc(10px * var(--ns-scale));
-            color: #34d399; /* Green True */
+            color: #34d399;
+            /* Green True */
         }
+
         body.theme-light .ns-if-yes {
             color: #059669;
         }
+
         .ns-if-no {
             right: calc(10px * var(--ns-scale));
-            color: #f87171; /* Red False */
+            color: #f87171;
+            /* Red False */
         }
+
         body.theme-light .ns-if-no {
             color: #dc2626;
         }
@@ -894,12 +986,14 @@
             grid-template-columns: 1fr 1fr;
             width: 100%;
         }
+
         .ns-branch {
             display: flex;
             flex-direction: column;
             min-width: 0;
             background-color: var(--ns-bg);
         }
+
         .ns-branch-true {
             border-right: 2px solid var(--ns-border);
         }
@@ -916,19 +1010,23 @@
             flex-direction: column;
             width: 100%;
         }
+
         .ns-loop-header {
             background-color: var(--ns-header-bg);
             border-bottom: 2px solid var(--ns-border);
             padding: calc(12px * var(--ns-scale)) calc(16px * var(--ns-scale));
             font-weight: 700;
         }
+
         .ns-loop-edit {
             font-weight: 700;
         }
+
         .ns-loop-body-container {
             display: flex;
             width: 100%;
         }
+
         .ns-loop-side-bar {
             width: calc(30px * var(--ns-scale));
             background-color: var(--ns-sidebar-bg);
@@ -936,6 +1034,7 @@
             flex-shrink: 0;
             position: relative;
         }
+
         .ns-loop-content {
             flex-grow: 1;
             display: flex;
@@ -949,10 +1048,12 @@
             flex-direction: column;
             width: 100%;
         }
+
         .ns-repeat-body-container {
             display: flex;
             width: 100%;
         }
+
         .ns-repeat-side-bar {
             width: calc(30px * var(--ns-scale));
             background-color: var(--ns-sidebar-bg);
@@ -960,18 +1061,21 @@
             flex-shrink: 0;
             position: relative;
         }
+
         .ns-repeat-content {
             flex-grow: 1;
             display: flex;
             flex-direction: column;
             min-width: 0;
         }
+
         .ns-repeat-footer {
             background-color: var(--ns-header-bg);
             border-top: 2px solid var(--ns-border);
             padding: calc(12px * var(--ns-scale)) calc(16px * var(--ns-scale));
             font-weight: 700;
         }
+
         .ns-repeat-edit {
             font-weight: 700;
         }
@@ -983,13 +1087,16 @@
             background-color: transparent;
             transition: all 0.2s ease;
             z-index: 20;
-            margin: -3px 0; /* Solapa ligeramente el borde para facilitar hover */
+            margin: -3px 0;
+            /* Solapa ligeramente el borde para facilitar hover */
         }
+
         .ns-spacer:hover {
             height: 14px;
             background-color: var(--ns-spacer-glow);
             margin: 0;
         }
+
         .ns-spacer-btn {
             position: absolute;
             top: 50%;
@@ -1009,6 +1116,7 @@
             transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             z-index: 25;
         }
+
         .ns-spacer:hover .ns-spacer-btn {
             transform: translate(-50%, -50%) scale(1);
         }
@@ -1024,23 +1132,27 @@
             flex-direction: column;
             align-items: center;
             gap: 12px;
-            background-color: rgba(255,255,255,0.01);
+            background-color: rgba(255, 255, 255, 0.01);
         }
+
         body.theme-light .ns-placeholder {
-            border-color: rgba(0,0,0,0.08);
-            background-color: rgba(0,0,0,0.01);
+            border-color: rgba(0, 0, 0, 0.08);
+            background-color: rgba(0, 0, 0, 0.01);
         }
+
         .ns-placeholder-text {
             font-size: 12px;
             color: var(--text-muted);
             font-weight: 500;
         }
+
         .ns-placeholder-actions {
             display: flex;
             flex-wrap: wrap;
             gap: 6px;
             justify-content: center;
         }
+
         .ns-placeholder-btn {
             background-color: rgba(255, 255, 255, 0.04);
             border: 1px solid var(--border-sidebar);
@@ -1052,9 +1164,11 @@
             cursor: pointer;
             transition: all 0.2s ease;
         }
+
         body.theme-light .ns-placeholder-btn {
             background-color: rgba(0, 0, 0, 0.02);
         }
+
         .ns-placeholder-btn:hover {
             border-color: var(--primary);
             background-color: var(--primary);
@@ -1080,10 +1194,12 @@
             z-index: 30;
             backdrop-filter: blur(4px);
         }
-        .ns-block:hover > .ns-actions-bar {
+
+        .ns-block:hover>.ns-actions-bar {
             opacity: 1;
             transform: translateY(0);
         }
+
         .ns-action-btn {
             background: transparent;
             border: none;
@@ -1097,13 +1213,16 @@
             cursor: pointer;
             transition: all 0.2s ease;
         }
+
         .ns-action-btn:hover {
             color: var(--text-main);
             background-color: rgba(255, 255, 255, 0.1);
         }
+
         body.theme-light .ns-action-btn:hover {
             background-color: rgba(0, 0, 0, 0.05);
         }
+
         .ns-action-btn.btn-delete:hover {
             color: var(--rose);
             background-color: rgba(244, 63, 94, 0.15);
@@ -1116,7 +1235,7 @@
             border: 1px solid var(--ns-actions-border);
             border-radius: 12px;
             padding: 6px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
             z-index: 1000;
             width: 220px;
             display: flex;
@@ -1125,12 +1244,15 @@
             backdrop-filter: blur(8px);
             transition: opacity 0.15s ease;
         }
+
         body.theme-light .context-menu {
-            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
         }
+
         .context-menu.hidden {
             display: none !important;
         }
+
         .context-menu-btn {
             background: transparent;
             border: none;
@@ -1147,10 +1269,12 @@
             transition: all 0.2s ease;
             width: 100%;
         }
+
         .context-menu-btn:hover {
             background-color: var(--primary);
             color: var(--text-inverse);
         }
+
         .context-menu-icon {
             font-size: 14px;
         }
@@ -1172,10 +1296,12 @@
             pointer-events: none;
             transition: opacity 0.3s ease;
         }
+
         .modal-overlay.show {
             opacity: 1;
             pointer-events: auto;
         }
+
         .modal-card {
             background-color: #1e293b;
             border: 1px solid var(--border-card);
@@ -1191,23 +1317,28 @@
             gap: 16px;
             backdrop-filter: blur(16px);
         }
+
         body.theme-light .modal-card {
             background-color: #ffffff;
-            border-color: rgba(0,0,0,0.1);
+            border-color: rgba(0, 0, 0, 0.1);
         }
+
         .modal-overlay.show .modal-card {
             transform: scale(1);
         }
+
         .modal-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
+
         .modal-header h3 {
             font-size: 18px;
             font-weight: 700;
             color: var(--text-main);
         }
+
         .modal-close-btn {
             background: transparent;
             border: none;
@@ -1216,14 +1347,17 @@
             cursor: pointer;
             line-height: 1;
         }
+
         .modal-close-btn:hover {
             color: var(--text-main);
         }
+
         .modal-body {
             font-size: 14px;
             color: var(--text-muted);
             line-height: 1.5;
         }
+
         .modal-input {
             width: 100%;
             background-color: rgba(0, 0, 0, 0.2);
@@ -1236,22 +1370,27 @@
             outline: none;
             margin-top: 10px;
         }
+
         body.theme-light .modal-input {
-            background-color: rgba(0,0,0,0.03);
-            border-color: rgba(0,0,0,0.1);
+            background-color: rgba(0, 0, 0, 0.03);
+            border-color: rgba(0, 0, 0, 0.1);
             color: var(--text-main);
         }
+
         .modal-input:focus {
             border-color: var(--primary);
         }
+
         .modal-input.hidden {
             display: none;
         }
+
         .modal-footer {
             display: flex;
             justify-content: flex-end;
             gap: 10px;
         }
+
         .btn-modal-primary {
             background-color: var(--primary);
             color: var(--text-inverse);
@@ -1263,9 +1402,11 @@
             cursor: pointer;
             transition: background-color 0.2s ease;
         }
+
         .btn-modal-primary:hover {
             background-color: var(--primary-hover);
         }
+
         .btn-modal-secondary {
             background-color: rgba(255, 255, 255, 0.05);
             color: var(--text-main);
@@ -1277,13 +1418,16 @@
             cursor: pointer;
             transition: all 0.2s ease;
         }
+
         body.theme-light .btn-modal-secondary {
             background-color: rgba(0, 0, 0, 0.02);
             border-color: rgba(0, 0, 0, 0.08);
         }
+
         .btn-modal-secondary:hover {
             background-color: rgba(255, 255, 255, 0.1);
         }
+
         body.theme-light .btn-modal-secondary:hover {
             background-color: rgba(0, 0, 0, 0.06);
         }
@@ -1298,6 +1442,7 @@
             gap: 10px;
             z-index: 9999;
         }
+
         .toast {
             background-color: rgba(15, 23, 42, 0.95);
             border: 1px solid rgba(255, 255, 255, 0.1);
@@ -1315,14 +1460,27 @@
             backdrop-filter: blur(8px);
             opacity: 0;
         }
+
         .toast.show {
             transform: translateX(0);
             opacity: 1;
         }
-        .toast-success { border-left: 4px solid var(--emerald); }
-        .toast-error { border-left: 4px solid var(--rose); }
-        .toast-warning { border-left: 4px solid var(--amber); }
-        .toast-info { border-left: 4px solid var(--primary); }
+
+        .toast-success {
+            border-left: 4px solid var(--emerald);
+        }
+
+        .toast-error {
+            border-left: 4px solid var(--rose);
+        }
+
+        .toast-warning {
+            border-left: 4px solid var(--amber);
+        }
+
+        .toast-info {
+            border-left: 4px solid var(--primary);
+        }
 
         /* --- OVERRIDES DE EXPORTACIÓN A PDF (IMPRESIÓN LIMPIA) --- */
         body.exporting {
@@ -1331,10 +1489,12 @@
             overflow: visible !important;
             height: auto !important;
         }
+
         body.exporting .app-layout {
             height: auto !important;
             overflow: visible !important;
         }
+
         body.exporting .sidebar,
         body.exporting .header,
         body.exporting .ns-spacer,
@@ -1342,11 +1502,13 @@
         body.exporting .ns-placeholder-actions {
             display: none !important;
         }
+
         body.exporting .main-content {
             background-color: #ffffff !important;
             height: auto !important;
             overflow: visible !important;
         }
+
         body.exporting .canvas-area {
             padding: 0 !important;
             background: #ffffff !important;
@@ -1354,6 +1516,7 @@
             overflow: visible !important;
             display: block !important;
         }
+
         body.exporting .diagram-container {
             max-width: 100% !important;
             width: 100% !important;
@@ -1363,6 +1526,7 @@
             background-color: #ffffff !important;
             transform: none !important;
         }
+
         body.exporting .ns-container {
             border-color: #000000 !important;
             color: #000000 !important;
@@ -1370,48 +1534,65 @@
             width: 100% !important;
             box-shadow: none !important;
         }
+
         body.exporting .ns-block {
             border-color: #000000 !important;
             background-color: #ffffff !important;
         }
+
         body.exporting .block-action,
         body.exporting .block-action_input,
-        body.exporting .block-action_output {
+        body.exporting .block-action_output,
+        body.exporting .block-WHILE,
+        body.exporting .block-FOR {
             background: #ffffff !important;
         }
+
         body.exporting .block-action::before,
         body.exporting .block-action_input::before,
         body.exporting .block-action_output::before {
             display: none !important;
         }
+
         body.exporting .ns-action-type-badge {
             border: 1px solid #000000 !important;
             background: #ffffff !important;
             color: #000000 !important;
             box-shadow: none !important;
         }
+
         body.exporting .ns-editable {
             color: #000000 !important;
         }
+
         body.exporting .ns-if-header {
             border-color: #000000 !important;
             background-color: #ffffff !important;
         }
+
         body.exporting .ns-branch-true {
             border-color: #000000 !important;
         }
+
         body.exporting .ns-loop-side-bar,
         body.exporting .ns-repeat-side-bar {
             border-color: #000000 !important;
             background-color: #ffffff !important;
         }
+
         body.exporting .ns-loop-header,
         body.exporting .ns-repeat-footer {
             border-color: #000000 !important;
             background-color: #ffffff !important;
         }
-        body.exporting .ns-if-yes { color: #000000 !important; }
-        body.exporting .ns-if-no { color: #000000 !important; }
+
+        body.exporting .ns-if-yes {
+            color: #000000 !important;
+        }
+
+        body.exporting .ns-if-no {
+            color: #000000 !important;
+        }
 
         /* --- NATIVE PRINT FALLBACK OVERRIDES (@media print) --- */
         @media print {
@@ -1421,11 +1602,13 @@
                 overflow: visible !important;
                 height: auto !important;
             }
+
             .app-layout {
                 height: auto !important;
                 overflow: visible !important;
                 display: block !important;
             }
+
             .sidebar,
             .header,
             .ns-spacer,
@@ -1433,6 +1616,7 @@
             .ns-placeholder-actions {
                 display: none !important;
             }
+
             .main-content {
                 background-color: #ffffff !important;
                 height: auto !important;
@@ -1440,6 +1624,7 @@
                 padding: 0 !important;
                 margin: 0 !important;
             }
+
             .canvas-area {
                 padding: 0 !important;
                 background: #ffffff !important;
@@ -1447,6 +1632,7 @@
                 overflow: visible !important;
                 display: block !important;
             }
+
             .diagram-container {
                 max-width: 100% !important;
                 width: 100% !important;
@@ -1456,58 +1642,76 @@
                 padding: 0 !important;
                 margin: 0 !important;
             }
+
             #diagram-canvas {
                 padding: 0 !important;
                 margin: 0 !important;
                 border: none !important;
             }
+
             .ns-container {
                 border: 2px solid #000000 !important;
                 background-color: #ffffff !important;
                 color: #000000 !important;
                 border-radius: 0 !important;
             }
+
             .ns-block {
                 border-color: #000000 !important;
                 background-color: #ffffff !important;
                 color: #000000 !important;
             }
+
             .block-action,
             .block-action_input,
-            .block-action_output {
+            .block-action_output,
+            .block-WHILE,
+            .block-FOR {
                 background: #ffffff !important;
             }
+
             .block-action::before,
             .block-action_input::before,
             .block-action_output::before {
                 display: none !important;
             }
+
             .ns-action-type-badge {
                 border: 1px solid #000000 !important;
                 background: #ffffff !important;
                 color: #000000 !important;
                 box-shadow: none !important;
             }
+
             .ns-editable {
                 color: #000000 !important;
                 background-color: transparent !important;
                 border-color: transparent !important;
             }
+
             .ns-if-svg line {
                 stroke: #000000 !important;
             }
+
             .ns-placeholder {
                 display: none !important;
             }
-            .ns-if-yes { color: #000000 !important; }
-            .ns-if-no { color: #000000 !important; }
+
+            .ns-if-yes {
+                color: #000000 !important;
+            }
+
+            .ns-if-no {
+                color: #000000 !important;
+            }
         }
     </style>
 </head>
+
 <body class="theme-dark accent-indigo">
 
     <div class="app-layout">
-        
+
         <!-- SIDEBAR DE NAVEGACIÓN Y CONFIGURACIÓN -->
         <aside class="sidebar" id="sidebar">
             <div class="sidebar-header">
@@ -1516,12 +1720,15 @@
                     <span class="logo-text">ChapinFlow</span>
                 </div>
                 <button class="btn-func-action" onclick="toggleSidebar()" title="Cerrar Panel">
-                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 19l-7-7 7-7"/></svg>
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor"
+                        stroke-width="2.5">
+                        <path d="M15 19l-7-7 7-7" />
+                    </svg>
                 </button>
             </div>
 
             <div class="sidebar-scroll">
-                
+
                 <!-- SECCIÓN FUNCIONES -->
                 <div class="sidebar-section">
                     <div class="sidebar-section-title">
@@ -1529,7 +1736,11 @@
                         <span style="font-family: var(--font-mono); font-size: 9px;" id="func-count">1</span>
                     </div>
                     <button class="btn-add-function" onclick="createNewFunction()">
-                        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="3"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor"
+                            stroke-width="3">
+                            <line x1="12" y1="5" x2="12" y2="19"></line>
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                        </svg>
                         Nueva Función
                     </button>
                     <div class="function-list" id="function-list">
@@ -1560,11 +1771,12 @@
                 <div class="sidebar-section">
                     <div class="sidebar-section-title">Configuración Visual</div>
                     <div class="settings-list">
-                        
+
                         <div class="setting-row">
                             <span class="setting-label">Tema</span>
                             <div class="theme-toggle-group">
-                                <button class="theme-toggle-btn active" id="theme-dark-btn" onclick="toggleTheme('dark')">
+                                <button class="theme-toggle-btn active" id="theme-dark-btn"
+                                    onclick="toggleTheme('dark')">
                                     🌙 Oscuro
                                 </button>
                                 <button class="theme-toggle-btn" id="theme-light-btn" onclick="toggleTheme('light')">
@@ -1592,28 +1804,34 @@
                     <div class="sidebar-section-title">Guía de Estructuras</div>
                     <div class="guide-list">
                         <div class="guide-item">
-                            <span class="guide-symbol" style="border-left: 3px solid #a855f7; padding-left: 8px;"> Acción Libre </span>
-                            <span class="guide-text">Línea de instrucción secuencial simple o asignación de código.</span>
+                            <span class="guide-symbol" style="border-left: 3px solid #a855f7; padding-left: 8px;">
+                                Acción Libre </span>
+                            <span class="guide-text">Línea de instrucción secuencial simple o asignación de
+                                código.</span>
                         </div>
                         <div class="guide-item">
-                            <span class="guide-symbol" style="border-left: 3px solid var(--cyan); padding-left: 8px;"> Action INPUT </span>
+                            <span class="guide-symbol" style="border-left: 3px solid var(--cyan); padding-left: 8px;">
+                                Action INPUT </span>
                             <span class="guide-text">Bloque de lectura o entrada de variables por teclado.</span>
                         </div>
                         <div class="guide-item">
-                            <span class="guide-symbol" style="border-left: 3px solid var(--amber); padding-left: 8px;"> Action OUTPUT </span>
+                            <span class="guide-symbol" style="border-left: 3px solid var(--amber); padding-left: 8px;">
+                                Action OUTPUT </span>
                             <span class="guide-text">Bloque de escritura o salida de datos por pantalla.</span>
                         </div>
                         <div class="guide-item">
-                            <span class="guide-symbol"> If/Else </span>
-                            <span class="guide-text">Doble triángulo superior. Bifurcación SÍ/NO (IF-ELSE).</span>
+                            <span class="guide-symbol"> Bucle FOR </span>
+                            <span class="guide-text">Estructura iterativa FOR con condición e incremento
+                                superior.</span>
                         </div>
                         <div class="guide-item">
-                            <span class="guide-symbol"> FOR/WHILE </span>
-                            <span class="guide-text">Estructura iterativa FOR / WHILE con condición de parada superior.</span>
+                            <span class="guide-symbol"> Bucle WHILE </span>
+                            <span class="guide-text">Estructura iterativa WHILE con condición de parada superior.</span>
                         </div>
                         <div class="guide-item">
-                            <span class="guide-symbol"> Until </span>
-                            <span class="guide-text">Estructura iterativa REPETIR/UNTIL con condición en la parte inferior.</span>
+                            <span class="guide-symbol"> DO-WHILE </span>
+                            <span class="guide-text">Estructura iterativa DO-WHILE con condición de parada en la parte
+                                inferior.</span>
                         </div>
                     </div>
                 </div>
@@ -1628,31 +1846,44 @@
 
         <!-- ESPACIO DE TRABAJO PRINCIPAL -->
         <main class="main-content">
-            
+
             <!-- HEADER DE CONTROL -->
             <header class="header">
                 <div class="header-left">
-                    <button class="btn-sidebar-toggle" id="btn-sidebar-toggle" onclick="toggleSidebar()" title="Alternar panel lateral">
-                        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+                    <button class="btn-sidebar-toggle" id="btn-sidebar-toggle" onclick="toggleSidebar()"
+                        title="Alternar panel lateral">
+                        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor"
+                            stroke-width="2.5">
+                            <path d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
                     </button>
                     <div class="function-title-container">
                         <span class="current-function-title" id="current-function-title">principal()</span>
                         <button class="btn-rename-func" onclick="renameCurrentFunction()" title="Renombrar función">
-                            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 20h9M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+                            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor"
+                                stroke-width="2.5">
+                                <path d="M12 20h9M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z" />
+                            </svg>
                         </button>
                     </div>
                 </div>
 
                 <!-- TOOLBAR -->
                 <div class="toolbar">
-                    
+
                     <!-- Deshacer / Rehacer -->
                     <div class="toolbar-group">
                         <button class="btn-tool" id="btn-undo" onclick="undo()" title="Deshacer (Ctrl+Z)" disabled>
-                            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 7v6h6M21 17a9 9 0 00-9-9 9 9 0 00-6 2.3L3 13"/></svg>
+                            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor"
+                                stroke-width="2.5">
+                                <path d="M3 7v6h6M21 17a9 9 0 00-9-9 9 9 0 00-6 2.3L3 13" />
+                            </svg>
                         </button>
                         <button class="btn-tool" id="btn-redo" onclick="redo()" title="Rehacer (Ctrl+Y)" disabled>
-                            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 7v6h-6M3 17a9 9 0 019-9 9 9 0 016 2.3l3 2.7"/></svg>
+                            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor"
+                                stroke-width="2.5">
+                                <path d="M21 7v6h-6M3 17a9 9 0 019-9 9 9 0 016 2.3l3 2.7" />
+                            </svg>
                         </button>
                     </div>
 
@@ -1661,8 +1892,10 @@
                         <button class="btn-tool" onclick="clearProject()" title="Limpiar todo el proyecto">
                             🧹 Nuevo
                         </button>
-                        <input type="file" id="import-file" style="display: none;" onchange="handleImportJSON(event)" accept=".json">
-                        <button class="btn-tool" onclick="document.getElementById('import-file').click()" title="Importar proyecto JSON">
+                        <input type="file" id="import-file" style="display: none;" onchange="handleImportJSON(event)"
+                            accept=".json">
+                        <button class="btn-tool" onclick="document.getElementById('import-file').click()"
+                            title="Importar proyecto JSON">
                             📥 Importar
                         </button>
                         <button class="btn-tool" onclick="exportJSON()" title="Exportar proyecto en JSON">
@@ -1672,10 +1905,12 @@
 
                     <!-- Modo de Visualización -->
                     <div class="mode-toggle-group">
-                        <button class="mode-btn active" id="mode-edit" onclick="setEditMode(true)" title="Modo interactivo para agregar y editar">
+                        <button class="mode-btn active" id="mode-edit" onclick="setEditMode(true)"
+                            title="Modo interactivo para agregar y editar">
                             ✏️ Editar
                         </button>
-                        <button class="mode-btn" id="mode-preview" onclick="setEditMode(false)" title="Vista previa para ver cómo se verá el diagrama limpio">
+                        <button class="mode-btn" id="mode-preview" onclick="setEditMode(false)"
+                            title="Vista previa para ver cómo se verá el diagrama limpio">
                             👁️ Vista Previa
                         </button>
                     </div>
@@ -1683,17 +1918,29 @@
                     <!-- Escalamiento / Zoom -->
                     <div class="toolbar-group">
                         <button class="btn-tool" onclick="zoomOut()" title="Alejar (Zoom Out)">
-                            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor"
+                                stroke-width="2.5">
+                                <line x1="5" y1="12" x2="19" y2="12" />
+                            </svg>
                         </button>
                         <span class="zoom-val" id="zoom-val">100%</span>
                         <button class="btn-tool" onclick="zoomIn()" title="Acercar (Zoom In)">
-                            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor"
+                                stroke-width="2.5">
+                                <line x1="12" y1="5" x2="12" y2="19" />
+                                <line x1="5" y1="12" x2="19" y2="12" />
+                            </svg>
                         </button>
                     </div>
 
                     <!-- Botón PDF -->
-                    <button class="btn-tool btn-action-primary" id="btn-export-pdf" onclick="exportToPDF()" title="Exportar diagrama a PDF">
-                        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8zM14 3v5h5M16 13H8M16 17H8M10 9H8"/></svg>
+                    <button class="btn-tool btn-action-primary" id="btn-export-pdf" onclick="exportToPDF()"
+                        title="Exportar diagrama a PDF">
+                        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor"
+                            stroke-width="2.5">
+                            <path
+                                d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8zM14 3v5h5M16 13H8M16 17H8M10 9H8" />
+                        </svg>
                         Exportar a PDF
                     </button>
                 </div>
@@ -1726,11 +1973,14 @@
         <button class="context-menu-btn" data-type="if">
             <span class="context-menu-icon">🔀</span> Condicional (IF-ELSE)
         </button>
-        <button class="context-menu-btn" data-type="WHILE">
-            <span class="context-menu-icon">🔁</span> Bucle Para/Mientras (FOR/WHILE)
+        <button class="context-menu-btn" data-type="FOR">
+            <span class="context-menu-icon">🔁</span> Bucle Para (FOR)
         </button>
-        <button class="context-menu-btn" data-type="repeat">
-            <span class="context-menu-icon">🔄</span> Bucle Repetir (REPEAT-UNTIL)
+        <button class="context-menu-btn" data-type="WHILE">
+            <span class="context-menu-icon">🔁</span> Bucle Mientras (WHILE)
+        </button>
+        <button class="context-menu-btn" data-type="UNTIL">
+            <span class="context-menu-icon">🔄</span> Bucle Hacer-Mientras (DO-WHILE)
         </button>
     </div>
 
@@ -1792,15 +2042,15 @@
             if (undoStack.length === 0) return;
             const currentState = JSON.stringify(appState.functions);
             redoStack.push(currentState);
-            
+
             const prev = undoStack.pop();
             appState.functions = JSON.parse(prev);
-            
+
             // Garantizar que la función activa siga existiendo
             if (!appState.functions[appState.activeFunctionId]) {
                 appState.activeFunctionId = 'main';
             }
-            
+
             renderSidebar();
             renderDiagram();
             updateHistoryButtons();
@@ -1811,14 +2061,14 @@
             if (redoStack.length === 0) return;
             const currentState = JSON.stringify(appState.functions);
             undoStack.push(currentState);
-            
+
             const next = redoStack.pop();
             appState.functions = JSON.parse(next);
-            
+
             if (!appState.functions[appState.activeFunctionId]) {
                 appState.activeFunctionId = 'main';
             }
-            
+
             renderSidebar();
             renderDiagram();
             updateHistoryButtons();
@@ -1840,29 +2090,29 @@
                 const btnConfirm = document.getElementById('modal-btn-confirm');
                 const btnCancel = document.getElementById('modal-btn-cancel');
                 const btnCloseX = document.getElementById('modal-close-btn-x');
-                
+
                 mTitle.innerText = title;
                 mMsg.innerText = message;
                 mInput.classList.add('hidden'); // ocultar input field
-                
+
                 modal.classList.remove('hidden');
                 setTimeout(() => modal.classList.add('show'), 10);
-                
+
                 const cleanUp = () => {
                     modal.classList.remove('show');
                     setTimeout(() => modal.classList.add('hidden'), 300);
                 };
-                
+
                 btnConfirm.onclick = () => {
                     cleanUp();
                     resolve(true);
                 };
-                
+
                 btnCancel.onclick = () => {
                     cleanUp();
                     resolve(false);
                 };
-                
+
                 btnCloseX.onclick = () => {
                     cleanUp();
                     resolve(false);
@@ -1879,32 +2129,32 @@
                 const btnConfirm = document.getElementById('modal-btn-confirm');
                 const btnCancel = document.getElementById('modal-btn-cancel');
                 const btnCloseX = document.getElementById('modal-close-btn-x');
-                
+
                 mTitle.innerText = title;
                 mMsg.innerText = message;
                 mInput.classList.remove('hidden'); // mostrar input field
                 mInput.value = defaultValue;
-                
+
                 modal.classList.remove('hidden');
                 setTimeout(() => modal.classList.add('show'), 10);
                 mInput.focus();
-                
+
                 const cleanUp = () => {
                     modal.classList.remove('show');
                     setTimeout(() => modal.classList.add('hidden'), 300);
                 };
-                
+
                 btnConfirm.onclick = () => {
                     const val = mInput.value;
                     cleanUp();
                     resolve(val);
                 };
-                
+
                 btnCancel.onclick = () => {
                     cleanUp();
                     resolve(null);
                 };
-                
+
                 btnCloseX.onclick = () => {
                     cleanUp();
                     resolve(null);
@@ -2054,20 +2304,20 @@
         function renderDiagram() {
             const canvas = document.getElementById('diagram-canvas');
             const currentFunc = appState.functions[appState.activeFunctionId];
-            
+
             // Actualizar interfaz del Workspace
             document.getElementById('current-function-title').innerText = currentFunc.name;
-            
+
             canvas.innerHTML = '';
-            
+
             // Contenedor principal que encapsula todo el diagrama
             const rootWrapper = document.createElement('div');
             // Diferenciación de bordes exigida por el arquitecto
             rootWrapper.className = `ns-container ${currentFunc.type === 'main' ? 'ns-main-mode' : 'ns-func-mode'}`;
-            
+
             // Llamado recursivo para construir la estructura
             buildStructureDOM(currentFunc.structures, rootWrapper, 'root');
-            
+
             canvas.appendChild(rootWrapper);
         }
 
@@ -2085,8 +2335,9 @@
                             <button class="ns-placeholder-btn" data-path="${path}" data-index="0" data-type="action_input">📥 Acción INPUT</button>
                             <button class="ns-placeholder-btn" data-path="${path}" data-index="0" data-type="action_output">📤 Acción OUTPUT</button>
                             <button class="ns-placeholder-btn" data-path="${path}" data-index="0" data-type="if">🔀 IF-ELSE</button>
-                            <button class="ns-placeholder-btn" data-path="${path}" data-index="0" data-type="WHILE">🔁 FOR / WHILE</button>
-                            <button class="ns-placeholder-btn" data-path="${path}" data-index="0" data-type="UNTIL">🔄 UNTIL</button>
+                            <button class="ns-placeholder-btn" data-path="${path}" data-index="0" data-type="FOR">🔁 Bucle FOR</button>
+                            <button class="ns-placeholder-btn" data-path="${path}" data-index="0" data-type="WHILE">🔁 Bucle WHILE</button>
+                            <button class="ns-placeholder-btn" data-path="${path}" data-index="0" data-type="UNTIL">🔄 Bucle DO-WHILE</button>
                         </div>
                     `;
                     parentDOM.appendChild(placeholder);
@@ -2126,7 +2377,7 @@
                 if (appState.editMode) {
                     const actionsBar = document.createElement('div');
                     actionsBar.className = 'ns-actions-bar';
-                    
+
                     const isFirst = index === 0;
                     const isLast = index === structures.length - 1;
 
@@ -2165,13 +2416,13 @@
                         badge.innerHTML = `<span>📝</span> <span>CÓDIGO</span>`;
                     }
                     inner.appendChild(badge);
-                    
+
                     const editable = document.createElement('div');
                     editable.className = 'ns-editable';
                     editable.contentEditable = appState.editMode;
                     editable.dataset.id = block.id;
                     editable.dataset.field = 'code';
-                    
+
                     let placeholderText = 'Escriba la acción o asignación (ej. x = 5)...';
                     if (block.type === 'action_input') {
                         placeholderText = 'Ingrese las variables por teclado (ej. Nombre, Edad)...';
@@ -2181,10 +2432,10 @@
 
                     editable.setAttribute('placeholder', placeholderText);
                     editable.innerText = block.code || '';
-                    
+
                     inner.appendChild(editable);
                     blockDiv.appendChild(inner);
-                } 
+                }
                 else if (block.type === 'if') {
                     const ifWrapper = document.createElement('div');
                     ifWrapper.className = 'ns-if-wrapper';
@@ -2203,7 +2454,7 @@
                         <span class="ns-if-label ns-if-yes">SÍ</span>
                         <span class="ns-if-label ns-if-no">NO</span>
                     `;
-                    
+
                     // Contenedor lateral para las ramas SI y NO
                     const branches = document.createElement('div');
                     branches.className = 'ns-if-branches';
@@ -2222,21 +2473,23 @@
                     ifWrapper.appendChild(ifHeader);
                     ifWrapper.appendChild(branches);
                     blockDiv.appendChild(ifWrapper);
-                } 
-                else if (block.type === 'WHILE') {
+                }
+                else if (block.type === 'WHILE' || block.type === 'FOR') {
                     const loopWrapper = document.createElement('div');
                     loopWrapper.className = 'ns-loop-wrapper';
 
                     // Cabecera superior con condición de entrada
                     const loopHeader = document.createElement('div');
                     loopHeader.className = 'ns-loop-header';
-                    
+
                     const editable = document.createElement('div');
                     editable.className = 'ns-editable ns-loop-edit';
                     editable.contentEditable = appState.editMode;
                     editable.dataset.id = block.id;
                     editable.dataset.field = 'condition';
-                    editable.setAttribute('placeholder', 'Bucle WHILE (ej. WHILE i <= 10)...');
+
+                    let placeholderText = block.type === 'FOR' ? 'Bucle FOR (ej. FOR i = 1 TO 10 BY +1)...' : 'Bucle WHILE (ej. WHILE i <= 10)...';
+                    editable.setAttribute('placeholder', placeholderText);
                     editable.innerText = block.condition || '';
 
                     loopHeader.appendChild(editable);
@@ -2287,7 +2540,7 @@
                     editable.contentEditable = appState.editMode;
                     editable.dataset.id = block.id;
                     editable.dataset.field = 'condition';
-                    editable.setAttribute('placeholder', 'FOR i = 0 TO 10 BY +1');
+                    editable.setAttribute('placeholder', 'Bucle DO-WHILE (ej. WHILE i < 10)...');
                     editable.innerText = block.condition || '';
 
                     repeatFooter.appendChild(editable);
@@ -2318,7 +2571,7 @@
         }
 
         // --- 6. LÓGICA DE INSERCIÓN, EDICIÓN Y REORDENAMIENTO ---
-        
+
         // Generador de UUIDs simples para bloques
         function generateId() {
             return 'b_' + Math.random().toString(36).substr(2, 9);
@@ -2337,7 +2590,9 @@
                 return { id, type: 'if', condition: '', trueBranch: [], falseBranch: [] };
             } else if (type === 'WHILE') {
                 return { id, type: 'WHILE', condition: '', body: [] };
-            } else if (type === 'UNTIL') {
+            } else if (type === 'FOR') {
+                return { id, type: 'FOR', condition: '', body: [] };
+            } else if (type === 'UNTIL' || type === 'repeat') {
                 return { id, type: 'UNTIL', condition: '', body: [] };
             }
         }
@@ -2348,7 +2603,7 @@
             if (path === 'root') {
                 return currentFunc.structures;
             }
-            
+
             const parts = path.split(':');
             const blockId = parts[0];
             const branch = parts[1]; // 'true', 'false', 'body'
@@ -2363,7 +2618,7 @@
                     if (block.type === 'if') {
                         if (search(block.trueBranch) || search(block.falseBranch)) return true;
                     }
-                    if (block.type === 'WHILE' || block.type === 'UNTIL') {
+                    if (block.type === 'WHILE' || block.type === 'FOR' || block.type === 'UNTIL') {
                         if (search(block.body)) return true;
                     }
                 }
@@ -2394,7 +2649,7 @@
                     if (arr[i].type === 'if') {
                         if (search(arr[i].trueBranch) || search(arr[i].falseBranch)) return true;
                     }
-                    if (arr[i].type === 'WHILE' || arr[i].type === 'UNTIL') {
+                    if (arr[i].type === 'WHILE' || arr[i].type === 'FOR' || arr[i].type === 'UNTIL') {
                         if (search(arr[i].body)) return true;
                     }
                 }
@@ -2411,7 +2666,7 @@
             if (block.type === 'if') {
                 clone.trueBranch = block.trueBranch.map(b => deepCloneBlock(b));
                 clone.falseBranch = block.falseBranch.map(b => deepCloneBlock(b));
-            } else if (block.type === 'WHILE' || block.type === 'UNTIL') {
+            } else if (block.type === 'WHILE' || block.type === 'FOR' || block.type === 'UNTIL') {
                 clone.body = block.body.map(b => deepCloneBlock(b));
             }
             return clone;
@@ -2425,7 +2680,7 @@
             canvas.addEventListener('click', (e) => {
                 const spacerBtn = e.target.closest('.ns-spacer-btn');
                 const placeholderBtn = e.target.closest('.ns-placeholder-btn');
-                
+
                 if (spacerBtn) {
                     e.stopPropagation();
                     currentInsertPath = spacerBtn.dataset.path;
@@ -2436,7 +2691,7 @@
                     const path = placeholderBtn.dataset.path;
                     const index = parseInt(placeholderBtn.dataset.index);
                     const type = placeholderBtn.dataset.type;
-                    
+
                     if (type && path) {
                         saveToHistory();
                         const targetArray = getArrayByPath(path);
@@ -2520,7 +2775,7 @@
                             if (arr[i].type === 'if') {
                                 if (updateInState(arr[i].trueBranch) || updateInState(arr[i].falseBranch)) return true;
                             }
-                            if (arr[i].type === 'WHILE' || arr[i].type === 'UNTIL') {
+                            if (arr[i].type === 'WHILE' || arr[i].type === 'FOR' || arr[i].type === 'UNTIL') {
                                 if (updateInState(arr[i].body)) return true;
                             }
                         }
@@ -2547,7 +2802,7 @@
         function showContextMenu(button) {
             const menu = document.getElementById('context-menu');
             const rect = button.getBoundingClientRect();
-            
+
             menu.style.left = `${rect.left + window.scrollX + rect.width / 2 - 110}px`;
             menu.style.top = `${rect.top + window.scrollY + rect.height + 8}px`;
             menu.classList.remove('hidden');
@@ -2557,16 +2812,16 @@
         document.getElementById('context-menu').addEventListener('click', (e) => {
             const btn = e.target.closest('.context-menu-btn');
             if (!btn) return;
-            
+
             const type = btn.dataset.type;
             if (type && currentInsertPath) {
                 saveToHistory();
-                
+
                 const targetArray = getArrayByPath(currentInsertPath);
                 if (targetArray) {
                     const newBlock = createBlockData(type);
                     targetArray.splice(currentInsertIndex, 0, newBlock);
-                    
+
                     renderDiagram();
                     showNotification(`Bloque ${type.toUpperCase()} agregado`, 'success');
                 }
@@ -2579,9 +2834,9 @@
         // Ocultar menú contextual al hacer clic fuera de él
         document.addEventListener('click', (e) => {
             const menu = document.getElementById('context-menu');
-            if (!menu.classList.contains('hidden') && 
-                !e.target.closest('.ns-spacer-btn') && 
-                !e.target.closest('.ns-placeholder-btn') && 
+            if (!menu.classList.contains('hidden') &&
+                !e.target.closest('.ns-spacer-btn') &&
+                !e.target.closest('.ns-placeholder-btn') &&
                 !e.target.closest('#context-menu')) {
                 menu.classList.add('hidden');
             }
@@ -2591,7 +2846,7 @@
         function renderSidebar() {
             const list = document.getElementById('function-list');
             list.innerHTML = '';
-            
+
             const keys = Object.keys(appState.functions);
             document.getElementById('func-count').innerText = keys.length;
 
@@ -2667,12 +2922,12 @@
         function renameFunction(key) {
             const func = appState.functions[key];
             let nameClean = func.name.endsWith('()') ? func.name.slice(0, -2) : func.name;
-            
+
             showCustomPrompt("Renombrar Función", "Nuevo nombre para la función:", nameClean).then(newName => {
                 if (!newName || newName.trim() === '') return;
 
                 saveToHistory();
-                
+
                 let finalName = newName.trim();
                 if (!finalName.endsWith('()')) finalName += '()';
 
@@ -2692,16 +2947,16 @@
         function deleteFunction(key) {
             if (key === 'main') return;
             const func = appState.functions[key];
-            
+
             showCustomConfirm("Eliminar Función", `¿Eliminar definitivamente la función auxiliar "${func.name}"?`).then(confirmed => {
                 if (confirmed) {
                     saveToHistory();
                     delete appState.functions[key];
-                    
+
                     if (appState.activeFunctionId === key) {
                         appState.activeFunctionId = 'main';
                     }
-                    
+
                     renderSidebar();
                     renderDiagram();
                     showNotification('Función de baja', 'warning');
@@ -2717,7 +2972,7 @@
             if (!file) return;
 
             const reader = new FileReader();
-            reader.onload = function(e) {
+            reader.onload = function (e) {
                 try {
                     const imported = JSON.parse(e.target.result);
                     // Validación mínima de arquitectura exigida
@@ -2726,7 +2981,7 @@
                         saveToHistory();
                         appState.functions = imported;
                         appState.activeFunctionId = 'main';
-                        
+
                         renderSidebar();
                         renderDiagram();
                         showNotification('Proyecto importado exitosamente', 'success');
@@ -2748,20 +3003,20 @@
                 const jsonString = JSON.stringify(appState.functions, null, 2);
                 const blob = new Blob([jsonString], { type: 'application/json;charset=utf-8;' });
                 const url = URL.createObjectURL(blob);
-                
+
                 const dlAnchor = document.createElement('a');
                 dlAnchor.setAttribute("href", url);
-                
+
                 const currentFunc = appState.functions[appState.activeFunctionId];
                 dlAnchor.setAttribute("download", `proyecto-chapin-${currentFunc.name.replace(/[\(\)]/g, '')}.json`);
-                
+
                 document.body.appendChild(dlAnchor);
                 dlAnchor.click();
-                
+
                 // Limpieza de recursos
                 document.body.removeChild(dlAnchor);
                 URL.revokeObjectURL(url);
-                
+
                 showNotification('Proyecto JSON descargado', 'success');
             } catch (error) {
                 console.error("Fallo al exportar JSON:", error);
@@ -2793,7 +3048,7 @@
         // --- 11. CONTROL DE EDICIÓN Y VISTA PREVIA ---
         function setEditMode(active) {
             appState.editMode = active;
-            
+
             const modeEdit = document.getElementById('mode-edit');
             const modePreview = document.getElementById('mode-preview');
 
@@ -2860,7 +3115,7 @@
             // Eliminar acentos previos
             document.body.classList.remove('accent-indigo', 'accent-emerald', 'accent-cyan', 'accent-orange', 'accent-rose');
             document.body.classList.add(`accent-${color}`);
-            
+
             // Marcar botón activo
             document.querySelectorAll('.accent-btn').forEach(btn => {
                 btn.classList.remove('active');
@@ -2876,12 +3131,12 @@
             const container = document.getElementById('notification-container');
             const toast = document.createElement('div');
             toast.className = `toast toast-${type}`;
-            
+
             let icon = 'ℹ️';
             if (type === 'success') icon = '✅';
             if (type === 'error') icon = '❌';
             if (type === 'warning') icon = '⚠️';
-            
+
             toast.innerHTML = `<span class="toast-icon">${icon}</span> <span>${msg}</span>`;
             container.appendChild(toast);
 
@@ -2903,16 +3158,16 @@
 
             function triggerPrintFallback() {
                 showNotification('Usando el Generador Nativo de Impresión...', 'info');
-                
+
                 // Forzar zoom a 1.0 temporalmente para asegurar escala
                 zoomLevel = 1.0;
                 updateZoomStyles();
-                
+
                 setTimeout(() => {
                     window.print();
                     zoomLevel = prevScale;
                     updateZoomStyles();
-                    
+
                     exportBtn.innerHTML = originalText;
                     exportBtn.disabled = false;
                 }, 500);
@@ -2930,7 +3185,7 @@
 
             // 1. Activar clase de exportación en el body (aplica overrides de CSS estricto B/N)
             document.body.classList.add('exporting');
-            
+
             // 2. Conservar el nivel de escala anterior y forzar zoom a 1.0 para el exportador
             zoomLevel = 1.0;
             updateZoomStyles();
@@ -2944,15 +3199,15 @@
                 margin: [15, 12, 15, 12],
                 filename: filename,
                 image: { type: 'jpeg', quality: 0.98 },
-                html2canvas: { 
+                html2canvas: {
                     scale: 2.5, // Mayor escala = mayor resolución en el vector final
                     useCORS: true,
                     backgroundColor: '#ffffff'
                 },
-                jsPDF: { 
-                    unit: 'mm', 
-                    format: 'a4', 
-                    orientation: 'portrait' 
+                jsPDF: {
+                    unit: 'mm',
+                    format: 'a4',
+                    orientation: 'portrait'
                 }
             };
 
@@ -2963,7 +3218,7 @@
                     document.body.classList.remove('exporting');
                     zoomLevel = prevScale;
                     updateZoomStyles();
-                    
+
                     exportBtn.innerHTML = originalText;
                     exportBtn.disabled = false;
                     showNotification('PDF descargado con éxito', 'success');
@@ -2983,14 +3238,14 @@
         document.addEventListener('DOMContentLoaded', () => {
             // Inicializar eventos de edición
             initCanvasEvents();
-            
+
             // Recuperar preferencias de almacenamiento local si existen
             const savedTheme = localStorage.getItem('chapinflow-theme') || 'dark';
             const savedAccent = localStorage.getItem('chapinflow-accent') || 'indigo';
-            
+
             toggleTheme(savedTheme);
             setAccent(savedAccent);
-            
+
             // Carga inicial
             renderSidebar();
             renderDiagram();
@@ -3009,4 +3264,5 @@
         });
     </script>
 </body>
+
 </html>
