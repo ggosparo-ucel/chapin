@@ -19,6 +19,9 @@
             --font-main: 'Outfit', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             --font-mono: 'Fira Code', 'Consolas', monospace;
 
+            /* --- RESIZABLE DRAWER SYSTEM --- */
+            --drawer-width: 480px;
+
             /* Configuración del tema (Sobrescribible por clases de tema) */
             --bg-app: #0b0f17;
             --bg-sidebar: rgba(17, 24, 39, 0.85);
@@ -783,6 +786,8 @@
             padding: calc(14px * var(--ns-scale)) calc(18px * var(--ns-scale));
             width: 100%;
             box-sizing: border-box;
+            display: flex;
+            align-items: flex-start;
         }
 
         /* Estilos especiales para bloques de acción, entrada y salida */
@@ -893,11 +898,340 @@
             color: var(--text-main);
             transition: background-color 0.2s ease;
             text-align: left;
+            flex-grow: 1;
         }
 
         .ns-editable:focus {
             background-color: var(--ns-edit-focus-bg);
             border-radius: 4px;
+        }
+
+        /* --- LINE NUMBER BADGES --- */
+        .ns-line-num {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 20px;
+            height: 20px;
+            background-color: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: var(--text-muted);
+            font-family: var(--font-mono);
+            font-size: 10px;
+            font-weight: 700;
+            border-radius: 4px;
+            margin-right: 8px;
+            flex-shrink: 0;
+            user-select: none;
+        }
+
+        body.theme-light .ns-line-num {
+            background-color: rgba(0, 0, 0, 0.04);
+            border-color: rgba(0, 0, 0, 0.1);
+        }
+
+        /* --- PANEL DERECHO DE PRUEBA DE ESCRITORIO --- */
+        .drawer-right {
+            position: fixed;
+            top: 0;
+            right: calc(-1 * var(--drawer-width));
+            /* Oculto por defecto */
+            width: var(--drawer-width);
+            height: 100vh;
+            background-color: var(--bg-sidebar);
+            border-left: 1px solid var(--border-sidebar);
+            z-index: 1000;
+            backdrop-filter: var(--glass-blur);
+            display: flex;
+            flex-direction: column;
+            transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1), width 0.05s ease;
+            box-shadow: -10px 0 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .drawer-right.open {
+            right: 0;
+        }
+
+        /* Tirador de Redimensión en el lateral izquierdo */
+        .drawer-resize-handle {
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            width: 8px;
+            cursor: ew-resize;
+            z-index: 1010;
+            transition: background-color 0.2s;
+            background-color: transparent;
+        }
+        .drawer-resize-handle:hover {
+            background-color: rgba(99, 102, 241, 0.2);
+            border-left: 2px solid var(--primary);
+        }
+
+        /* Desactivar transiciones durante el arrastre para fluidez */
+        body.is-resizing .drawer-right,
+        body.is-resizing .btn-floating-drawer-toggle {
+            transition: none !important;
+        }
+
+        /* Botón flotante vertical acoplado a la derecha */
+        .btn-floating-drawer-toggle {
+            position: fixed;
+            top: 50%;
+            right: 0;
+            transform: translateY(-50%);
+            background-color: var(--primary);
+            color: var(--text-inverse);
+            border: 1px solid var(--border-sidebar);
+            border-right: none;
+            border-radius: 12px 0 0 12px;
+            padding: 16px 8px;
+            cursor: pointer;
+            z-index: 999;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            box-shadow: -4px 0 15px var(--primary-glow);
+            transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.2s ease, transform 0.2s ease;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            writing-mode: vertical-rl;
+            text-orientation: mixed;
+            white-space: nowrap;
+        }
+
+        .btn-floating-drawer-toggle:hover {
+            background-color: var(--primary-hover);
+            transform: translateY(-50%) scale(1.05);
+        }
+
+        .btn-floating-drawer-toggle.drawer-open {
+            right: var(--drawer-width);
+        }
+
+        .drawer-header {
+            padding: 24px;
+            border-bottom: 1px solid var(--border-sidebar);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .drawer-title-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .drawer-icon {
+            font-size: 20px;
+        }
+
+        .drawer-title {
+            font-size: 18px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #ffffff 30%, var(--text-muted));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        body.theme-light .drawer-title {
+            background: linear-gradient(135deg, var(--text-main) 30%, var(--text-muted));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .btn-close-drawer {
+            background: transparent;
+            border: none;
+            font-size: 24px;
+            color: var(--text-muted);
+            cursor: pointer;
+            line-height: 1;
+            transition: color 0.2s ease;
+        }
+
+        .btn-close-drawer:hover {
+            color: var(--rose);
+        }
+
+        .drawer-content {
+            flex-grow: 1;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            overflow: hidden;
+        }
+
+        .drawer-section {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .section-title {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--text-muted);
+            font-weight: 700;
+        }
+
+        .var-input-group {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .var-badges-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 8px;
+        }
+
+        .var-badge {
+            background-color: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-sidebar);
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-main);
+        }
+
+        body.theme-light .var-badge {
+            background-color: rgba(0, 0, 0, 0.02);
+        }
+
+        .var-badge-delete {
+            cursor: pointer;
+            color: var(--text-muted);
+            font-weight: bold;
+            font-size: 14px;
+            line-height: 1;
+            transition: color 0.2s ease;
+        }
+
+        .var-badge-delete:hover {
+            color: var(--rose);
+        }
+
+        /* Tabla de asignación */
+        .table-scroll-container {
+            flex-grow: 1;
+            overflow: auto;
+            border: 1px solid var(--border-sidebar);
+            border-radius: 8px;
+            background-color: rgba(0, 0, 0, 0.15);
+        }
+
+        body.theme-light .table-scroll-container {
+            background-color: rgba(0, 0, 0, 0.02);
+        }
+
+        .trace-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+            text-align: left;
+        }
+
+        .trace-table th,
+        .trace-table td {
+            padding: 10px 12px;
+            border-bottom: 1px solid var(--border-sidebar);
+            border-right: 1px solid var(--border-sidebar);
+        }
+
+        .trace-table th:last-child,
+        .trace-table td:last-child {
+            border-right: none;
+        }
+
+        .trace-table th {
+            background-color: rgba(255, 255, 255, 0.02);
+            color: var(--text-muted);
+            font-weight: 700;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            backdrop-filter: blur(4px);
+        }
+
+        .trace-table tr:hover td {
+            background-color: rgba(255, 255, 255, 0.02);
+        }
+
+        body.theme-light .trace-table tr:hover td {
+            background-color: rgba(0, 0, 0, 0.01);
+        }
+
+        .trace-input {
+            width: 100%;
+            background-color: transparent;
+            border: none;
+            outline: none;
+            color: var(--text-main);
+            font-family: var(--font-mono);
+            font-size: 12px;
+            padding: 2px 4px;
+        }
+
+        .trace-input:focus {
+            background-color: var(--ns-edit-focus-bg);
+            border-radius: 4px;
+        }
+
+        .trace-select {
+            background-color: rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--border-sidebar);
+            color: var(--text-main);
+            border-radius: 4px;
+            font-family: var(--font-mono);
+            font-size: 11px;
+            outline: none;
+            padding: 2px 4px;
+            cursor: pointer;
+        }
+
+        body.theme-light .trace-select {
+            background-color: #ffffff;
+        }
+
+        .drawer-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 12px;
+        }
+
+        /* Resaltado del bloque en ejecución en el canvas */
+        .ns-block.line-highlight {
+            box-shadow: 0 0 0 2px var(--primary) !important;
+            animation: line-blink 1.5s infinite ease-in-out;
+            transform: scale(1.01);
+            z-index: 10;
+        }
+
+        @keyframes line-blink {
+
+            0%,
+            100% {
+                box-shadow: 0 0 0 2px var(--primary);
+            }
+
+            50% {
+                box-shadow: 0 0 12px var(--primary-glow);
+            }
         }
 
         .ns-editable:empty::before {
@@ -1499,7 +1833,9 @@
         body.exporting .header,
         body.exporting .ns-spacer,
         body.exporting .ns-actions-bar,
-        body.exporting .ns-placeholder-actions {
+        body.exporting .ns-placeholder-actions,
+        body.exporting .btn-floating-drawer-toggle,
+        body.exporting .drawer-right {
             display: none !important;
         }
 
@@ -1594,6 +1930,23 @@
             color: #000000 !important;
         }
 
+        body.exporting #pdf-trace-table-container-temp {
+            background-color: #ffffff !important;
+            color: #000000 !important;
+            border: 2px solid #000000 !important;
+        }
+
+        body.exporting #pdf-trace-table-container-temp h3 {
+            color: #000000 !important;
+            border-bottom: 2px solid #000000 !important;
+        }
+
+        body.exporting #pdf-trace-table-container-temp th,
+        body.exporting #pdf-trace-table-container-temp td {
+            border-color: #000000 !important;
+            color: #000000 !important;
+        }
+
         /* --- NATIVE PRINT FALLBACK OVERRIDES (@media print) --- */
         @media print {
             body {
@@ -1613,7 +1966,9 @@
             .header,
             .ns-spacer,
             .ns-actions-bar,
-            .ns-placeholder-actions {
+            .ns-placeholder-actions,
+            .btn-floating-drawer-toggle,
+            .drawer-right {
                 display: none !important;
             }
 
@@ -1702,6 +2057,23 @@
             }
 
             .ns-if-no {
+                color: #000000 !important;
+            }
+
+            #pdf-trace-table-container-temp {
+                background-color: #ffffff !important;
+                color: #000000 !important;
+                border: 2px solid #000000 !important;
+            }
+
+            #pdf-trace-table-container-temp h3 {
+                color: #000000 !important;
+                border-bottom: 2px solid #000000 !important;
+            }
+
+            #pdf-trace-table-container-temp th,
+            #pdf-trace-table-container-temp td {
+                border-color: #000000 !important;
                 color: #000000 !important;
             }
         }
@@ -1933,6 +2305,14 @@
                         </button>
                     </div>
 
+                    <!-- Depuración / Prueba de escritorio -->
+                    <div class="toolbar-group">
+                        <button class="btn-tool" onclick="toggleTraceDrawer()"
+                            title="Prueba de Escritorio (Depuración Manual)">
+                            📋 Prueba de Escritorio
+                        </button>
+                    </div>
+
                     <!-- Botón PDF -->
                     <button class="btn-tool btn-action-primary" id="btn-export-pdf" onclick="exportToPDF()"
                         title="Exportar diagrama a PDF">
@@ -2002,11 +2382,80 @@
         </div>
     </div>
 
+    <!-- BOTÓN FLOTANTE PARA ALTERNAR PRUEBA DE ESCRITORIO -->
+    <button class="btn-floating-drawer-toggle" id="btn-floating-drawer-toggle" onclick="toggleTraceDrawer()"
+        title="Alternar Prueba de Escritorio">
+        <span>📋 Depuración</span>
+    </button>
+
+    <!-- PANEL DERECHO DE PRUEBA DE ESCRITORIO (DRAWER) -->
+    <aside class="drawer-right" id="trace-drawer">
+        <!-- Tirador de redimensión para arrastrar con el ratón -->
+        <div class="drawer-resize-handle" id="drawer-resize-handle"></div>
+        <div class="drawer-header">
+            <div class="drawer-title-container">
+                <span class="drawer-icon">📋</span>
+                <span class="drawer-title">Prueba de Escritorio</span>
+            </div>
+            <button class="btn-close-drawer" onclick="toggleTraceDrawer()" title="Cerrar Panel">&times;</button>
+        </div>
+        <div class="drawer-content">
+            <!-- Gestión de Variables -->
+            <div class="drawer-section">
+                <div class="section-title">Variables del Algoritmo</div>
+                <div class="var-input-group">
+                    <input type="text" id="new-var-name" class="modal-input" placeholder="Nombre (ej. Suma, i)..."
+                        style="margin: 0;">
+                    <button class="btn-modal-primary" onclick="addVariableColumn()" style="padding: 8px 16px;">+
+                        Agregar</button>
+                </div>
+                <div class="var-badges-list" id="var-badges-list">
+                    <!-- Cargado dinámicamente -->
+                </div>
+            </div>
+            <!-- Tabla de Asignación -->
+            <div class="drawer-section" style="flex-grow: 1; display: flex; flex-direction: column; overflow: hidden;">
+                <div class="section-title">Tabla de Asignación de Valores</div>
+                <div class="table-scroll-container">
+                    <table class="trace-table" id="trace-table">
+                        <thead>
+                            <tr id="trace-table-header">
+                                <th style="width: 50px;">Paso</th>
+                                <th style="width: 90px;">Línea</th>
+                                <th style="width: 45px;">Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody id="trace-table-body">
+                            <!-- Cargado dinámicamente -->
+                        </tbody>
+                    </table>
+                </div>
+                <div class="drawer-actions">
+                    <button class="btn-modal-primary" onclick="addTraceRow()"
+                        style="width: 100%; justify-content: center; font-size: 13px; padding: 10px; display: flex; align-items: center; gap: 6px;">
+                        <span>➕</span> <span>Agregar Fila (Paso)</span>
+                    </button>
+                    <button class="btn-modal-secondary" onclick="clearTraceTable()"
+                        style="width: 100%; justify-content: center; font-size: 13px; padding: 10px; border: 1px solid var(--border-sidebar); display: flex; align-items: center; gap: 6px;">
+                        <span>🧹</span> <span>Limpiar Tabla</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </aside>
+
     <!-- CONTENEDOR DE NOTIFICACIONES TOAST -->
     <div id="notification-container"></div>
 
     <!-- LÓGICA DE ESTADO Y CONTROLADORES -->
     <script>
+        let lineCounter = 0;
+        let lineBlocks = [];
+
+        let traceState = {
+            variables: [],
+            rows: []
+        };
         // --- 1. CONFIGURACIÓN DEL ESTADO DE LA SPA ---
         let appState = {
             activeFunctionId: 'main',
@@ -2289,8 +2738,16 @@
                     saveToHistory();
                     appState.functions = JSON.parse(JSON.stringify(templates[key].data));
                     appState.activeFunctionId = 'main';
+
+                    // Reiniciar el estado de la prueba de escritorio al cargar plantilla
+                    traceState = {
+                        variables: [],
+                        rows: []
+                    };
+
                     renderSidebar();
                     renderDiagram();
+                    renderTraceTable();
                     showNotification('Plantilla cargada exitosamente', 'success');
                 }
             });
@@ -2302,6 +2759,9 @@
         let zoomLevel = 1.0;
 
         function renderDiagram() {
+            lineCounter = 0;
+            lineBlocks = [];
+
             const canvas = document.getElementById('diagram-canvas');
             const currentFunc = appState.functions[appState.activeFunctionId];
 
@@ -2400,9 +2860,12 @@
 
                 // Renderizado interno según el tipo de bloque
                 if (block.type === 'action' || block.type === 'action_input' || block.type === 'action_output') {
+                    lineCounter++;
+                    blockDiv.dataset.line = lineCounter;
+                    lineBlocks.push({ id: block.id, line: lineCounter, type: block.type, code: block.code });
+
                     const inner = document.createElement('div');
-                    inner.className = 'ns-action-inner';
-                    inner.classList.add('has-badge');
+                    inner.className = 'ns-action-inner has-badge';
 
                     const badge = document.createElement('div');
                     if (block.type === 'action_input') {
@@ -2416,6 +2879,11 @@
                         badge.innerHTML = `<span>📝</span> <span>CÓDIGO</span>`;
                     }
                     inner.appendChild(badge);
+
+                    const lineNumSpan = document.createElement('span');
+                    lineNumSpan.className = 'ns-line-num';
+                    lineNumSpan.innerText = lineCounter.toString();
+                    inner.appendChild(lineNumSpan);
 
                     const editable = document.createElement('div');
                     editable.className = 'ns-editable';
@@ -2437,6 +2905,10 @@
                     blockDiv.appendChild(inner);
                 }
                 else if (block.type === 'if') {
+                    lineCounter++;
+                    blockDiv.dataset.line = lineCounter;
+                    lineBlocks.push({ id: block.id, line: lineCounter, type: 'if', code: block.condition });
+
                     const ifWrapper = document.createElement('div');
                     ifWrapper.className = 'ns-if-wrapper';
 
@@ -2448,7 +2920,8 @@
                             <line x1="0" y1="0" x2="50" y2="100" stroke="var(--ns-border)" stroke-width="2"/>
                             <line x1="100" y1="0" x2="50" y2="100" stroke="var(--ns-border)" stroke-width="2"/>
                         </svg>
-                        <div class="ns-if-cond-container">
+                        <div class="ns-if-cond-container" style="display: flex; align-items: center; justify-content: center; gap: 4px;">
+                            <span class="ns-line-num">${lineCounter}</span>
                             <div class="ns-editable ns-cond-edit" contenteditable="${appState.editMode}" data-id="${block.id}" data-field="condition" placeholder="¿Condición IF?">${block.condition || ''}</div>
                         </div>
                         <span class="ns-if-label ns-if-yes">SÍ</span>
@@ -2475,12 +2948,23 @@
                     blockDiv.appendChild(ifWrapper);
                 }
                 else if (block.type === 'WHILE' || block.type === 'FOR') {
+                    lineCounter++;
+                    blockDiv.dataset.line = lineCounter;
+                    lineBlocks.push({ id: block.id, line: lineCounter, type: block.type, code: block.condition });
+
                     const loopWrapper = document.createElement('div');
                     loopWrapper.className = 'ns-loop-wrapper';
 
                     // Cabecera superior con condición de entrada
                     const loopHeader = document.createElement('div');
                     loopHeader.className = 'ns-loop-header';
+                    loopHeader.style.display = 'flex';
+                    loopHeader.style.alignItems = 'center';
+
+                    const lineNumSpan = document.createElement('span');
+                    lineNumSpan.className = 'ns-line-num';
+                    lineNumSpan.innerText = lineCounter.toString();
+                    loopHeader.appendChild(lineNumSpan);
 
                     const editable = document.createElement('div');
                     editable.className = 'ns-editable ns-loop-edit';
@@ -2513,6 +2997,10 @@
                     blockDiv.appendChild(loopWrapper);
                 }
                 else if (block.type === 'UNTIL') {
+                    lineCounter++;
+                    blockDiv.dataset.line = lineCounter;
+                    lineBlocks.push({ id: block.id, line: lineCounter, type: 'UNTIL', code: block.condition });
+
                     const repeatWrapper = document.createElement('div');
                     repeatWrapper.className = 'ns-repeat-wrapper';
 
@@ -2534,6 +3022,13 @@
                     // Footer del bucle con condición al final
                     const repeatFooter = document.createElement('div');
                     repeatFooter.className = 'ns-repeat-footer';
+                    repeatFooter.style.display = 'flex';
+                    repeatFooter.style.alignItems = 'center';
+
+                    const lineNumSpan = document.createElement('span');
+                    lineNumSpan.className = 'ns-line-num';
+                    lineNumSpan.innerText = lineCounter.toString();
+                    repeatFooter.appendChild(lineNumSpan);
 
                     const editable = document.createElement('div');
                     editable.className = 'ns-editable ns-repeat-edit';
@@ -2966,7 +3461,7 @@
 
         // --- 10. CONFIGURACIONES GENERALES & EXPORTACIÓN JSON ---
 
-        // Importación de archivo JSON local
+        // Importación de archivo JSON local (soporta diagramas puros y proyectos con prueba de escritorio)
         function handleImportJSON(event) {
             const file = event.target.files[0];
             if (!file) return;
@@ -2975,15 +3470,39 @@
             reader.onload = function (e) {
                 try {
                     const imported = JSON.parse(e.target.result);
-                    // Validación mínima de arquitectura exigida
-                    const keys = Object.keys(imported);
-                    if (keys.length > 0 && imported['main'] && imported['main'].structures) {
+
+                    let functionsData = null;
+                    let importedTraceState = null;
+
+                    if (imported.functions && typeof imported.functions === 'object') {
+                        functionsData = imported.functions;
+                        if (imported.traceState) {
+                            importedTraceState = imported.traceState;
+                        }
+                    } else {
+                        // Formato antiguo / legado
+                        functionsData = imported;
+                    }
+
+                    const keys = Object.keys(functionsData);
+                    if (keys.length > 0 && functionsData['main'] && functionsData['main'].structures) {
                         saveToHistory();
-                        appState.functions = imported;
+                        appState.functions = functionsData;
                         appState.activeFunctionId = 'main';
+
+                        // Cargar el estado de depuración si está presente, si no reiniciar
+                        if (importedTraceState) {
+                            traceState = importedTraceState;
+                        } else {
+                            traceState = {
+                                variables: [],
+                                rows: []
+                            };
+                        }
 
                         renderSidebar();
                         renderDiagram();
+                        renderTraceTable();
                         showNotification('Proyecto importado exitosamente', 'success');
                     } else {
                         throw new Error('Estructura de diagrama inválida.');
@@ -2997,10 +3516,15 @@
             event.target.value = ''; // resetea selector de archivos
         }
 
-        // Descarga de proyecto JSON local
+        // Descarga de proyecto JSON local (incluyendo tabla de depuración activa)
         function exportJSON() {
             try {
-                const jsonString = JSON.stringify(appState.functions, null, 2);
+                const exportData = {
+                    version: '1.2.0',
+                    functions: appState.functions,
+                    traceState: traceState
+                };
+                const jsonString = JSON.stringify(exportData, null, 2);
                 const blob = new Blob([jsonString], { type: 'application/json;charset=utf-8;' });
                 const url = URL.createObjectURL(blob);
 
@@ -3038,8 +3562,16 @@
                         }
                     };
                     appState.activeFunctionId = 'main';
+
+                    // Limpiar estado de prueba de escritorio
+                    traceState = {
+                        variables: [],
+                        rows: []
+                    };
+
                     renderSidebar();
                     renderDiagram();
+                    renderTraceTable();
                     showNotification('Proyecto restablecido', 'warning');
                 }
             });
@@ -3156,6 +3688,119 @@
 
             const prevScale = zoomLevel;
 
+            // Si hay datos de depuración (filas o variables en traceState) o si el drawer está abierto
+            const drawer = document.getElementById('trace-drawer');
+            const isDebugging = (drawer && drawer.classList.contains('open')) || (traceState && (traceState.rows.length > 0 || traceState.variables.length > 0));
+            let tableContainer = null;
+
+            if (isDebugging) {
+                // Creamos el contenedor de la tabla de depuración con estilos sólidos inline
+                tableContainer = document.createElement('div');
+                tableContainer.id = 'pdf-trace-table-container-temp';
+                tableContainer.style.marginTop = '40px';
+                tableContainer.style.borderRadius = '12px';
+                tableContainer.style.border = '2px solid #000000';
+                tableContainer.style.padding = '24px';
+                tableContainer.style.backgroundColor = '#ffffff';
+                tableContainer.style.color = '#000000';
+
+                const tableTitle = document.createElement('h3');
+                tableTitle.innerText = '📋 Prueba de Escritorio / Tabla de Asignación';
+                tableTitle.style.fontFamily = 'var(--font-main)';
+                tableTitle.style.fontSize = '16px';
+                tableTitle.style.fontWeight = '700';
+                tableTitle.style.color = '#000000';
+                tableTitle.style.marginBottom = '16px';
+                tableTitle.style.borderBottom = '2px solid #000000';
+                tableTitle.style.paddingBottom = '8px';
+                tableContainer.appendChild(tableTitle);
+
+                // Generar tabla limpia con estilos sólidos inline
+                const printTable = document.createElement('table');
+                printTable.className = 'trace-table';
+                printTable.style.width = '100%';
+                printTable.style.borderCollapse = 'collapse';
+                printTable.style.backgroundColor = '#ffffff';
+                printTable.style.color = '#000000';
+
+                const thead = document.createElement('thead');
+                const headerRow = document.createElement('tr');
+                headerRow.innerHTML = `
+                    <th style="padding: 12px 10px; border: 2px solid #000000; text-align: center; font-weight: 700; background-color: #f1f5f9; color: #000000; font-family: var(--font-main);">Paso</th>
+                    <th style="padding: 12px 10px; border: 2px solid #000000; text-align: center; font-weight: 700; background-color: #f1f5f9; color: #000000; font-family: var(--font-main);">Línea</th>
+                `;
+                traceState.variables.forEach(v => {
+                    headerRow.innerHTML += `
+                        <th style="padding: 12px 10px; border: 2px solid #000000; text-align: center; font-weight: 700; background-color: #f1f5f9; color: #000000; font-family: var(--font-main);">${v}</th>
+                    `;
+                });
+                thead.appendChild(headerRow);
+                printTable.appendChild(thead);
+
+                const tbody = document.createElement('tbody');
+                if (traceState.rows.length === 0) {
+                    const tr = document.createElement('tr');
+                    const td = document.createElement('td');
+                    td.colSpan = 2 + traceState.variables.length;
+                    td.style.padding = '20px';
+                    td.style.border = '2px solid #000000';
+                    td.style.textAlign = 'center';
+                    td.style.color = '#64748b';
+                    td.style.fontStyle = 'italic';
+                    td.style.fontFamily = 'var(--font-main)';
+                    td.innerText = 'No hay pasos registrados en la prueba de escritorio.';
+                    tr.appendChild(td);
+                    tbody.appendChild(tr);
+                } else {
+                    traceState.rows.forEach((row, rowIndex) => {
+                        const tr = document.createElement('tr');
+
+                        const tdStep = document.createElement('td');
+                        tdStep.style.padding = '10px 12px';
+                        tdStep.style.border = '2px solid #000000';
+                        tdStep.style.textAlign = 'center';
+                        tdStep.style.fontWeight = '700';
+                        tdStep.style.color = '#000000';
+                        tdStep.style.fontFamily = 'var(--font-main)';
+                        tdStep.innerText = (rowIndex + 1).toString();
+                        tr.appendChild(tdStep);
+
+                        const tdLine = document.createElement('td');
+                        tdLine.style.padding = '10px 12px';
+                        tdLine.style.border = '2px solid #000000';
+                        tdLine.style.textAlign = 'center';
+                        tdLine.style.color = '#000000';
+                        tdLine.style.fontFamily = 'var(--font-mono)';
+
+                        const lb = lineBlocks.find(l => l.line === row.line);
+                        let codePreview = '';
+                        if (lb && lb.code) {
+                            const trimmed = lb.code.trim();
+                            codePreview = trimmed.length > 20 ? trimmed.substring(0, 20) + '...' : trimmed;
+                        }
+                        tdLine.innerText = row.line ? `L${row.line}${codePreview ? ' (' + codePreview + ')' : ''}` : '--';
+                        tr.appendChild(tdLine);
+
+                        traceState.variables.forEach(v => {
+                            const tdVar = document.createElement('td');
+                            tdVar.style.padding = '10px 12px';
+                            tdVar.style.border = '2px solid #000000';
+                            tdVar.style.textAlign = 'center';
+                            tdVar.style.color = '#000000';
+                            tdVar.style.fontFamily = 'var(--font-mono)';
+                            tdVar.innerText = row.values[v] !== undefined ? row.values[v] : '';
+                            tr.appendChild(tdVar);
+                        });
+                        tbody.appendChild(tr);
+                    });
+                }
+                printTable.appendChild(tbody);
+                tableContainer.appendChild(printTable);
+
+                // Lo agregamos directamente dentro del diagram-canvas
+                element.appendChild(tableContainer);
+            }
+
             function triggerPrintFallback() {
                 showNotification('Usando el Generador Nativo de Impresión...', 'info');
 
@@ -3168,6 +3813,7 @@
                     zoomLevel = prevScale;
                     updateZoomStyles();
 
+                    if (tableContainer) tableContainer.remove();
                     exportBtn.innerHTML = originalText;
                     exportBtn.disabled = false;
                 }, 500);
@@ -3219,6 +3865,7 @@
                     zoomLevel = prevScale;
                     updateZoomStyles();
 
+                    if (tableContainer) tableContainer.remove();
                     exportBtn.innerHTML = originalText;
                     exportBtn.disabled = false;
                     showNotification('PDF descargado con éxito', 'success');
@@ -3234,10 +3881,387 @@
             }
         }
 
+        // --- 16. PRUEBA DE ESCRITORIO Y DEPURACIÓN ---
+        function highlightLine(lineNum) {
+            document.querySelectorAll('.ns-block').forEach(b => b.classList.remove('line-highlight'));
+            if (!lineNum) return;
+            const target = document.querySelector(`.ns-block[data-line="${lineNum}"]`);
+            if (target) {
+                target.classList.add('line-highlight');
+            }
+        }
+
+        function renderTraceTable() {
+            const headerRow = document.getElementById('trace-table-header');
+            headerRow.innerHTML = `
+                <th style="width: 50px;">Paso</th>
+                <th style="width: 90px;">Línea</th>
+            `;
+            traceState.variables.forEach(v => {
+                headerRow.innerHTML += `
+                    <th>
+                        <div style="display: flex; align-items: center; justify-content: space-between; gap: 4px;">
+                            <span>${v}</span>
+                            <span class="var-badge-delete" onclick="removeVariableColumn('${v}')" title="Eliminar variable">&times;</span>
+                        </div>
+                    </th>
+                `;
+            });
+            headerRow.innerHTML += `<th style="width: 45px;">Acción</th>`;
+
+            const tbody = document.getElementById('trace-table-body');
+            tbody.innerHTML = '';
+
+            if (traceState.rows.length === 0) {
+                const tr = document.createElement('tr');
+                const td = document.createElement('td');
+                td.colSpan = 3 + traceState.variables.length;
+                td.style.textAlign = 'center';
+                td.style.color = 'var(--text-muted)';
+                td.style.fontStyle = 'italic';
+                td.style.padding = '20px';
+                td.innerText = 'No hay pasos agregados. Use el botón de abajo para iniciar la depuración manual.';
+                tr.appendChild(td);
+                tbody.appendChild(tr);
+            } else {
+                traceState.rows.forEach((row, rowIndex) => {
+                    const tr = document.createElement('tr');
+                    tr.dataset.rowIndex = rowIndex;
+
+                    const tdStep = document.createElement('td');
+                    tdStep.style.textAlign = 'center';
+                    tdStep.style.fontWeight = 'bold';
+                    tdStep.innerText = (rowIndex + 1).toString();
+                    tr.appendChild(tdStep);
+
+                    const tdLine = document.createElement('td');
+                    const select = document.createElement('select');
+                    select.className = 'trace-select';
+                    select.innerHTML = `<option value="">--</option>`;
+
+                    lineBlocks.forEach(lb => {
+                        const selected = row.line === lb.line ? 'selected' : '';
+                        let codePreview = '';
+                        if (lb.code) {
+                            const trimmed = lb.code.trim();
+                            codePreview = trimmed.length > 25 ? trimmed.substring(0, 25) + '...' : trimmed;
+                        }
+                        const labelText = `L${lb.line}${codePreview ? ' (' + codePreview + ')' : ''}`;
+                        select.innerHTML += `<option value="${lb.line}" ${selected}>${labelText}</option>`;
+                    });
+
+                    select.onchange = (e) => {
+                        row.line = parseInt(e.target.value) || null;
+                        highlightLine(row.line);
+                    };
+                    select.onfocus = () => {
+                        highlightLine(row.line);
+                    };
+
+                    tdLine.appendChild(select);
+                    tr.appendChild(tdLine);
+
+                    traceState.variables.forEach(v => {
+                        const tdVar = document.createElement('td');
+                        const input = document.createElement('input');
+                        input.type = 'text';
+                        input.className = 'trace-input';
+                        input.value = row.values[v] !== undefined ? row.values[v] : '';
+                        input.oninput = (e) => {
+                            row.values[v] = e.target.value;
+                        };
+                        input.onfocus = () => {
+                            highlightLine(row.line);
+                        };
+                        tdVar.appendChild(input);
+                        tr.appendChild(tdVar);
+                    });
+
+                    const tdActions = document.createElement('td');
+                    tdActions.style.textAlign = 'center';
+                    tdActions.innerHTML = `
+                        <button class="btn-func-action delete" onclick="removeTraceRow(${rowIndex})" title="Eliminar este paso" style="width: 20px; height: 20px; padding: 0; font-size: 14px; line-height: 1;">
+                            &times;
+                        </button>
+                    `;
+                    tr.appendChild(tdActions);
+
+                    tr.onmouseenter = () => {
+                        highlightLine(row.line);
+                    };
+                    tr.onmouseleave = () => {
+                        highlightLine(null);
+                    };
+
+                    tbody.appendChild(tr);
+                });
+            }
+
+            renderVarBadges();
+        }
+
+        function renderVarBadges() {
+            const list = document.getElementById('var-badges-list');
+            list.innerHTML = '';
+
+            if (traceState.variables.length === 0) {
+                list.innerHTML = `<span style="font-size: 11px; color: var(--text-muted); font-style: italic;">No hay variables registradas.</span>`;
+                return;
+            }
+
+            traceState.variables.forEach(v => {
+                const badge = document.createElement('div');
+                badge.className = 'var-badge';
+                badge.innerHTML = `
+                    <span>${v}</span>
+                    <span class="var-badge-delete" onclick="removeVariableColumn('${v}')">&times;</span>
+                `;
+                list.appendChild(badge);
+            });
+        }
+
+        function addVariableColumn() {
+            const input = document.getElementById('new-var-name');
+            const name = input.value.trim();
+            if (!name) return;
+
+            if (traceState.variables.includes(name)) {
+                showNotification('La variable ya existe', 'warning');
+                return;
+            }
+
+            traceState.variables.push(name);
+            input.value = '';
+
+            traceState.rows.forEach(row => {
+                if (row.values[name] === undefined) {
+                    row.values[name] = '';
+                }
+            });
+
+            renderTraceTable();
+            showNotification(`Variable ${name} agregada`, 'success');
+        }
+
+        function removeVariableColumn(name) {
+            traceState.variables = traceState.variables.filter(v => v !== name);
+            traceState.rows.forEach(row => {
+                delete row.values[name];
+            });
+            renderTraceTable();
+            showNotification(`Variable ${name} eliminada`, 'info');
+        }
+
+        // --- AUXILIARES PARA AUTOCOMPLETADO NO LINEAL EN PRUEBA DE ESCRITORIO ---
+        function findParentBlockOfArray(targetArr) {
+            const currentFunc = appState.functions[appState.activeFunctionId];
+            let found = null;
+
+            function search(arr, parent) {
+                if (arr === targetArr) {
+                    found = parent;
+                    return true;
+                }
+                for (let block of arr) {
+                    if (block.type === 'if') {
+                        if (search(block.trueBranch, block) || search(block.falseBranch, block)) return true;
+                    }
+                    if (block.type === 'WHILE' || block.type === 'FOR' || block.type === 'UNTIL') {
+                        if (search(block.body, block)) return true;
+                    }
+                }
+                return false;
+            }
+
+            search(currentFunc.structures, null);
+            return found;
+        }
+
+        function getLineForBlockId(blockId) {
+            const block = lineBlocks.find(lb => lb.id === blockId);
+            return block ? block.line : null;
+        }
+
+        function getLoopHeaderForLastBlock(blockId) {
+            let res = findParentArrayAndIndex(blockId);
+            if (!res) return null;
+
+            if (res.index === res.array.length - 1) {
+                let parentBlock = findParentBlockOfArray(res.array);
+                if (parentBlock) {
+                    if (parentBlock.type === 'WHILE' || parentBlock.type === 'FOR') {
+                        return getLineForBlockId(parentBlock.id);
+                    } else if (parentBlock.type === 'UNTIL') {
+                        return null; // DO-WHILE footer se maneja secuencialmente desde el cuerpo
+                    } else if (parentBlock.type === 'if') {
+                        return getLoopHeaderForLastBlock(parentBlock.id);
+                    }
+                }
+            }
+            return null;
+        }
+
+        function getLoopBackForUntil(blockId) {
+            const currentFunc = appState.functions[appState.activeFunctionId];
+            let target = null;
+            function search(arr) {
+                for (let block of arr) {
+                    if (block.id === blockId) {
+                        target = block;
+                        return true;
+                    }
+                    if (block.type === 'if') {
+                        if (search(block.trueBranch) || search(block.falseBranch)) return true;
+                    }
+                    if (block.type === 'WHILE' || block.type === 'FOR' || block.type === 'UNTIL') {
+                        if (search(block.body)) return true;
+                    }
+                }
+                return false;
+            }
+            search(currentFunc.structures);
+
+            if (target && target.type === 'UNTIL' && target.body && target.body.length > 0) {
+                return getLineForBlockId(target.body[0].id);
+            }
+            return null;
+        }
+
+        function getNextExecutionLine(currentLine) {
+            if (!currentLine) return null;
+            const currentBlock = lineBlocks.find(lb => lb.line === currentLine);
+            if (!currentBlock) return null;
+
+            // Caso 1: Bucle DO-WHILE (UNTIL) - del footer de condición al primer bloque de su cuerpo
+            if (currentBlock.type === 'UNTIL') {
+                const loopBackLine = getLoopBackForUntil(currentBlock.id);
+                if (loopBackLine) return loopBackLine;
+            }
+
+            // Caso 2: Última instrucción de un WHILE, FOR (o condicional interno) - retorno a cabecera de bucle
+            const parentLoopHeaderLine = getLoopHeaderForLastBlock(currentBlock.id);
+            if (parentLoopHeaderLine) {
+                return parentLoopHeaderLine;
+            }
+
+            // Caso 3: Secuencia lineal al siguiente bloque
+            const currentIndex = lineBlocks.findIndex(lb => lb.line === currentLine);
+            if (currentIndex !== -1 && currentIndex < lineBlocks.length - 1) {
+                return lineBlocks[currentIndex + 1].line;
+            }
+
+            return null;
+        }
+
+        function addTraceRow() {
+            let nextLine = null;
+            if (traceState.rows.length === 0) {
+                if (lineBlocks.length > 0) {
+                    nextLine = lineBlocks[0].line;
+                }
+            } else {
+                const prevRow = traceState.rows[traceState.rows.length - 1];
+                if (prevRow && prevRow.line) {
+                    nextLine = getNextExecutionLine(prevRow.line);
+                }
+            }
+
+            const newRow = {
+                line: nextLine,
+                values: {}
+            };
+            traceState.variables.forEach(v => {
+                newRow.values[v] = '';
+            });
+            traceState.rows.push(newRow);
+            renderTraceTable();
+
+            const container = document.querySelector('.table-scroll-container');
+            setTimeout(() => {
+                container.scrollTop = container.scrollHeight;
+            }, 50);
+        }
+
+        function removeTraceRow(index) {
+            traceState.rows.splice(index, 1);
+            renderTraceTable();
+        }
+
+        function clearTraceTable() {
+            showCustomConfirm('Limpiar Tabla', '¿Desea limpiar todas las filas de la tabla de depuración?').then(confirmed => {
+                if (confirmed) {
+                    traceState.rows = [];
+                    renderTraceTable();
+                    highlightLine(null);
+                    showNotification('Tabla de depuración limpia', 'info');
+                }
+            });
+        }
+
+        function toggleTraceDrawer() {
+            const drawer = document.getElementById('trace-drawer');
+            const floatingBtn = document.getElementById('btn-floating-drawer-toggle');
+            drawer.classList.toggle('open');
+
+            if (floatingBtn) {
+                floatingBtn.classList.toggle('drawer-open');
+            }
+
+            if (drawer.classList.contains('open')) {
+                renderTraceTable();
+            }
+        }
+
+        // --- 17. RESIZE DE LA PRUEBA DE ESCRITORIO ---
+        function initDrawerResize() {
+            const drawer = document.getElementById('trace-drawer');
+            const handle = document.getElementById('drawer-resize-handle');
+            if (!handle || !drawer) return;
+
+            let isResizing = false;
+
+            handle.addEventListener('mousedown', (e) => {
+                isResizing = true;
+                document.body.classList.add('is-resizing');
+                document.body.style.cursor = 'ew-resize';
+                e.preventDefault();
+            });
+
+            document.addEventListener('mousemove', (e) => {
+                if (!isResizing) return;
+
+                // Ancho dinámico del drawer (ancho ventana - posición X ratón)
+                let newWidth = window.innerWidth - e.clientX;
+
+                // Límites de tamaño: mínimo 320px, máximo 85% de la ventana
+                if (newWidth < 320) newWidth = 320;
+                if (newWidth > window.innerWidth * 0.85) newWidth = window.innerWidth * 0.85;
+
+                document.documentElement.style.setProperty('--drawer-width', `${newWidth}px`);
+            });
+
+            document.addEventListener('mouseup', () => {
+                if (isResizing) {
+                    isResizing = false;
+                    document.body.classList.remove('is-resizing');
+                    document.body.style.cursor = '';
+                }
+            });
+
+            // Atajo de doble clic para restablecer el tamaño por defecto (480px)
+            handle.addEventListener('dblclick', () => {
+                document.documentElement.style.setProperty('--drawer-width', '480px');
+                showNotification('Tamaño de panel restablecido', 'info');
+            });
+        }
+
         // --- 16. INICIALIZACIÓN DE LA SPA ---
         document.addEventListener('DOMContentLoaded', () => {
             // Inicializar eventos de edición
             initCanvasEvents();
+            
+            // Inicializar tirador de redimensión del panel
+            initDrawerResize();
 
             // Recuperar preferencias de almacenamiento local si existen
             const savedTheme = localStorage.getItem('chapinflow-theme') || 'dark';
