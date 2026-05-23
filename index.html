@@ -709,6 +709,95 @@
             box-sizing: border-box;
         }
 
+        /* Estilos especiales para bloques de acción, entrada y salida */
+        .block-action {
+            position: relative;
+            background: linear-gradient(90deg, rgba(168, 85, 247, 0.05) 0%, var(--ns-bg) 100%);
+        }
+        .block-action_input {
+            position: relative;
+            background: linear-gradient(90deg, rgba(6, 182, 212, 0.05) 0%, var(--ns-bg) 100%);
+        }
+        .block-action_output {
+            position: relative;
+            background: linear-gradient(90deg, rgba(245, 158, 11, 0.05) 0%, var(--ns-bg) 100%);
+        }
+
+        /* Borde izquierdo especial para indicar Proceso/Entrada/Salida */
+        .block-action::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            width: 4px;
+            background-color: #a855f7;
+            box-shadow: 0 0 8px rgba(168, 85, 247, 0.4);
+        }
+        .block-action_input::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            width: 4px;
+            background-color: var(--cyan);
+            box-shadow: 0 0 8px var(--cyan);
+        }
+        .block-action_output::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            width: 4px;
+            background-color: var(--amber);
+            box-shadow: 0 0 8px var(--amber);
+        }
+
+        /* Badges flotantes sutiles a la izquierda */
+        .ns-action-type-badge {
+            position: absolute;
+            top: 6px;
+            left: 12px;
+            font-family: var(--font-main);
+            font-size: calc(9px * var(--ns-scale));
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            pointer-events: none;
+            opacity: 0.85;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .badge-code {
+            background-color: rgba(168, 85, 247, 0.15);
+            color: #c084fc;
+            border: 1px solid rgba(168, 85, 247, 0.25);
+        }
+
+        .badge-input {
+            background-color: rgba(6, 182, 212, 0.15);
+            color: #22d3ee;
+            border: 1px solid rgba(6, 182, 212, 0.25);
+        }
+
+        .badge-output {
+            background-color: rgba(245, 158, 11, 0.15);
+            color: #fbbf24;
+            border: 1px solid rgba(245, 158, 11, 0.25);
+        }
+
+        /* Ajustar padding para dar espacio al badge si es input/output/code */
+        .ns-action-inner.has-badge {
+            padding-top: calc(26px * var(--ns-scale));
+            padding-bottom: calc(10px * var(--ns-scale));
+        }
+
         /* Editable inline */
         .ns-editable {
             font-family: var(--font-mono);
@@ -1285,6 +1374,22 @@
             border-color: #000000 !important;
             background-color: #ffffff !important;
         }
+        body.exporting .block-action,
+        body.exporting .block-action_input,
+        body.exporting .block-action_output {
+            background: #ffffff !important;
+        }
+        body.exporting .block-action::before,
+        body.exporting .block-action_input::before,
+        body.exporting .block-action_output::before {
+            display: none !important;
+        }
+        body.exporting .ns-action-type-badge {
+            border: 1px solid #000000 !important;
+            background: #ffffff !important;
+            color: #000000 !important;
+            box-shadow: none !important;
+        }
         body.exporting .ns-editable {
             color: #000000 !important;
         }
@@ -1366,6 +1471,22 @@
                 border-color: #000000 !important;
                 background-color: #ffffff !important;
                 color: #000000 !important;
+            }
+            .block-action,
+            .block-action_input,
+            .block-action_output {
+                background: #ffffff !important;
+            }
+            .block-action::before,
+            .block-action_input::before,
+            .block-action_output::before {
+                display: none !important;
+            }
+            .ns-action-type-badge {
+                border: 1px solid #000000 !important;
+                background: #ffffff !important;
+                color: #000000 !important;
+                box-shadow: none !important;
             }
             .ns-editable {
                 color: #000000 !important;
@@ -1471,8 +1592,16 @@
                     <div class="sidebar-section-title">Guía de Estructuras</div>
                     <div class="guide-list">
                         <div class="guide-item">
-                            <span class="guide-symbol"> Action </span>
-                            <span class="guide-text">Línea de instrucción secuencial simple o asignación.</span>
+                            <span class="guide-symbol" style="border-left: 3px solid #a855f7; padding-left: 8px;"> Acción Libre </span>
+                            <span class="guide-text">Línea de instrucción secuencial simple o asignación de código.</span>
+                        </div>
+                        <div class="guide-item">
+                            <span class="guide-symbol" style="border-left: 3px solid var(--cyan); padding-left: 8px;"> Action INPUT </span>
+                            <span class="guide-text">Bloque de lectura o entrada de variables por teclado.</span>
+                        </div>
+                        <div class="guide-item">
+                            <span class="guide-symbol" style="border-left: 3px solid var(--amber); padding-left: 8px;"> Action OUTPUT </span>
+                            <span class="guide-text">Bloque de escritura o salida de datos por pantalla.</span>
                         </div>
                         <div class="guide-item">
                             <span class="guide-symbol"> If/Else </span>
@@ -1586,7 +1715,13 @@
     <!-- CONTEXT MENU PARA INSERTAR BLOQUES -->
     <div id="context-menu" class="context-menu hidden">
         <button class="context-menu-btn" data-type="action">
-            <span class="context-menu-icon">📝</span> Acción / Instrucción
+            <span class="context-menu-icon">📝</span> Acción Libre (Código)
+        </button>
+        <button class="context-menu-btn" data-type="action_input">
+            <span class="context-menu-icon">📥</span> Acción INPUT (Entrada)
+        </button>
+        <button class="context-menu-btn" data-type="action_output">
+            <span class="context-menu-icon">📤</span> Acción OUTPUT (Salida)
         </button>
         <button class="context-menu-btn" data-type="if">
             <span class="context-menu-icon">🔀</span> Condicional (IF-ELSE)
@@ -1797,21 +1932,21 @@
                         type: 'main',
                         structures: [
                             { id: 't1_1', type: 'action', code: 'Suma = 0' },
-                            { id: 't1_2', type: 'action', code: 'OUTPUT "Ingrese cantidad de números a sumar (N):"' },
-                            { id: 't1_3', type: 'action', code: 'INPUT N' },
+                            { id: 't1_2', type: 'action_output', code: 'OUTPUT "Ingrese cantidad de números a sumar (N):"' },
+                            { id: 't1_3', type: 'action_input', code: 'INPUT N' },
                             { id: 't1_4', type: 'action', code: 'i = 1' },
                             {
                                 id: 't1_5',
                                 type: 'WHILE',
                                 condition: 'WHILE i <= N',
                                 body: [
-                                    { id: 't1_6', type: 'action', code: 'OUTPUT "Ingrese número:"' },
-                                    { id: 't1_7', type: 'action', code: 'INPUT Num' },
+                                    { id: 't1_6', type: 'action_output', code: 'OUTPUT "Ingrese número:"' },
+                                    { id: 't1_7', type: 'action_input', code: 'INPUT Num' },
                                     { id: 't1_8', type: 'action', code: 'Suma = Suma + Num' },
                                     { id: 't1_9', type: 'action', code: 'i = i + 1' }
                                 ]
                             },
-                            { id: 't1_10', type: 'action', code: 'OUTPUT "La suma total es: ", Suma' }
+                            { id: 't1_10', type: 'action_output', code: 'OUTPUT "La suma total es: ", Suma' }
                         ]
                     }
                 }
@@ -1824,8 +1959,8 @@
                         name: 'main()',
                         type: 'main',
                         structures: [
-                            { id: 't2_1', type: 'action', code: 'OUTPUT "Ingrese A, B y C:"' },
-                            { id: 't2_2', type: 'action', code: 'INPUT A, B, C' },
+                            { id: 't2_1', type: 'action_output', code: 'OUTPUT "Ingrese A, B y C:"' },
+                            { id: 't2_2', type: 'action_input', code: 'INPUT A, B, C' },
                             {
                                 id: 't2_3',
                                 type: 'if',
@@ -1849,7 +1984,7 @@
                                     }
                                 ]
                             },
-                            { id: 't2_10', type: 'action', code: 'OUTPUT "El número mayor es: ", Mayor' }
+                            { id: 't2_10', type: 'action_output', code: 'OUTPUT "El número mayor es: ", Mayor' }
                         ]
                     }
                 }
@@ -1862,15 +1997,15 @@
                         name: 'main()',
                         type: 'main',
                         structures: [
-                            { id: 't3_1', type: 'action', code: 'OUTPUT "Ingrese número de términos:"' },
-                            { id: 't3_2', type: 'action', code: 'INPUT Limite' },
+                            { id: 't3_1', type: 'action_output', code: 'OUTPUT "Ingrese número de términos:"' },
+                            { id: 't3_2', type: 'action_input', code: 'INPUT Limite' },
                             { id: 't3_3', type: 'action', code: 'i = 0' },
                             {
                                 id: 't3_4',
                                 type: 'WHILE',
                                 condition: 'WHILE i < Limite',
                                 body: [
-                                    { id: 't3_5', type: 'action', code: 'OUTPUT fibonacci(i)' },
+                                    { id: 't3_5', type: 'action_output', code: 'OUTPUT fibonacci(i)' },
                                     { id: 't3_6', type: 'action', code: 'i = i + 1' }
                                 ]
                             }
@@ -1946,7 +2081,9 @@
                     placeholder.innerHTML = `
                         <div class="ns-placeholder-text">Bloque de instrucciones vacío</div>
                         <div class="ns-placeholder-actions">
-                            <button class="ns-placeholder-btn" data-path="${path}" data-index="0" data-type="action">📝 Action</button>
+                            <button class="ns-placeholder-btn" data-path="${path}" data-index="0" data-type="action">📝 Acción Libre</button>
+                            <button class="ns-placeholder-btn" data-path="${path}" data-index="0" data-type="action_input">📥 Acción INPUT</button>
+                            <button class="ns-placeholder-btn" data-path="${path}" data-index="0" data-type="action_output">📤 Acción OUTPUT</button>
                             <button class="ns-placeholder-btn" data-path="${path}" data-index="0" data-type="if">🔀 IF-ELSE</button>
                             <button class="ns-placeholder-btn" data-path="${path}" data-index="0" data-type="WHILE">🔁 FOR / WHILE</button>
                             <button class="ns-placeholder-btn" data-path="${path}" data-index="0" data-type="UNTIL">🔄 UNTIL</button>
@@ -2011,16 +2148,38 @@
                 }
 
                 // Renderizado interno según el tipo de bloque
-                if (block.type === 'action') {
+                if (block.type === 'action' || block.type === 'action_input' || block.type === 'action_output') {
                     const inner = document.createElement('div');
                     inner.className = 'ns-action-inner';
+                    inner.classList.add('has-badge');
+
+                    const badge = document.createElement('div');
+                    if (block.type === 'action_input') {
+                        badge.className = 'ns-action-type-badge badge-input';
+                        badge.innerHTML = `<span>📥</span> <span>INPUT</span>`;
+                    } else if (block.type === 'action_output') {
+                        badge.className = 'ns-action-type-badge badge-output';
+                        badge.innerHTML = `<span>📤</span> <span>OUTPUT</span>`;
+                    } else {
+                        badge.className = 'ns-action-type-badge badge-code';
+                        badge.innerHTML = `<span>📝</span> <span>CÓDIGO</span>`;
+                    }
+                    inner.appendChild(badge);
                     
                     const editable = document.createElement('div');
                     editable.className = 'ns-editable';
                     editable.contentEditable = appState.editMode;
                     editable.dataset.id = block.id;
                     editable.dataset.field = 'code';
-                    editable.setAttribute('placeholder', 'Escriba la acción o asignación (ej. x = 5)...');
+                    
+                    let placeholderText = 'Escriba la acción o asignación (ej. x = 5)...';
+                    if (block.type === 'action_input') {
+                        placeholderText = 'Ingrese las variables por teclado (ej. Nombre, Edad)...';
+                    } else if (block.type === 'action_output') {
+                        placeholderText = 'Escriba la salida por pantalla (ej. "Resultado es: ", Suma)...';
+                    }
+
+                    editable.setAttribute('placeholder', placeholderText);
                     editable.innerText = block.code || '';
                     
                     inner.appendChild(editable);
@@ -2170,6 +2329,10 @@
             const id = generateId();
             if (type === 'action') {
                 return { id, type: 'action', code: '' };
+            } else if (type === 'action_input') {
+                return { id, type: 'action_input', code: '' };
+            } else if (type === 'action_output') {
+                return { id, type: 'action_output', code: '' };
             } else if (type === 'if') {
                 return { id, type: 'if', condition: '', trueBranch: [], falseBranch: [] };
             } else if (type === 'WHILE') {
