@@ -790,7 +790,7 @@
             align-items: flex-start;
         }
 
-        /* Estilos especiales para bloques de acción, entrada y salida */
+        /* Estilos especiales para bloques de acción, entrada, salida y retorno */
         .block-action {
             position: relative;
             background: linear-gradient(90deg, rgba(168, 85, 247, 0.05) 0%, var(--ns-bg) 100%);
@@ -806,7 +806,27 @@
             background: linear-gradient(90deg, rgba(245, 158, 11, 0.05) 0%, var(--ns-bg) 100%);
         }
 
-        /* Borde izquierdo especial para indicar Proceso/Entrada/Salida */
+        .block-action_return {
+            position: relative;
+            background: linear-gradient(90deg, rgba(244, 63, 94, 0.05) 0%, var(--ns-bg) 100%);
+        }
+
+        .block-action_continue {
+            position: relative;
+            background: linear-gradient(90deg, rgba(16, 185, 129, 0.05) 0%, var(--ns-bg) 100%);
+        }
+
+        .block-action_break {
+            position: relative;
+            background: linear-gradient(90deg, rgba(239, 68, 68, 0.05) 0%, var(--ns-bg) 100%);
+        }
+
+        .block-action_exit {
+            position: relative;
+            background: linear-gradient(90deg, rgba(37, 99, 235, 0.05) 0%, var(--ns-bg) 100%);
+        }
+
+        /* Borde izquierdo especial para indicar Proceso/Entrada/Salida/Retorno */
         .block-action::before {
             content: '';
             position: absolute;
@@ -838,6 +858,58 @@
             width: 4px;
             background-color: var(--amber);
             box-shadow: 0 0 8px var(--amber);
+        }
+
+        .block-action_return::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            width: 4px;
+            background-color: var(--rose);
+            box-shadow: 0 0 8px var(--rose);
+        }
+
+        .block-action_continue::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            width: 4px;
+            background-color: var(--emerald);
+            box-shadow: 0 0 8px var(--emerald);
+        }
+
+        .block-action_break::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            width: 4px;
+            background-color: #ef4444;
+            box-shadow: 0 0 8px #ef4444;
+        }
+
+        .block-action_exit::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            width: 4px;
+            background-color: #2563eb;
+            box-shadow: 0 0 8px #2563eb;
+        }
+
+        /* Estilos diferenciados para bucles */
+        .block-WHILE,
+        .block-FOR,
+        .block-UNTIL {
+            border-left: 4px solid var(--primary) !important;
+            background: linear-gradient(90deg, rgba(99, 102, 241, 0.03) 0%, var(--ns-bg) 100%) !important;
         }
 
         /* Badges flotantes sutiles a la izquierda */
@@ -875,6 +947,38 @@
             background-color: rgba(245, 158, 11, 0.15);
             color: #fbbf24;
             border: 1px solid rgba(245, 158, 11, 0.25);
+        }
+
+        .badge-return {
+            background-color: rgba(244, 63, 94, 0.15);
+            color: #f43f5e;
+            border: 1px solid rgba(244, 63, 94, 0.25);
+        }
+
+        .badge-continue {
+            background-color: rgba(16, 185, 129, 0.15);
+            color: #34d399;
+            border: 1px solid rgba(16, 185, 129, 0.25);
+        }
+
+        .badge-break {
+            background-color: rgba(239, 68, 68, 0.15);
+            color: #f87171;
+            border: 1px solid rgba(239, 68, 68, 0.25);
+        }
+
+        .badge-exit {
+            background-color: rgba(37, 99, 235, 0.15);
+            color: #60a5fa;
+            border: 1px solid rgba(37, 99, 235, 0.25);
+        }
+
+        .badge-for,
+        .badge-while,
+        .badge-until {
+            background-color: rgba(99, 102, 241, 0.15);
+            color: #818cf8;
+            border: 1px solid rgba(99, 102, 241, 0.25);
         }
 
         /* Ajustar padding para dar espacio al badge si es input/output/code */
@@ -964,6 +1068,7 @@
             transition: background-color 0.2s;
             background-color: transparent;
         }
+
         .drawer-resize-handle:hover {
             background-color: rgba(99, 102, 241, 0.2);
             border-left: 2px solid var(--primary);
@@ -1414,46 +1519,7 @@
             font-weight: 700;
         }
 
-        /* --- DISPARADORES DE EDICIÓN FLOTANTES ("+") --- */
-        .ns-spacer {
-            height: 6px;
-            position: relative;
-            background-color: transparent;
-            transition: all 0.2s ease;
-            z-index: 20;
-            margin: -3px 0;
-            /* Solapa ligeramente el borde para facilitar hover */
-        }
 
-        .ns-spacer:hover {
-            height: 14px;
-            background-color: var(--ns-spacer-glow);
-            margin: 0;
-        }
-
-        .ns-spacer-btn {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%) scale(0);
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            background-color: var(--primary);
-            color: var(--text-inverse);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border: none;
-            cursor: pointer;
-            box-shadow: 0 0 10px var(--primary-glow);
-            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            z-index: 25;
-        }
-
-        .ns-spacer:hover .ns-spacer-btn {
-            transform: translate(-50%, -50%) scale(1);
-        }
 
         /* Placeholders de bloque vacío */
         .ns-placeholder {
@@ -1503,11 +1569,86 @@
             background-color: rgba(0, 0, 0, 0.02);
         }
 
-        .ns-placeholder-btn:hover {
+        /* --- ESTILOS DE LA CAJA DE HERRAMIENTAS Y RESALTADO DE SELECCIÓN --- */
+        .btn-toolbox {
+            background-color: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-sidebar);
+            color: var(--text-main);
+            padding: 8px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            text-align: center;
+            box-sizing: border-box;
+            width: 100%;
+        }
+        body.theme-light .btn-toolbox {
+            background-color: rgba(0, 0, 0, 0.02);
+            color: var(--text-main);
+        }
+        .btn-toolbox:hover {
             border-color: var(--primary);
             background-color: var(--primary);
             color: var(--text-inverse);
             box-shadow: var(--shadow-glow);
+        }
+        .btn-toolbox-opt {
+            flex: 1;
+            background-color: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border-sidebar);
+            color: var(--text-muted);
+            padding: 6px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: center;
+        }
+        body.theme-light .btn-toolbox-opt {
+            background-color: rgba(0, 0, 0, 0.02);
+        }
+        .btn-toolbox-opt.active {
+            background-color: var(--primary);
+            border-color: var(--primary);
+            color: var(--text-inverse);
+        }
+        .btn-toolbox-opt:hover:not(.active) {
+            background-color: rgba(255, 255, 255, 0.06);
+            color: var(--text-main);
+        }
+        body.theme-light .btn-toolbox-opt:hover:not(.active) {
+            background-color: rgba(0, 0, 0, 0.04);
+        }
+        .btn-toolbox-clear {
+            width: 100%;
+            background: transparent;
+            border: 1px dashed var(--rose);
+            color: var(--rose);
+            padding: 8px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-top: 8px;
+        }
+        .btn-toolbox-clear:hover {
+            background-color: var(--rose);
+            color: white;
+        }
+        
+        .ns-block.selected-block-highlight {
+            box-shadow: 0 0 0 2px var(--amber) !important;
+            border-color: var(--amber) !important;
+            z-index: 15;
+            position: relative;
         }
 
         /* --- BOTONES DE ACCIÓN FLOTANTES POR BLOQUE --- */
@@ -1831,7 +1972,6 @@
 
         body.exporting .sidebar,
         body.exporting .header,
-        body.exporting .ns-spacer,
         body.exporting .ns-actions-bar,
         body.exporting .ns-placeholder-actions,
         body.exporting .btn-floating-drawer-toggle,
@@ -1879,14 +2019,24 @@
         body.exporting .block-action,
         body.exporting .block-action_input,
         body.exporting .block-action_output,
+        body.exporting .block-action_return,
+        body.exporting .block-action_continue,
+        body.exporting .block-action_break,
+        body.exporting .block-action_exit,
         body.exporting .block-WHILE,
-        body.exporting .block-FOR {
+        body.exporting .block-FOR,
+        body.exporting .block-UNTIL {
             background: #ffffff !important;
+            border-left: none !important;
         }
 
         body.exporting .block-action::before,
         body.exporting .block-action_input::before,
-        body.exporting .block-action_output::before {
+        body.exporting .block-action_output::before,
+        body.exporting .block-action_return::before,
+        body.exporting .block-action_continue::before,
+        body.exporting .block-action_break::before,
+        body.exporting .block-action_exit::before {
             display: none !important;
         }
 
@@ -1964,7 +2114,6 @@
 
             .sidebar,
             .header,
-            .ns-spacer,
             .ns-actions-bar,
             .ns-placeholder-actions,
             .btn-floating-drawer-toggle,
@@ -2020,14 +2169,24 @@
             .block-action,
             .block-action_input,
             .block-action_output,
+            .block-action_return,
+            .block-action_continue,
+            .block-action_break,
+            .block-action_exit,
             .block-WHILE,
-            .block-FOR {
+            .block-FOR,
+            .block-UNTIL {
                 background: #ffffff !important;
+                border-left: none !important;
             }
 
             .block-action::before,
             .block-action_input::before,
-            .block-action_output::before {
+            .block-action_output::before,
+            .block-action_return::before,
+            .block-action_continue::before,
+            .block-action_break::before,
+            .block-action_exit::before {
                 display: none !important;
             }
 
@@ -2120,6 +2279,41 @@
                     </div>
                 </div>
 
+                <!-- SECCIÓN CAJA DE HERRAMIENTAS (INSERTAR BLOQUE) -->
+                <div class="sidebar-section" id="toolbox-section">
+                    <div class="sidebar-section-title">Caja de Herramientas</div>
+                    <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 8px; font-family: var(--font-main);" id="toolbox-target-label">
+                        📍 Ubicación: Al final de la función
+                    </div>
+                    <div class="toolbox-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px;">
+                        <button class="btn-toolbox" onclick="insertBlockFromToolbox('action')" title="Acción Libre (Código)">📝 Código</button>
+                        <button class="btn-toolbox" onclick="insertBlockFromToolbox('action_input')" title="Acción INPUT (Entrada)">📥 INPUT</button>
+                        <button class="btn-toolbox" onclick="insertBlockFromToolbox('action_output')" title="Acción OUTPUT (Salida)">📤 OUTPUT</button>
+                        <button class="btn-toolbox" onclick="insertBlockFromToolbox('action_return')" title="Acción RETURN (Retornar)">↩️ RETURN</button>
+                        <button class="btn-toolbox" onclick="insertBlockFromToolbox('action_continue')" title="Control CONTINUE (Continuar)">⏩ CONTINUE</button>
+                        <button class="btn-toolbox" onclick="insertBlockFromToolbox('action_break')" title="Control BREAK (Romper)">🛑 BREAK</button>
+                        <button class="btn-toolbox" onclick="insertBlockFromToolbox('action_exit')" title="Control EXIT (Salir)">🚪 EXIT</button>
+                        <button class="btn-toolbox" onclick="insertBlockFromToolbox('if')" title="Condicional (IF-ELSE)">🔀 IF-ELSE</button>
+                        <button class="btn-toolbox" onclick="insertBlockFromToolbox('FOR')" title="Bucle Para (FOR)">🔁 FOR</button>
+                        <button class="btn-toolbox" onclick="insertBlockFromToolbox('WHILE')" title="Bucle Mientras (WHILE)">🔁 WHILE</button>
+                        <button class="btn-toolbox" onclick="insertBlockFromToolbox('UNTIL')" title="Bucle Hacer-Mientras (DO-WHILE)">🔄 DO-WHILE</button>
+                    </div>
+                    
+                    <div class="toolbox-relations" style="display: flex; flex-direction: column; gap: 6px;">
+                        <div id="toolbox-options-container" style="display: none;">
+                            <span style="font-size: 10px; text-transform: uppercase; color: var(--text-muted); font-weight: 700;">Relación:</span>
+                            <div style="display: flex; gap: 4px; margin-top: 4px;">
+                                <button class="btn-toolbox-opt" id="btn-opt-before" onclick="setToolboxRelation('before')">Antes</button>
+                                <button class="btn-toolbox-opt active" id="btn-opt-after" onclick="setToolboxRelation('after')">Después</button>
+                                <button class="btn-toolbox-opt" id="btn-opt-inside" onclick="setToolboxRelation('inside')" style="display: none;">Dentro</button>
+                            </div>
+                        </div>
+                        <button class="btn-toolbox-clear" id="btn-toolbox-clear" onclick="deselectToolboxTarget()" style="display: none;">
+                            ❌ Deseleccionar Bloque
+                        </button>
+                    </div>
+                </div>
+
                 <!-- SECCIÓN PLANTILLAS -->
                 <div class="sidebar-section">
                     <div class="sidebar-section-title">Plantillas Académicas</div>
@@ -2190,6 +2384,31 @@
                             <span class="guide-symbol" style="border-left: 3px solid var(--amber); padding-left: 8px;">
                                 Action OUTPUT </span>
                             <span class="guide-text">Bloque de escritura o salida de datos por pantalla.</span>
+                        </div>
+                        <div class="guide-item">
+                            <span class="guide-symbol" style="border-left: 3px solid var(--rose); padding-left: 8px;">
+                                Acción RETURN </span>
+                            <span class="guide-text">Retorno de un valor y finalización de ejecución de una función.</span>
+                        </div>
+                        <div class="guide-item">
+                            <span class="guide-symbol" style="border-left: 3px solid var(--emerald); padding-left: 8px;">
+                                CONTINUE </span>
+                            <span class="guide-text">Instrucción inmutable para saltar a la siguiente iteración del bucle.</span>
+                        </div>
+                        <div class="guide-item">
+                            <span class="guide-symbol" style="border-left: 3px solid #ef4444; padding-left: 8px;">
+                                BREAK </span>
+                            <span class="guide-text">Instrucción inmutable para romper o salir del bucle actual de forma inmediata.</span>
+                        </div>
+                        <div class="guide-item">
+                            <span class="guide-symbol" style="border-left: 3px solid #2563eb; padding-left: 8px;">
+                                EXIT </span>
+                            <span class="guide-text">Finalización del programa completo con un valor de salida específico.</span>
+                        </div>
+                        <div class="guide-item">
+                            <span class="guide-symbol" style="border-left: 3px solid var(--primary); padding-left: 8px;">
+                                IF-ELSE </span>
+                            <span class="guide-text">Estructura condicional de bifurcación basada en una condición lógica.</span>
                         </div>
                         <div class="guide-item">
                             <span class="guide-symbol"> Bucle FOR </span>
@@ -2339,30 +2558,7 @@
 
     </div>
 
-    <!-- CONTEXT MENU PARA INSERTAR BLOQUES -->
-    <div id="context-menu" class="context-menu hidden">
-        <button class="context-menu-btn" data-type="action">
-            <span class="context-menu-icon">📝</span> Acción Libre (Código)
-        </button>
-        <button class="context-menu-btn" data-type="action_input">
-            <span class="context-menu-icon">📥</span> Acción INPUT (Entrada)
-        </button>
-        <button class="context-menu-btn" data-type="action_output">
-            <span class="context-menu-icon">📤</span> Acción OUTPUT (Salida)
-        </button>
-        <button class="context-menu-btn" data-type="if">
-            <span class="context-menu-icon">🔀</span> Condicional (IF-ELSE)
-        </button>
-        <button class="context-menu-btn" data-type="FOR">
-            <span class="context-menu-icon">🔁</span> Bucle Para (FOR)
-        </button>
-        <button class="context-menu-btn" data-type="WHILE">
-            <span class="context-menu-icon">🔁</span> Bucle Mientras (WHILE)
-        </button>
-        <button class="context-menu-btn" data-type="UNTIL">
-            <span class="context-menu-icon">🔄</span> Bucle Hacer-Mientras (DO-WHILE)
-        </button>
-    </div>
+
 
     <!-- DIÁLOGOS Y MODALES PERSONALIZADOS -->
     <div id="custom-modal" class="modal-overlay hidden">
@@ -2452,10 +2648,6 @@
         let lineCounter = 0;
         let lineBlocks = [];
 
-        let traceState = {
-            variables: [],
-            rows: []
-        };
         // --- 1. CONFIGURACIÓN DEL ESTADO DE LA SPA ---
         let appState = {
             activeFunctionId: 'main',
@@ -2467,10 +2659,16 @@
                     id: 'main',
                     name: 'main()',
                     type: 'main',
-                    structures: []
+                    structures: [],
+                    traceState: {
+                        variables: [],
+                        rows: []
+                    }
                 }
             }
         };
+
+        let traceState = appState.functions['main'].traceState;
 
         // --- 2. HISTORIAL DE ACCIONES (DESHACER / REHACER) ---
         let undoStack = [];
@@ -2500,8 +2698,18 @@
                 appState.activeFunctionId = 'main';
             }
 
+            // Re-vincular traceState de la función activa
+            const activeFunc = appState.functions[appState.activeFunctionId];
+            if (!activeFunc.traceState) {
+                activeFunc.traceState = { variables: [], rows: [] };
+            }
+            traceState = activeFunc.traceState;
+
+            deselectToolboxTarget();
+
             renderSidebar();
             renderDiagram();
+            renderTraceTable();
             updateHistoryButtons();
             showNotification('Acción deshecha', 'info');
         }
@@ -2518,8 +2726,18 @@
                 appState.activeFunctionId = 'main';
             }
 
+            // Re-vincular traceState de la función activa
+            const activeFunc = appState.functions[appState.activeFunctionId];
+            if (!activeFunc.traceState) {
+                activeFunc.traceState = { variables: [], rows: [] };
+            }
+            traceState = activeFunc.traceState;
+
+            deselectToolboxTarget();
+
             renderSidebar();
             renderDiagram();
+            renderTraceTable();
             updateHistoryButtons();
             showNotification('Acción rehecha', 'info');
         }
@@ -2720,10 +2938,10 @@
                                 type: 'if',
                                 condition: '¿n <= 1?',
                                 trueBranch: [
-                                    { id: 't3_8', type: 'action', code: 'Retornar n' }
+                                    { id: 't3_8', type: 'action_return', code: 'Retornar n' }
                                 ],
                                 falseBranch: [
-                                    { id: 't3_9', type: 'action', code: 'Retornar fibonacci(n - 1) + fibonacci(n - 2)' }
+                                    { id: 't3_9', type: 'action_return', code: 'Retornar fibonacci(n - 1) + fibonacci(n - 2)' }
                                 ]
                             }
                         ]
@@ -2739,11 +2957,16 @@
                     appState.functions = JSON.parse(JSON.stringify(templates[key].data));
                     appState.activeFunctionId = 'main';
 
-                    // Reiniciar el estado de la prueba de escritorio al cargar plantilla
-                    traceState = {
-                        variables: [],
-                        rows: []
-                    };
+                    // Asegurar que cada función tenga su propio traceState vacío
+                    Object.values(appState.functions).forEach(f => {
+                        f.traceState = {
+                            variables: [],
+                            rows: []
+                        };
+                    });
+                    traceState = appState.functions['main'].traceState;
+
+                    deselectToolboxTarget();
 
                     renderSidebar();
                     renderDiagram();
@@ -2754,8 +2977,6 @@
         }
 
         // --- 5. RENDERIZADOR DEL DIAGRAMA DE CHAPÍN (DOM DIRECTO) ---
-        let currentInsertPath = null;
-        let currentInsertIndex = 0;
         let zoomLevel = 1.0;
 
         function renderDiagram() {
@@ -2794,6 +3015,7 @@
                             <button class="ns-placeholder-btn" data-path="${path}" data-index="0" data-type="action">📝 Acción Libre</button>
                             <button class="ns-placeholder-btn" data-path="${path}" data-index="0" data-type="action_input">📥 Acción INPUT</button>
                             <button class="ns-placeholder-btn" data-path="${path}" data-index="0" data-type="action_output">📤 Acción OUTPUT</button>
+                            <button class="ns-placeholder-btn" data-path="${path}" data-index="0" data-type="action_return">↩️ Acción RETURN</button>
                             <button class="ns-placeholder-btn" data-path="${path}" data-index="0" data-type="if">🔀 IF-ELSE</button>
                             <button class="ns-placeholder-btn" data-path="${path}" data-index="0" data-type="FOR">🔁 Bucle FOR</button>
                             <button class="ns-placeholder-btn" data-path="${path}" data-index="0" data-type="WHILE">🔁 Bucle WHILE</button>
@@ -2811,23 +3033,6 @@
             parentDOM.classList.remove('is-empty');
 
             structures.forEach((block, index) => {
-                // A. Insertar Trigger flotante ("+") superior en modo edición
-                if (appState.editMode) {
-                    const spacerBefore = document.createElement('div');
-                    spacerBefore.className = 'ns-spacer';
-                    spacerBefore.dataset.path = path;
-                    spacerBefore.dataset.index = index.toString();
-                    spacerBefore.innerHTML = `
-                        <button class="ns-spacer-btn" data-path="${path}" data-index="${index}" title="Insertar bloque aquí">
-                            <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="3.5">
-                                <line x1="12" y1="5" x2="12" y2="19"></line>
-                                <line x1="5" y1="12" x2="19" y2="12"></line>
-                            </svg>
-                        </button>
-                    `;
-                    parentDOM.appendChild(spacerBefore);
-                }
-
                 // B. Crear bloque visual
                 const blockDiv = document.createElement('div');
                 blockDiv.className = `ns-block block-${block.type}`;
@@ -2859,7 +3064,7 @@
                 }
 
                 // Renderizado interno según el tipo de bloque
-                if (block.type === 'action' || block.type === 'action_input' || block.type === 'action_output') {
+                if (block.type === 'action' || block.type === 'action_input' || block.type === 'action_output' || block.type === 'action_return' || block.type === 'action_continue' || block.type === 'action_break' || block.type === 'action_exit') {
                     lineCounter++;
                     blockDiv.dataset.line = lineCounter;
                     lineBlocks.push({ id: block.id, line: lineCounter, type: block.type, code: block.code });
@@ -2874,6 +3079,18 @@
                     } else if (block.type === 'action_output') {
                         badge.className = 'ns-action-type-badge badge-output';
                         badge.innerHTML = `<span>📤</span> <span>OUTPUT</span>`;
+                    } else if (block.type === 'action_return') {
+                        badge.className = 'ns-action-type-badge badge-return';
+                        badge.innerHTML = `<span>↩️</span> <span>RETURN</span>`;
+                    } else if (block.type === 'action_continue') {
+                        badge.className = 'ns-action-type-badge badge-continue';
+                        badge.innerHTML = `<span>⏩</span> <span>CONTINUE</span>`;
+                    } else if (block.type === 'action_break') {
+                        badge.className = 'ns-action-type-badge badge-break';
+                        badge.innerHTML = `<span>🛑</span> <span>BREAK</span>`;
+                    } else if (block.type === 'action_exit') {
+                        badge.className = 'ns-action-type-badge badge-exit';
+                        badge.innerHTML = `<span>🚪</span> <span>EXIT</span>`;
                     } else {
                         badge.className = 'ns-action-type-badge badge-code';
                         badge.innerHTML = `<span>📝</span> <span>CÓDIGO</span>`;
@@ -2887,7 +3104,9 @@
 
                     const editable = document.createElement('div');
                     editable.className = 'ns-editable';
-                    editable.contentEditable = appState.editMode;
+                    
+                    const isImmutable = block.type === 'action_continue' || block.type === 'action_break';
+                    editable.contentEditable = isImmutable ? false : appState.editMode;
                     editable.dataset.id = block.id;
                     editable.dataset.field = 'code';
 
@@ -2896,10 +3115,39 @@
                         placeholderText = 'Ingrese las variables por teclado (ej. Nombre, Edad)...';
                     } else if (block.type === 'action_output') {
                         placeholderText = 'Escriba la salida por pantalla (ej. "Resultado es: ", Suma)...';
+                    } else if (block.type === 'action_return') {
+                        placeholderText = 'Escriba el valor de retorno (ej. Resultado)...';
+                    } else if (block.type === 'action_exit') {
+                        placeholderText = 'Código o valor de salida (ej. 0, 1)...';
+                    } else if (isImmutable) {
+                        placeholderText = '';
                     }
 
                     editable.setAttribute('placeholder', placeholderText);
-                    editable.innerText = block.code || '';
+
+                    let displayedText = block.code || '';
+                    if (block.type === 'action_continue') {
+                        displayedText = 'continue';
+                    } else if (block.type === 'action_break') {
+                        displayedText = 'break';
+                    } else if (block.type === 'action_exit') {
+                        let rawCode = block.code || 'exit 0';
+                        if (!rawCode.startsWith('exit ')) {
+                            rawCode = 'exit 0';
+                        }
+                        displayedText = rawCode.substring(5);
+
+                        const exitLabel = document.createElement('span');
+                        exitLabel.style.fontFamily = 'var(--font-mono)';
+                        exitLabel.style.fontWeight = '700';
+                        exitLabel.style.marginRight = '6px';
+                        exitLabel.style.color = '#3b82f6';
+                        exitLabel.style.userSelect = 'none';
+                        exitLabel.innerText = 'exit ';
+                        inner.appendChild(exitLabel);
+                    }
+
+                    editable.innerText = displayedText;
 
                     inner.appendChild(editable);
                     blockDiv.appendChild(inner);
@@ -2966,6 +3214,17 @@
                     lineNumSpan.innerText = lineCounter.toString();
                     loopHeader.appendChild(lineNumSpan);
 
+                    // Insertar etiqueta de bucle identificable
+                    const badge = document.createElement('div');
+                    badge.className = `ns-action-type-badge badge-${block.type.toLowerCase()}`;
+                    badge.style.position = 'static';
+                    badge.style.marginRight = '8px';
+                    badge.style.fontSize = '9px';
+                    badge.style.padding = '2px 6px';
+                    badge.style.opacity = '0.85';
+                    badge.innerHTML = block.type === 'FOR' ? `<span>🔁</span> <span>FOR</span>` : `<span>🔁</span> <span>WHILE</span>`;
+                    loopHeader.appendChild(badge);
+
                     const editable = document.createElement('div');
                     editable.className = 'ns-editable ns-loop-edit';
                     editable.contentEditable = appState.editMode;
@@ -3030,6 +3289,17 @@
                     lineNumSpan.innerText = lineCounter.toString();
                     repeatFooter.appendChild(lineNumSpan);
 
+                    // Insertar etiqueta de bucle DO-WHILE identificable
+                    const badge = document.createElement('div');
+                    badge.className = 'ns-action-type-badge badge-until';
+                    badge.style.position = 'static';
+                    badge.style.marginRight = '8px';
+                    badge.style.fontSize = '9px';
+                    badge.style.padding = '2px 6px';
+                    badge.style.opacity = '0.85';
+                    badge.innerHTML = `<span>🔄</span> <span>DO-WHILE</span>`;
+                    repeatFooter.appendChild(badge);
+
                     const editable = document.createElement('div');
                     editable.className = 'ns-editable ns-repeat-edit';
                     editable.contentEditable = appState.editMode;
@@ -3045,24 +3315,121 @@
                 }
 
                 parentDOM.appendChild(blockDiv);
-
-                // C. Insertar Trigger flotante ("+") inferior en el último elemento
-                if (appState.editMode && index === structures.length - 1) {
-                    const spacerAfter = document.createElement('div');
-                    spacerAfter.className = 'ns-spacer';
-                    spacerAfter.dataset.path = path;
-                    spacerAfter.dataset.index = (index + 1).toString();
-                    spacerAfter.innerHTML = `
-                        <button class="ns-spacer-btn" data-path="${path}" data-index="${index + 1}" title="Insertar bloque al final">
-                            <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="3.5">
-                                <line x1="12" y1="5" x2="12" y2="19"></line>
-                                <line x1="5" y1="12" x2="19" y2="12"></line>
-                            </svg>
-                        </button>
-                    `;
-                    parentDOM.appendChild(spacerAfter);
-                }
             });
+        }
+
+        // --- ESTADO Y FUNCIONES DE LA CAJA DE HERRAMIENTAS ---
+        let selectedBlockId = null;
+        let toolboxRelation = 'after'; // 'before', 'after', 'inside'
+
+        function findBlockById(blockId) {
+            const res = findParentArrayAndIndex(blockId);
+            return res ? res.array[res.index] : null;
+        }
+
+        function selectToolboxTarget(blockId) {
+            if (!appState.editMode) return;
+
+            selectedBlockId = blockId;
+
+            // Quitar clase previa de resaltado
+            document.querySelectorAll('.ns-block').forEach(b => b.classList.remove('selected-block-highlight'));
+
+            const targetBlock = document.querySelector(`.ns-block[data-id="${blockId}"]`);
+            if (targetBlock) {
+                targetBlock.classList.add('selected-block-highlight');
+            }
+
+            // Buscar detalles del bloque en lineBlocks
+            const lb = lineBlocks.find(l => l.id === blockId);
+            const blockName = lb ? `L${lb.line} (${lb.type})` : 'Bloque';
+
+            // Actualizar interfaz del toolbox
+            document.getElementById('toolbox-target-label').innerHTML = `📍 Seleccionado: <b>${blockName}</b>`;
+            document.getElementById('toolbox-options-container').style.display = 'block';
+            document.getElementById('btn-toolbox-clear').style.display = 'block';
+
+            // Mostrar u ocultar el botón "Dentro" dependiendo del tipo de bloque
+            const blockData = findBlockById(blockId);
+            const btnInside = document.getElementById('btn-opt-inside');
+            if (blockData && (blockData.type === 'if' || blockData.type === 'WHILE' || blockData.type === 'FOR' || blockData.type === 'UNTIL')) {
+                btnInside.style.display = 'block';
+            } else {
+                btnInside.style.display = 'none';
+                if (toolboxRelation === 'inside') {
+                    setToolboxRelation('after');
+                }
+            }
+        }
+
+        function deselectToolboxTarget() {
+            selectedBlockId = null;
+            document.querySelectorAll('.ns-block').forEach(b => b.classList.remove('selected-block-highlight'));
+
+            document.getElementById('toolbox-target-label').innerHTML = `📍 Ubicación: Al final de la función`;
+            document.getElementById('toolbox-options-container').style.display = 'none';
+            document.getElementById('btn-toolbox-clear').style.display = 'none';
+        }
+
+        function setToolboxRelation(relation) {
+            toolboxRelation = relation;
+            document.querySelectorAll('.btn-toolbox-opt').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`btn-opt-${relation}`).classList.add('active');
+        }
+
+        function insertBlockFromToolbox(type) {
+            saveToHistory();
+            const newBlock = createBlockData(type);
+
+            if (!selectedBlockId) {
+                // Insertar al final del root
+                const targetArray = appState.functions[appState.activeFunctionId].structures;
+                targetArray.push(newBlock);
+                renderDiagram();
+                showNotification(`Bloque ${type.toUpperCase()} agregado al final`, 'success');
+                return;
+            }
+
+            const res = findParentArrayAndIndex(selectedBlockId);
+            if (!res) {
+                showNotification('Error: No se pudo encontrar la ubicación del bloque seleccionado', 'error');
+                return;
+            }
+
+            const targetBlock = res.array[res.index];
+
+            if (toolboxRelation === 'before') {
+                res.array.splice(res.index, 0, newBlock);
+                renderDiagram();
+                selectToolboxTarget(newBlock.id);
+                showNotification(`Bloque ${type.toUpperCase()} insertado antes`, 'success');
+            } else if (toolboxRelation === 'after') {
+                res.array.splice(res.index + 1, 0, newBlock);
+                renderDiagram();
+                selectToolboxTarget(newBlock.id);
+                showNotification(`Bloque ${type.toUpperCase()} insertado después`, 'success');
+            } else if (toolboxRelation === 'inside') {
+                if (targetBlock.type === 'if') {
+                    showCustomConfirm('Seleccionar Rama', '¿Insertar en la rama SÍ? (Confirmar para rama SÍ, Cancelar para rama NO)').then(isYes => {
+                        if (isYes) {
+                            targetBlock.trueBranch.push(newBlock);
+                            showNotification(`Bloque ${type.toUpperCase()} insertado en rama SÍ`, 'success');
+                        } else {
+                            targetBlock.falseBranch.push(newBlock);
+                            showNotification(`Bloque ${type.toUpperCase()} insertado en rama NO`, 'success');
+                        }
+                        renderDiagram();
+                        selectToolboxTarget(newBlock.id);
+                    });
+                } else if (targetBlock.type === 'WHILE' || targetBlock.type === 'FOR' || targetBlock.type === 'UNTIL') {
+                    targetBlock.body.push(newBlock);
+                    renderDiagram();
+                    selectToolboxTarget(newBlock.id);
+                    showNotification(`Bloque ${type.toUpperCase()} insertado dentro del bucle`, 'success');
+                } else {
+                    showNotification('El bloque seleccionado no admite inserción interna', 'warning');
+                }
+            }
         }
 
         // --- 6. LÓGICA DE INSERCIÓN, EDICIÓN Y REORDENAMIENTO ---
@@ -3081,6 +3448,14 @@
                 return { id, type: 'action_input', code: '' };
             } else if (type === 'action_output') {
                 return { id, type: 'action_output', code: '' };
+            } else if (type === 'action_return') {
+                return { id, type: 'action_return', code: '' };
+            } else if (type === 'action_continue') {
+                return { id, type: 'action_continue', code: 'continue' };
+            } else if (type === 'action_break') {
+                return { id, type: 'action_break', code: 'break' };
+            } else if (type === 'action_exit') {
+                return { id, type: 'action_exit', code: 'exit 0' };
             } else if (type === 'if') {
                 return { id, type: 'if', condition: '', trueBranch: [], falseBranch: [] };
             } else if (type === 'WHILE') {
@@ -3171,17 +3546,11 @@
         function initCanvasEvents() {
             const canvas = document.getElementById('diagram-canvas');
 
-            // 1. Delegación de eventos para triggers flotantes "+" y placeholders vacíos
+            // 1. Delegación de eventos para placeholders vacíos y selección de bloques
             canvas.addEventListener('click', (e) => {
-                const spacerBtn = e.target.closest('.ns-spacer-btn');
                 const placeholderBtn = e.target.closest('.ns-placeholder-btn');
 
-                if (spacerBtn) {
-                    e.stopPropagation();
-                    currentInsertPath = spacerBtn.dataset.path;
-                    currentInsertIndex = parseInt(spacerBtn.dataset.index);
-                    showContextMenu(spacerBtn);
-                } else if (placeholderBtn) {
+                if (placeholderBtn) {
                     e.stopPropagation();
                     const path = placeholderBtn.dataset.path;
                     const index = parseInt(placeholderBtn.dataset.index);
@@ -3194,61 +3563,77 @@
                             const newBlock = createBlockData(type);
                             targetArray.splice(index, 0, newBlock);
                             renderDiagram();
+                            selectToolboxTarget(newBlock.id);
                             showNotification(`Bloque ${type.toUpperCase()} agregado`, 'success');
                         }
                     }
+                    return;
                 }
 
-                // Eventos de reordenamiento y duplicación/eliminación
+                // Eventos de reordenamiento y duplicación/eliminación (prioritarios sobre la selección)
                 const btnMoveUp = e.target.closest('.btn-move-up');
                 const btnMoveDown = e.target.closest('.btn-move-down');
                 const btnDuplicate = e.target.closest('.btn-duplicate');
                 const btnDelete = e.target.closest('.btn-delete');
 
-                if (btnMoveUp) {
-                    const id = btnMoveUp.dataset.id;
-                    const res = findParentArrayAndIndex(id);
-                    if (res && res.index > 0) {
-                        saveToHistory();
-                        const temp = res.array[res.index];
-                        res.array[res.index] = res.array[res.index - 1];
-                        res.array[res.index - 1] = temp;
-                        renderDiagram();
-                        showNotification('Bloque subido', 'info');
+                if (btnMoveUp || btnMoveDown || btnDuplicate || btnDelete) {
+                    e.stopPropagation();
+                    if (btnMoveUp) {
+                        const id = btnMoveUp.dataset.id;
+                        const res = findParentArrayAndIndex(id);
+                        if (res && res.index > 0) {
+                            saveToHistory();
+                            const temp = res.array[res.index];
+                            res.array[res.index] = res.array[res.index - 1];
+                            res.array[res.index - 1] = temp;
+                            renderDiagram();
+                            showNotification('Bloque subido', 'info');
+                        }
                     }
+                    else if (btnMoveDown) {
+                        const id = btnMoveDown.dataset.id;
+                        const res = findParentArrayAndIndex(id);
+                        if (res && res.index < res.array.length - 1) {
+                            saveToHistory();
+                            const temp = res.array[res.index];
+                            res.array[res.index] = res.array[res.index + 1];
+                            res.array[res.index + 1] = temp;
+                            renderDiagram();
+                            showNotification('Bloque bajado', 'info');
+                        }
+                    }
+                    else if (btnDuplicate) {
+                        const id = btnDuplicate.dataset.id;
+                        const res = findParentArrayAndIndex(id);
+                        if (res) {
+                            saveToHistory();
+                            const clone = deepCloneBlock(res.array[res.index]);
+                            res.array.splice(res.index + 1, 0, clone);
+                            renderDiagram();
+                            showNotification('Bloque duplicado', 'success');
+                        }
+                    }
+                    else if (btnDelete) {
+                        const id = btnDelete.dataset.id;
+                        const res = findParentArrayAndIndex(id);
+                        if (res) {
+                            saveToHistory();
+                            res.array.splice(res.index, 1);
+                            renderDiagram();
+                            showNotification('Bloque eliminado', 'warning');
+                        }
+                    }
+                    return;
                 }
-                else if (btnMoveDown) {
-                    const id = btnMoveDown.dataset.id;
-                    const res = findParentArrayAndIndex(id);
-                    if (res && res.index < res.array.length - 1) {
-                        saveToHistory();
-                        const temp = res.array[res.index];
-                        res.array[res.index] = res.array[res.index + 1];
-                        res.array[res.index + 1] = temp;
-                        renderDiagram();
-                        showNotification('Bloque bajado', 'info');
-                    }
-                }
-                else if (btnDuplicate) {
-                    const id = btnDuplicate.dataset.id;
-                    const res = findParentArrayAndIndex(id);
-                    if (res) {
-                        saveToHistory();
-                        const clone = deepCloneBlock(res.array[res.index]);
-                        res.array.splice(res.index + 1, 0, clone);
-                        renderDiagram();
-                        showNotification('Bloque duplicado', 'success');
-                    }
-                }
-                else if (btnDelete) {
-                    const id = btnDelete.dataset.id;
-                    const res = findParentArrayAndIndex(id);
-                    if (res) {
-                        saveToHistory();
-                        res.array.splice(res.index, 1);
-                        renderDiagram();
-                        showNotification('Bloque eliminado', 'warning');
-                    }
+
+                // Selección de bloque en el diagrama
+                const blockDiv = e.target.closest('.ns-block');
+                if (blockDiv) {
+                    e.stopPropagation();
+                    selectToolboxTarget(blockDiv.dataset.id);
+                } else {
+                    // Si se hizo click fuera, deseleccionar objetivo de inserción
+                    deselectToolboxTarget();
                 }
             });
 
@@ -3264,7 +3649,11 @@
                     function updateInState(arr) {
                         for (let i = 0; i < arr.length; i++) {
                             if (arr[i].id === id) {
-                                arr[i][field] = value;
+                                if (arr[i].type === 'action_exit') {
+                                    arr[i][field] = 'exit ' + value;
+                                } else {
+                                    arr[i][field] = value;
+                                }
                                 return true;
                             }
                             if (arr[i].type === 'if') {
@@ -3293,49 +3682,7 @@
             });
         }
 
-        // --- 8. MENÚ CONTEXTUAL FLOTANTE ---
-        function showContextMenu(button) {
-            const menu = document.getElementById('context-menu');
-            const rect = button.getBoundingClientRect();
 
-            menu.style.left = `${rect.left + window.scrollX + rect.width / 2 - 110}px`;
-            menu.style.top = `${rect.top + window.scrollY + rect.height + 8}px`;
-            menu.classList.remove('hidden');
-        }
-
-        // Escuchador global de clics en el menú contextual
-        document.getElementById('context-menu').addEventListener('click', (e) => {
-            const btn = e.target.closest('.context-menu-btn');
-            if (!btn) return;
-
-            const type = btn.dataset.type;
-            if (type && currentInsertPath) {
-                saveToHistory();
-
-                const targetArray = getArrayByPath(currentInsertPath);
-                if (targetArray) {
-                    const newBlock = createBlockData(type);
-                    targetArray.splice(currentInsertIndex, 0, newBlock);
-
-                    renderDiagram();
-                    showNotification(`Bloque ${type.toUpperCase()} agregado`, 'success');
-                }
-            }
-
-            document.getElementById('context-menu').classList.add('hidden');
-            currentInsertPath = null;
-        });
-
-        // Ocultar menú contextual al hacer clic fuera de él
-        document.addEventListener('click', (e) => {
-            const menu = document.getElementById('context-menu');
-            if (!menu.classList.contains('hidden') &&
-                !e.target.closest('.ns-spacer-btn') &&
-                !e.target.closest('.ns-placeholder-btn') &&
-                !e.target.closest('#context-menu')) {
-                menu.classList.add('hidden');
-            }
-        });
 
         // --- 9. CONTROL DE VISTA DE FUNCIONES ---
         function renderSidebar() {
@@ -3353,8 +3700,22 @@
                 item.className = `function-item ${isActive ? 'active' : ''}`;
                 item.onclick = () => {
                     appState.activeFunctionId = key;
+
+                    // Asignar el traceState de la función activa
+                    const currentFunc = appState.functions[key];
+                    if (!currentFunc.traceState) {
+                        currentFunc.traceState = {
+                            variables: [],
+                            rows: []
+                        };
+                    }
+                    traceState = currentFunc.traceState;
+
+                    deselectToolboxTarget();
+
                     renderSidebar();
                     renderDiagram();
+                    renderTraceTable();
                 };
 
                 const info = document.createElement('div');
@@ -3391,9 +3752,9 @@
 
                 let clean = rawName.trim();
                 // Aseguramos formato estándar con paréntesis para las funciones auxiliares
-                if (!clean.endsWith('()')) {
-                    clean += '()';
-                }
+                //if (!clean.endsWith(')')) {
+                //    clean += '()';
+                //}
 
                 saveToHistory();
 
@@ -3404,12 +3765,21 @@
                     type: 'auxiliar',
                     structures: [
                         { id: 'act_' + Date.now(), type: 'action', code: '// Inicie su codificación aquí...' }
-                    ]
+                    ],
+                    traceState: {
+                        variables: [],
+                        rows: []
+                    }
                 };
 
                 appState.activeFunctionId = id;
+                traceState = appState.functions[id].traceState;
+
+                deselectToolboxTarget();
+
                 renderSidebar();
                 renderDiagram();
+                renderTraceTable();
                 showNotification(`Función ${clean} creada`, 'success');
             });
         }
@@ -3452,8 +3822,18 @@
                         appState.activeFunctionId = 'main';
                     }
 
+                    // Re-vincular traceState al de la función activa
+                    const activeFunc = appState.functions[appState.activeFunctionId];
+                    if (!activeFunc.traceState) {
+                        activeFunc.traceState = { variables: [], rows: [] };
+                    }
+                    traceState = activeFunc.traceState;
+
+                    deselectToolboxTarget();
+
                     renderSidebar();
                     renderDiagram();
+                    renderTraceTable();
                     showNotification('Función de baja', 'warning');
                 }
             });
@@ -3490,15 +3870,25 @@
                         appState.functions = functionsData;
                         appState.activeFunctionId = 'main';
 
-                        // Cargar el estado de depuración si está presente, si no reiniciar
+                        // Asegurar que cada función tenga su propio traceState
+                        Object.keys(appState.functions).forEach(k => {
+                            if (!appState.functions[k].traceState) {
+                                appState.functions[k].traceState = {
+                                    variables: [],
+                                    rows: []
+                                };
+                            }
+                        });
+
+                        // Migrar el traceState global heredado a main si existe
                         if (importedTraceState) {
-                            traceState = importedTraceState;
-                        } else {
-                            traceState = {
-                                variables: [],
-                                rows: []
-                            };
+                            appState.functions['main'].traceState = importedTraceState;
                         }
+
+                        // Vincular el traceState activo al de la función seleccionada (main)
+                        traceState = appState.functions['main'].traceState;
+
+                        deselectToolboxTarget();
 
                         renderSidebar();
                         renderDiagram();
@@ -3558,16 +3948,17 @@
                             id: 'main',
                             name: 'main()',
                             type: 'main',
-                            structures: []
+                            structures: [],
+                            traceState: {
+                                variables: [],
+                                rows: []
+                            }
                         }
                     };
                     appState.activeFunctionId = 'main';
+                    traceState = appState.functions['main'].traceState;
 
-                    // Limpiar estado de prueba de escritorio
-                    traceState = {
-                        variables: [],
-                        rows: []
-                    };
+                    deselectToolboxTarget();
 
                     renderSidebar();
                     renderDiagram();
@@ -3727,13 +4118,15 @@
                 const headerRow = document.createElement('tr');
                 headerRow.innerHTML = `
                     <th style="padding: 12px 10px; border: 2px solid #000000; text-align: center; font-weight: 700; background-color: #f1f5f9; color: #000000; font-family: var(--font-main);">Paso</th>
-                    <th style="padding: 12px 10px; border: 2px solid #000000; text-align: center; font-weight: 700; background-color: #f1f5f9; color: #000000; font-family: var(--font-main);">Línea</th>
                 `;
                 traceState.variables.forEach(v => {
                     headerRow.innerHTML += `
                         <th style="padding: 12px 10px; border: 2px solid #000000; text-align: center; font-weight: 700; background-color: #f1f5f9; color: #000000; font-family: var(--font-main);">${v}</th>
                     `;
                 });
+                headerRow.innerHTML += `
+                    <th style="padding: 12px 10px; border: 2px solid #000000; text-align: center; font-weight: 700; background-color: #f1f5f9; color: #000000; font-family: var(--font-main);">Línea</th>
+                `;
                 thead.appendChild(headerRow);
                 printTable.appendChild(thead);
 
@@ -3765,6 +4158,17 @@
                         tdStep.innerText = (rowIndex + 1).toString();
                         tr.appendChild(tdStep);
 
+                        traceState.variables.forEach(v => {
+                            const tdVar = document.createElement('td');
+                            tdVar.style.padding = '10px 12px';
+                            tdVar.style.border = '2px solid #000000';
+                            tdVar.style.textAlign = 'center';
+                            tdVar.style.color = '#000000';
+                            tdVar.style.fontFamily = 'var(--font-mono)';
+                            tdVar.innerText = row.values[v] !== undefined ? row.values[v] : '';
+                            tr.appendChild(tdVar);
+                        });
+
                         const tdLine = document.createElement('td');
                         tdLine.style.padding = '10px 12px';
                         tdLine.style.border = '2px solid #000000';
@@ -3778,19 +4182,30 @@
                             const trimmed = lb.code.trim();
                             codePreview = trimmed.length > 20 ? trimmed.substring(0, 20) + '...' : trimmed;
                         }
-                        tdLine.innerText = row.line ? `L${row.line}${codePreview ? ' (' + codePreview + ')' : ''}` : '--';
-                        tr.appendChild(tdLine);
+                        
+                        let labelPrefix = '';
+                        if (lb) {
+                            if (lb.type === 'FOR') {
+                                labelPrefix = '🔁 [FOR] ';
+                            } else if (lb.type === 'WHILE') {
+                                labelPrefix = '🔁 [WHILE] ';
+                            } else if (lb.type === 'UNTIL') {
+                                labelPrefix = '🔄 [DO-WHILE] ';
+                            } else if (lb.type === 'if') {
+                                labelPrefix = '🔀 [IF] ';
+                            } else if (lb.type === 'action_input') {
+                                labelPrefix = '📥 [INPUT] ';
+                            } else if (lb.type === 'action_output') {
+                                labelPrefix = '📤 [OUTPUT] ';
+                            } else if (lb.type === 'action_return') {
+                                labelPrefix = '↩️ [RETURN] ';
+                            } else {
+                                labelPrefix = '📝 [CÓDIGO] ';
+                            }
+                        }
 
-                        traceState.variables.forEach(v => {
-                            const tdVar = document.createElement('td');
-                            tdVar.style.padding = '10px 12px';
-                            tdVar.style.border = '2px solid #000000';
-                            tdVar.style.textAlign = 'center';
-                            tdVar.style.color = '#000000';
-                            tdVar.style.fontFamily = 'var(--font-mono)';
-                            tdVar.innerText = row.values[v] !== undefined ? row.values[v] : '';
-                            tr.appendChild(tdVar);
-                        });
+                        tdLine.innerText = row.line && lb ? `${labelPrefix}L${row.line}${codePreview ? ': ' + codePreview : ''}` : '--';
+                        tr.appendChild(tdLine);
                         tbody.appendChild(tr);
                     });
                 }
@@ -3895,7 +4310,6 @@
             const headerRow = document.getElementById('trace-table-header');
             headerRow.innerHTML = `
                 <th style="width: 50px;">Paso</th>
-                <th style="width: 90px;">Línea</th>
             `;
             traceState.variables.forEach(v => {
                 headerRow.innerHTML += `
@@ -3907,7 +4321,10 @@
                     </th>
                 `;
             });
-            headerRow.innerHTML += `<th style="width: 45px;">Acción</th>`;
+            headerRow.innerHTML += `
+                <th style="width: 90px;">Línea</th>
+                <th style="width: 45px;">Acción</th>
+            `;
 
             const tbody = document.getElementById('trace-table-body');
             tbody.innerHTML = '';
@@ -3934,33 +4351,6 @@
                     tdStep.innerText = (rowIndex + 1).toString();
                     tr.appendChild(tdStep);
 
-                    const tdLine = document.createElement('td');
-                    const select = document.createElement('select');
-                    select.className = 'trace-select';
-                    select.innerHTML = `<option value="">--</option>`;
-
-                    lineBlocks.forEach(lb => {
-                        const selected = row.line === lb.line ? 'selected' : '';
-                        let codePreview = '';
-                        if (lb.code) {
-                            const trimmed = lb.code.trim();
-                            codePreview = trimmed.length > 25 ? trimmed.substring(0, 25) + '...' : trimmed;
-                        }
-                        const labelText = `L${lb.line}${codePreview ? ' (' + codePreview + ')' : ''}`;
-                        select.innerHTML += `<option value="${lb.line}" ${selected}>${labelText}</option>`;
-                    });
-
-                    select.onchange = (e) => {
-                        row.line = parseInt(e.target.value) || null;
-                        highlightLine(row.line);
-                    };
-                    select.onfocus = () => {
-                        highlightLine(row.line);
-                    };
-
-                    tdLine.appendChild(select);
-                    tr.appendChild(tdLine);
-
                     traceState.variables.forEach(v => {
                         const tdVar = document.createElement('td');
                         const input = document.createElement('input');
@@ -3976,6 +4366,59 @@
                         tdVar.appendChild(input);
                         tr.appendChild(tdVar);
                     });
+
+                    const tdLine = document.createElement('td');
+                    const select = document.createElement('select');
+                    select.className = 'trace-select';
+                    select.innerHTML = `<option value="">--</option>`;
+
+                    lineBlocks.forEach(lb => {
+                        const selected = row.line === lb.line ? 'selected' : '';
+                        let codePreview = '';
+                        if (lb.code) {
+                            const trimmed = lb.code.trim();
+                            codePreview = trimmed.length > 25 ? trimmed.substring(0, 25) + '...' : trimmed;
+                        }
+                        
+                        let labelPrefix = '';
+                        if (lb.type === 'FOR') {
+                            labelPrefix = '🔁 [FOR] ';
+                        } else if (lb.type === 'WHILE') {
+                            labelPrefix = '🔁 [WHILE] ';
+                        } else if (lb.type === 'UNTIL') {
+                            labelPrefix = '🔄 [DO-WHILE] ';
+                        } else if (lb.type === 'if') {
+                            labelPrefix = '🔀 [IF] ';
+                        } else if (lb.type === 'action_input') {
+                            labelPrefix = '📥 [INPUT] ';
+                        } else if (lb.type === 'action_output') {
+                            labelPrefix = '📤 [OUTPUT] ';
+                        } else if (lb.type === 'action_return') {
+                            labelPrefix = '↩️ [RETURN] ';
+                        } else if (lb.type === 'action_continue') {
+                            labelPrefix = '⏩ [CONTINUE] ';
+                        } else if (lb.type === 'action_break') {
+                            labelPrefix = '🛑 [BREAK] ';
+                        } else if (lb.type === 'action_exit') {
+                            labelPrefix = '🚪 [EXIT] ';
+                        } else {
+                            labelPrefix = '📝 [CÓDIGO] ';
+                        }
+
+                        const labelText = `${labelPrefix}L${lb.line}${codePreview ? ': ' + codePreview : ''}`;
+                        select.innerHTML += `<option value="${lb.line}" ${selected}>${labelText}</option>`;
+                    });
+
+                    select.onchange = (e) => {
+                        row.line = parseInt(e.target.value) || null;
+                        highlightLine(row.line);
+                    };
+                    select.onfocus = () => {
+                        highlightLine(row.line);
+                    };
+
+                    tdLine.appendChild(select);
+                    tr.appendChild(tdLine);
 
                     const tdActions = document.createElement('td');
                     tdActions.style.textAlign = 'center';
@@ -4259,7 +4702,7 @@
         document.addEventListener('DOMContentLoaded', () => {
             // Inicializar eventos de edición
             initCanvasEvents();
-            
+
             // Inicializar tirador de redimensión del panel
             initDrawerResize();
 
