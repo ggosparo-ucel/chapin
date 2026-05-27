@@ -45,14 +45,43 @@ La herramienta es autónoma (corre completamente en el cliente sin requerir serv
 
 ## ⌨️ Atajos de Teclado del Espacio de Trabajo
 
-Optimiza tu flujo de trabajo en el canvas utilizando los siguientes atajos globales:
+Optimiza tu flujo de trabajo utilizando los siguientes atajos de teclado interactivos:
 
-| Atajo | Acción |
+### A. Atajos Generales y del Canvas (Activos cuando no se edita texto)
+
+| Atajo / Tecla | Acción |
 | :--- | :--- |
 | `Ctrl + Z` | Deshacer la última acción estructural (insertar, mover, borrar, duplicar, limpiar). |
 | `Ctrl + Y` | Rehacer la última acción estructural deshecha. |
-| `Enter` | Crea un salto de línea dentro de un bloque de acción (`Action`). |
+| `ArrowUp` | Desplazar la selección (resaltado ámbar) al bloque superior en el diagrama. |
+| `ArrowDown` | Desplazar la selección (resaltado ámbar) al bloque inferior en el diagrama. |
+| `Delete` / `Backspace` | Eliminar de forma inmediata el bloque seleccionado en el canvas. |
+| `Escape` | Deseleccionar el bloque actual, regresando la inserción al final del diagrama. |
+| `Enter` | Crea un salto de línea dentro de un bloque de acción (`Action`) durante su edición. |
 | `Enter` | Confirma y aplica el cambio de texto en cabeceras de condiciones (`IF`, `WHILE`, `UNTIL`). |
+
+### B. Inserción Rápida con Una Sola Tecla (Cuando no hay campos de texto enfocados)
+
+Pulsando una sola letra se insertará inmediatamente el bloque correspondiente relativo al elemento seleccionado:
+
+*   **`C`** ➔ Acción Libre (Código)
+*   **`I`** ➔ Acción INPUT (Entrada)
+*   **`O`** ➔ Acción OUTPUT (Salida)
+*   **`R`** ➔ Acción RETURN (Retornar)
+*   **`T`** ➔ Control CONTINUE (Continuar)
+*   **`B`** ➔ Control BREAK (Romper)
+*   **`E`** ➔ Control EXIT (Salir)
+*   **`F`** ➔ Estructura Condicional (IF-ELSE)
+*   **`P`** ➔ Bucle FOR (Para)
+*   **`W`** ➔ Bucle WHILE (Mientras)
+*   **`D`** ➔ Bucle DO-WHILE (Hacer-Mientras)
+
+### C. Atajos de la Prueba de Escritorio (Tabla de Depuración)
+
+| Atajo / Tecla | Ubicación | Acción |
+| :--- | :--- | :--- |
+| `Enter` | Celdas de Variables (`.trace-input`) o Selector de Línea (`.trace-select`) | Guarda el paso actual, inserta una **nueva fila copiando automáticamente todos los valores anteriores** y enfoca el primer input de la nueva fila de inmediato. |
+| `Enter` | Campo de Nueva Variable (`#new-var-name`) | Agrega automáticamente la columna de variable de manera ágil sin necesidad de usar el ratón. |
 
 ---
 
