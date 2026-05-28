@@ -1312,6 +1312,92 @@
             background-color: #ffffff;
         }
 
+        /* --- ESTILOS DE FILAS COLOREADAS EN TABLA DE TRAZAS --- */
+        .trace-row-action {
+            background-color: rgba(168, 85, 247, 0.08) !important;
+            border-left: 3px solid #a855f7 !important;
+        }
+
+        .trace-row-action_input {
+            background-color: rgba(6, 182, 212, 0.08) !important;
+            border-left: 3px solid var(--cyan) !important;
+        }
+
+        .trace-row-action_output {
+            background-color: rgba(245, 158, 11, 0.08) !important;
+            border-left: 3px solid var(--amber) !important;
+        }
+
+        .trace-row-action_return {
+            background-color: rgba(244, 63, 94, 0.08) !important;
+            border-left: 3px solid var(--rose) !important;
+        }
+
+        .trace-row-action_continue {
+            background-color: rgba(16, 185, 129, 0.08) !important;
+            border-left: 3px solid var(--emerald) !important;
+        }
+
+        .trace-row-action_break {
+            background-color: rgba(239, 68, 68, 0.08) !important;
+            border-left: 3px solid #ef4444 !important;
+        }
+
+        .trace-row-action_exit {
+            background-color: rgba(37, 99, 235, 0.08) !important;
+            border-left: 3px solid #2563eb !important;
+        }
+
+        .trace-row-FOR,
+        .trace-row-WHILE,
+        .trace-row-UNTIL {
+            background-color: rgba(99, 102, 241, 0.08) !important;
+            border-left: 3px solid var(--primary) !important;
+        }
+
+        .trace-row-if {
+            background-color: rgba(249, 115, 22, 0.08) !important;
+            border-left: 3px solid #f97316 !important;
+        }
+
+        body.theme-light .trace-row-action {
+            background-color: rgba(168, 85, 247, 0.05) !important;
+        }
+
+        body.theme-light .trace-row-action_input {
+            background-color: rgba(6, 182, 212, 0.05) !important;
+        }
+
+        body.theme-light .trace-row-action_output {
+            background-color: rgba(245, 158, 11, 0.05) !important;
+        }
+
+        body.theme-light .trace-row-action_return {
+            background-color: rgba(244, 63, 94, 0.05) !important;
+        }
+
+        body.theme-light .trace-row-action_continue {
+            background-color: rgba(16, 185, 129, 0.05) !important;
+        }
+
+        body.theme-light .trace-row-action_break {
+            background-color: rgba(239, 68, 68, 0.05) !important;
+        }
+
+        body.theme-light .trace-row-action_exit {
+            background-color: rgba(37, 99, 235, 0.05) !important;
+        }
+
+        body.theme-light .trace-row-FOR,
+        body.theme-light .trace-row-WHILE,
+        body.theme-light .trace-row-UNTIL {
+            background-color: rgba(99, 102, 241, 0.05) !important;
+        }
+
+        body.theme-light .trace-row-if {
+            background-color: rgba(249, 115, 22, 0.05) !important;
+        }
+
         .drawer-actions {
             display: flex;
             flex-direction: column;
@@ -2095,6 +2181,22 @@
         body.exporting #pdf-trace-table-container-temp td {
             border-color: #000000 !important;
             color: #000000 !important;
+        }
+
+        /* --- EXPORTACIÓN A PDF: Filas coloreadas de tabla de trazas --- */
+        body.exporting .trace-row-action,
+        body.exporting .trace-row-action_input,
+        body.exporting .trace-row-action_output,
+        body.exporting .trace-row-action_return,
+        body.exporting .trace-row-action_continue,
+        body.exporting .trace-row-action_break,
+        body.exporting .trace-row-action_exit,
+        body.exporting .trace-row-FOR,
+        body.exporting .trace-row-WHILE,
+        body.exporting .trace-row-UNTIL,
+        body.exporting .trace-row-if {
+            border-left: 3px solid #000000 !important;
+            background-color: #ffffff !important;
         }
 
         /* --- NATIVE PRINT FALLBACK OVERRIDES (@media print) --- */
@@ -4345,6 +4447,12 @@
                     const tr = document.createElement('tr');
                     tr.dataset.rowIndex = rowIndex;
 
+                    // Agregar clase CSS según el tipo de acción/bucle
+                    const blockType = getBlockTypeByLine(row.line);
+                    if (blockType) {
+                        tr.classList.add(`trace-row-${blockType}`);
+                    }
+
                     const tdStep = document.createElement('td');
                     tdStep.style.textAlign = 'center';
                     tdStep.style.fontWeight = 'bold';
@@ -4417,6 +4525,20 @@
 
                     select.onchange = (e) => {
                         row.line = parseInt(e.target.value) || null;
+                        
+                        // Actualizar color de la fila según el nuevo tipo de bloque
+                        const newBlockType = getBlockTypeByLine(row.line);
+                        // Remover todas las clases trace-row-*
+                        tr.classList.forEach(cls => {
+                            if (cls.startsWith('trace-row-')) {
+                                tr.classList.remove(cls);
+                            }
+                        });
+                        // Agregar la nueva clase si existe un tipo
+                        if (newBlockType) {
+                            tr.classList.add(`trace-row-${newBlockType}`);
+                        }
+                        
                         highlightLine(row.line);
                     };
                     select.onfocus = () => {
@@ -4535,6 +4657,12 @@
         function getLineForBlockId(blockId) {
             const block = lineBlocks.find(lb => lb.id === blockId);
             return block ? block.line : null;
+        }
+
+        function getBlockTypeByLine(lineNum) {
+            if (!lineNum) return null;
+            const lineBlock = lineBlocks.find(lb => lb.line === lineNum);
+            return lineBlock ? lineBlock.type : null;
         }
 
         function getLoopHeaderForLastBlock(blockId) {
