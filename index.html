@@ -1118,6 +1118,29 @@
             right: var(--drawer-width);
         }
 
+        /* En pantallas grandes (PC), el panel de depuración no se superpone, sino que empuja el canvas */
+        @media (min-width: 1025px) {
+            .drawer-right {
+                position: relative;
+                right: auto;
+                top: auto;
+                height: 100%;
+                z-index: 35;
+                flex-shrink: 0;
+                box-shadow: none;
+                margin-right: calc(-1 * var(--drawer-width));
+                transition: margin-right 0.3s cubic-bezier(0.4, 0, 0.2, 1), width 0.05s ease;
+            }
+            
+            .drawer-right.open {
+                margin-right: 0;
+            }
+
+            body.is-resizing .drawer-right {
+                transition: none !important;
+            }
+        }
+
         .drawer-header {
             padding: 24px;
             border-bottom: 1px solid var(--border-sidebar);
