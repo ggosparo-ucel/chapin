@@ -1124,7 +1124,7 @@
                 position: relative;
                 right: auto;
                 top: auto;
-                height: 100%;
+                height: 100vh;
                 z-index: 35;
                 flex-shrink: 0;
                 box-shadow: none;
@@ -1194,6 +1194,7 @@
             flex-direction: column;
             gap: 24px;
             overflow: hidden;
+            min-height: 0;
         }
 
         .drawer-section {
@@ -1257,6 +1258,7 @@
         .table-scroll-container {
             flex-grow: 1;
             overflow: auto;
+            min-height: 0;
             border: 1px solid var(--border-sidebar);
             border-radius: 8px;
             background-color: rgba(0, 0, 0, 0.15);
@@ -2735,7 +2737,7 @@
                 </div>
             </div>
             <!-- Tabla de Asignación -->
-            <div class="drawer-section" style="flex-grow: 1; display: flex; flex-direction: column; overflow: hidden;">
+            <div class="drawer-section" style="flex-grow: 1; display: flex; flex-direction: column; overflow: hidden; min-height: 0;">
                 <div class="section-title">Tabla de Asignación de Valores</div>
                 <div class="table-scroll-container">
                     <table class="trace-table" id="trace-table">
@@ -3903,7 +3905,7 @@
         }
 
         function createNewFunction() {
-            showCustomPrompt("Nueva Función", "Nombre de la nueva función auxiliar:", "calcularImpuesto").then(rawName => {
+            showCustomPrompt("Nueva Función", "Nombre de la nueva función auxiliar:", "").then(rawName => {
                 if (!rawName || rawName.trim() === '') return;
 
                 let clean = rawName.trim();
