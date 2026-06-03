@@ -3391,10 +3391,6 @@
                     blockDiv.appendChild(loopWrapper);
                 }
                 else if (block.type === 'UNTIL') {
-                    lineCounter++;
-                    blockDiv.dataset.line = lineCounter;
-                    lineBlocks.push({ id: block.id, line: lineCounter, type: 'UNTIL', code: block.condition });
-
                     const repeatWrapper = document.createElement('div');
                     repeatWrapper.className = 'ns-repeat-wrapper';
 
@@ -3414,6 +3410,10 @@
                     repeatWrapper.appendChild(repeatBody);
 
                     // Footer del bucle con condición al final
+                    lineCounter++;
+                    blockDiv.dataset.line = lineCounter;
+                    lineBlocks.push({ id: block.id, line: lineCounter, type: 'UNTIL', code: block.condition });
+
                     const repeatFooter = document.createElement('div');
                     repeatFooter.className = 'ns-repeat-footer';
                     repeatFooter.style.display = 'flex';
