@@ -252,6 +252,20 @@
             border-style: solid;
         }
 
+        .btn-add-function:disabled {
+            opacity: 0.4;
+            pointer-events: none;
+            cursor: not-allowed;
+            border-color: var(--border-sidebar);
+            color: var(--text-muted);
+        }
+
+        .sidebar-section.readonly-mode {
+            opacity: 0.4;
+            pointer-events: none;
+            user-select: none;
+        }
+
         /* Lista de funciones */
         .function-list {
             display: flex;
@@ -2813,6 +2827,7 @@
         }
 
         function undo() {
+            if (!appState.editMode) return;
             if (undoStack.length === 0) return;
             const currentState = JSON.stringify(appState.functions);
             redoStack.push(currentState);
@@ -2842,6 +2857,7 @@
         }
 
         function redo() {
+            if (!appState.editMode) return;
             if (redoStack.length === 0) return;
             const currentState = JSON.stringify(appState.functions);
             undoStack.push(currentState);
@@ -3078,6 +3094,7 @@
         };
 
         function loadTemplate(key) {
+            if (!appState.editMode) return;
             showCustomConfirm('Cargar Plantilla', `¿Cargar la plantilla "${templates[key].title}"? Se descartará el trabajo actual.`).then(confirmed => {
                 if (confirmed) {
                     saveToHistory();
@@ -3530,6 +3547,7 @@
         }
 
         function insertBlockFromToolbox(type) {
+            if (!appState.editMode) return;
             saveToHistory();
             const newBlock = createBlockData(type);
 
@@ -3885,8 +3903,8 @@
                 `;
                 item.appendChild(info);
 
-                // Botones de acción sólo para auxiliares
-                if (func.type === 'auxiliar') {
+                // Botones de acción sólo para auxiliares en modo de edición
+                if (func.type === 'auxiliar' && appState.editMode) {
                     const actions = document.createElement('div');
                     actions.className = 'function-actions';
                     actions.innerHTML = `
@@ -3905,6 +3923,7 @@
         }
 
         function createNewFunction() {
+            if (!appState.editMode) return;
             showCustomPrompt("Nueva Función", "Nombre de la nueva función auxiliar:", "").then(rawName => {
                 if (!rawName || rawName.trim() === '') return;
 
@@ -3943,6 +3962,7 @@
         }
 
         function renameFunction(key) {
+            if (!appState.editMode) return;
             const func = appState.functions[key];
             let nameClean = func.name.endsWith('()') ? func.name.slice(0, -2) : func.name;
 
@@ -3968,6 +3988,7 @@
         }
 
         function deleteFunction(key) {
+            if (!appState.editMode) return;
             if (key === 'main') return;
             const func = appState.functions[key];
 
@@ -4001,6 +4022,7 @@
 
         // Importación de archivo JSON local (soporta diagramas puros y proyectos con prueba de escritorio)
         function handleImportJSON(event) {
+            if (!appState.editMode) return;
             const file = event.target.files[0];
             if (!file) return;
 
@@ -4098,6 +4120,7 @@
 
         // Limpiar y resetear el proyecto completo
         function clearProject() {
+            if (!appState.editMode) return;
             showCustomConfirm('Limpiar Todo', '¿Está seguro de que desea borrar todo el proyecto? Se perderán todas las funciones auxiliares y cambios no guardados.').then(confirmed => {
                 if (confirmed) {
                     saveToHistory();
@@ -4133,15 +4156,32 @@
             const modeEdit = document.getElementById('mode-edit');
             const modePreview = document.getElementById('mode-preview');
 
+            const btnClear = document.querySelector('button[onclick="clearProject()"]');
+            const btnImport = document.querySelector('button[onclick*="import-file"]');
+            const btnAddFunc = document.querySelector('.btn-add-function');
+
             if (active) {
                 modeEdit.classList.add('active');
                 modePreview.classList.remove('active');
+                document.getElementById('toolbox-section').classList.remove('readonly-mode');
+                document.getElementById('templates-section').classList.remove('readonly-mode');
+                if (btnClear) btnClear.disabled = false;
+                if (btnImport) btnImport.disabled = false;
+                if (btnAddFunc) btnAddFunc.disabled = false;
             } else {
                 modeEdit.classList.remove('active');
                 modePreview.classList.add('active');
+                document.getElementById('toolbox-section').classList.add('readonly-mode');
+                document.getElementById('templates-section').classList.add('readonly-mode');
+                if (btnClear) btnClear.disabled = true;
+                if (btnImport) btnImport.disabled = true;
+                if (btnAddFunc) btnAddFunc.disabled = true;
+                deselectToolboxTarget();
             }
 
+            renderSidebar();
             renderDiagram();
+            updateHistoryButtons();
         }
 
         // --- 12. SISTEMA DE ZOOM VECTORIAL DYNAMIC ---
@@ -4994,6 +5034,7 @@
 
                 // Eliminación con Delete o Backspace
                 if (e.key === 'Delete' || e.key === 'Backspace') {
+                    if (!appState.editMode) return;
                     if (selectedBlockId) {
                         const res = findParentArrayAndIndex(selectedBlockId);
                         if (res) {
@@ -5048,6 +5089,7 @@
 
                 if (typeToInsert) {
                     e.preventDefault();
+                    if (!appState.editMode) return;
                     insertBlockFromToolbox(typeToInsert);
                 }
             });
