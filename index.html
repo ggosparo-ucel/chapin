@@ -2205,19 +2205,23 @@
             color: #000000 !important;
         }
 
-        body.exporting #pdf-trace-table-container-temp {
+        body.exporting #pdf-trace-table-container-temp,
+        body.exporting .pdf-trace-table-container {
             background-color: #ffffff !important;
             color: #000000 !important;
             border: 2px solid #000000 !important;
         }
 
-        body.exporting #pdf-trace-table-container-temp h3 {
+        body.exporting #pdf-trace-table-container-temp h3,
+        body.exporting .pdf-trace-table-container h3 {
             color: #000000 !important;
             border-bottom: 2px solid #000000 !important;
         }
 
         body.exporting #pdf-trace-table-container-temp th,
-        body.exporting #pdf-trace-table-container-temp td {
+        body.exporting #pdf-trace-table-container-temp td,
+        body.exporting .pdf-trace-table-container th,
+        body.exporting .pdf-trace-table-container td {
             border-color: #000000 !important;
             color: #000000 !important;
         }
@@ -4271,152 +4275,264 @@
 
         // --- 15. EXPORTACIÓN PROFESIONAL A PDF ---
         function exportToPDF() {
-            const element = document.getElementById('diagram-canvas');
             const exportBtn = document.getElementById('btn-export-pdf');
             const originalText = exportBtn.innerHTML;
-
             const prevScale = zoomLevel;
 
-            // Si hay datos de depuración (filas o variables en traceState) o si el drawer está abierto
-            const drawer = document.getElementById('trace-drawer');
-            const isDebugging = (drawer && drawer.classList.contains('open')) || (traceState && (traceState.rows.length > 0 || traceState.variables.length > 0));
-            let tableContainer = null;
+            // Bloquear botón e indicar cargando
+            exportBtn.innerHTML = '⏳ Generando...';
+            exportBtn.disabled = true;
 
-            if (isDebugging) {
-                // Creamos el contenedor de la tabla de depuración con estilos sólidos inline
-                tableContainer = document.createElement('div');
-                tableContainer.id = 'pdf-trace-table-container-temp';
-                tableContainer.style.marginTop = '40px';
-                tableContainer.style.borderRadius = '12px';
-                tableContainer.style.border = '2px solid #000000';
-                tableContainer.style.padding = '24px';
-                tableContainer.style.backgroundColor = '#ffffff';
-                tableContainer.style.color = '#000000';
+            // 1. Activar clase de exportación en el body (aplica overrides de CSS estricto B/N)
+            document.body.classList.add('exporting');
 
-                const tableTitle = document.createElement('h3');
-                tableTitle.innerText = '📋 Prueba de Escritorio / Tabla de Asignación';
-                tableTitle.style.fontFamily = 'var(--font-main)';
-                tableTitle.style.fontSize = '16px';
-                tableTitle.style.fontWeight = '700';
-                tableTitle.style.color = '#000000';
-                tableTitle.style.marginBottom = '16px';
-                tableTitle.style.borderBottom = '2px solid #000000';
-                tableTitle.style.paddingBottom = '8px';
-                tableContainer.appendChild(tableTitle);
+            // 2. Conservar el nivel de escala anterior y forzar zoom a 1.0 para el exportador
+            zoomLevel = 1.0;
+            updateZoomStyles();
 
-                // Generar tabla limpia con estilos sólidos inline
-                const printTable = document.createElement('table');
-                printTable.className = 'trace-table';
-                printTable.style.width = '100%';
-                printTable.style.borderCollapse = 'collapse';
-                printTable.style.backgroundColor = '#ffffff';
-                printTable.style.color = '#000000';
-
-                const thead = document.createElement('thead');
-                const headerRow = document.createElement('tr');
-                headerRow.innerHTML = `
-                    <th style="padding: 12px 10px; border: 2px solid #000000; text-align: center; font-weight: 700; background-color: #f1f5f9; color: #000000; font-family: var(--font-main);">Paso</th>
-                `;
-                traceState.variables.forEach(v => {
-                    headerRow.innerHTML += `
-                        <th style="padding: 12px 10px; border: 2px solid #000000; text-align: center; font-weight: 700; background-color: #f1f5f9; color: #000000; font-family: var(--font-main);">${v}</th>
-                    `;
-                });
-                headerRow.innerHTML += `
-                    <th style="padding: 12px 10px; border: 2px solid #000000; text-align: center; font-weight: 700; background-color: #f1f5f9; color: #000000; font-family: var(--font-main);">Línea</th>
-                `;
-                thead.appendChild(headerRow);
-                printTable.appendChild(thead);
-
-                const tbody = document.createElement('tbody');
-                if (traceState.rows.length === 0) {
-                    const tr = document.createElement('tr');
-                    const td = document.createElement('td');
-                    td.colSpan = 2 + traceState.variables.length;
-                    td.style.padding = '20px';
-                    td.style.border = '2px solid #000000';
-                    td.style.textAlign = 'center';
-                    td.style.color = '#64748b';
-                    td.style.fontStyle = 'italic';
-                    td.style.fontFamily = 'var(--font-main)';
-                    td.innerText = 'No hay pasos registrados en la prueba de escritorio.';
-                    tr.appendChild(td);
-                    tbody.appendChild(tr);
-                } else {
-                    traceState.rows.forEach((row, rowIndex) => {
-                        const tr = document.createElement('tr');
-
-                        const tdStep = document.createElement('td');
-                        tdStep.style.padding = '10px 12px';
-                        tdStep.style.border = '2px solid #000000';
-                        tdStep.style.textAlign = 'center';
-                        tdStep.style.fontWeight = '700';
-                        tdStep.style.color = '#000000';
-                        tdStep.style.fontFamily = 'var(--font-main)';
-                        tdStep.innerText = (rowIndex + 1).toString();
-                        tr.appendChild(tdStep);
-
-                        traceState.variables.forEach(v => {
-                            const tdVar = document.createElement('td');
-                            tdVar.style.padding = '10px 12px';
-                            tdVar.style.border = '2px solid #000000';
-                            tdVar.style.textAlign = 'center';
-                            tdVar.style.color = '#000000';
-                            tdVar.style.fontFamily = 'var(--font-mono)';
-                            tdVar.innerText = row.values[v] !== undefined ? row.values[v] : '';
-                            tr.appendChild(tdVar);
-                        });
-
-                        const tdLine = document.createElement('td');
-                        tdLine.style.padding = '10px 12px';
-                        tdLine.style.border = '2px solid #000000';
-                        tdLine.style.textAlign = 'center';
-                        tdLine.style.color = '#000000';
-                        tdLine.style.fontFamily = 'var(--font-mono)';
-
-                        const lb = lineBlocks.find(l => l.line === row.line);
-                        let codePreview = '';
-                        if (lb && lb.code) {
-                            const trimmed = lb.code.trim();
-                            codePreview = trimmed.length > 20 ? trimmed.substring(0, 20) + '...' : trimmed;
-                        }
-                        
-                        let labelPrefix = '';
-                        if (lb) {
-                            if (lb.type === 'FOR') {
-                                labelPrefix = '🔁 [FOR] ';
-                            } else if (lb.type === 'WHILE') {
-                                labelPrefix = '🔁 [WHILE] ';
-                            } else if (lb.type === 'UNTIL') {
-                                labelPrefix = '🔄 [DO-WHILE] ';
-                            } else if (lb.type === 'if') {
-                                labelPrefix = '🔀 [IF] ';
-                            } else if (lb.type === 'action_input') {
-                                labelPrefix = '📥 [INPUT] ';
-                            } else if (lb.type === 'action_output') {
-                                labelPrefix = '📤 [OUTPUT] ';
-                            } else if (lb.type === 'action_return') {
-                                labelPrefix = '↩️ [RETURN] ';
-                            } else {
-                                labelPrefix = '📝 [CODE] ';
-                            }
-                        }
-
-                        if (row.line === 'ignore') {
-                            tdLine.innerText = 'Ignorar';
-                        } else {
-                            tdLine.innerText = row.line && lb ? `${labelPrefix}L${row.line}${codePreview ? ': ' + codePreview : ''}` : '--';
-                        }
-                        tr.appendChild(tdLine);
-                        tbody.appendChild(tr);
-                    });
-                }
-                printTable.appendChild(tbody);
-                tableContainer.appendChild(printTable);
-
-                // Lo agregamos directamente dentro del diagram-canvas
-                element.appendChild(tableContainer);
+            // Ocultar el diagrama activo para que no salga en la impresión duplicado
+            const activeDiagramContainer = document.getElementById('diagram-container');
+            if (activeDiagramContainer) {
+                activeDiagramContainer.style.display = 'none';
             }
+
+            // Crear el contenedor de exportación para PDF/Impresión
+            const pdfContainer = document.createElement('div');
+            pdfContainer.id = 'pdf-export-container';
+            pdfContainer.style.width = '100%';
+            pdfContainer.style.backgroundColor = '#ffffff';
+            pdfContainer.style.color = '#000000';
+            pdfContainer.style.fontFamily = 'var(--font-main)';
+            pdfContainer.style.padding = '10px';
+
+            // Título principal del documento
+            const mainHeader = document.createElement('div');
+            mainHeader.style.borderBottom = '3px solid #6366f1';
+            mainHeader.style.paddingBottom = '12px';
+            mainHeader.style.marginBottom = '24px';
+            
+            const projectTitle = document.createElement('h1');
+            projectTitle.innerText = 'ChapinFlow - Reporte Completo del Proyecto';
+            projectTitle.style.fontSize = '22px';
+            projectTitle.style.fontWeight = '800';
+            projectTitle.style.color = '#1e293b';
+            projectTitle.style.margin = '0 0 4px 0';
+            mainHeader.appendChild(projectTitle);
+            
+            const projectMeta = document.createElement('p');
+            const dateStr = new Date().toLocaleString('es-ES');
+            projectMeta.innerText = `Generado el: ${dateStr} | Total de Funciones: ${Object.keys(appState.functions).length}`;
+            projectMeta.style.fontSize = '12px';
+            projectMeta.style.color = '#64748b';
+            projectMeta.style.margin = '0';
+            mainHeader.appendChild(projectMeta);
+            
+            pdfContainer.appendChild(mainHeader);
+
+            // Guardar modo de edición actual y forzar vista previa para generar el HTML limpio
+            const originalEditMode = appState.editMode;
+            appState.editMode = false;
+
+            // Ordenar las funciones: 'main' primero, luego el resto en orden alfabético
+            const keys = Object.keys(appState.functions);
+            const sortedKeys = keys.sort((a, b) => {
+                if (a === 'main') return -1;
+                if (b === 'main') return 1;
+                return a.localeCompare(b);
+            });
+
+            // Generar contenido para cada función
+            sortedKeys.forEach((key, index) => {
+                const func = appState.functions[key];
+
+                const funcSection = document.createElement('div');
+                funcSection.className = 'pdf-function-section';
+                if (index > 0) {
+                    funcSection.style.pageBreakBefore = 'always';
+                }
+                funcSection.style.marginBottom = '30px';
+
+                // Encabezado de la Función
+                const funcHeader = document.createElement('h2');
+                funcHeader.style.fontSize = '16px';
+                funcHeader.style.fontWeight = '700';
+                funcHeader.style.color = '#1e293b';
+                funcHeader.style.borderBottom = '2px solid #e2e8f0';
+                funcHeader.style.paddingBottom = '6px';
+                funcHeader.style.marginBottom = '16px';
+                funcHeader.style.display = 'flex';
+                funcHeader.style.alignItems = 'center';
+                funcHeader.style.gap = '8px';
+
+                const iconSpan = document.createElement('span');
+                iconSpan.innerText = func.type === 'main' ? '🚀' : 'ƒ';
+                funcHeader.appendChild(iconSpan);
+
+                const titleSpan = document.createElement('span');
+                titleSpan.innerText = `${func.type === 'main' ? 'Función Principal' : 'Función Auxiliar'}: ${func.name}`;
+                funcHeader.appendChild(titleSpan);
+
+                funcSection.appendChild(funcHeader);
+
+                // Diagrama Nassi-Shneiderman
+                const diagramTitle = document.createElement('h3');
+                diagramTitle.innerText = '📊 Diagrama Nassi-Shneiderman';
+                diagramTitle.style.fontSize = '13px';
+                diagramTitle.style.fontWeight = '600';
+                diagramTitle.style.color = '#475569';
+                diagramTitle.style.marginBottom = '10px';
+                funcSection.appendChild(diagramTitle);
+
+                const diagramContainer = document.createElement('div');
+                diagramContainer.className = `ns-container ${func.type === 'main' ? 'ns-main-mode' : 'ns-func-mode'}`;
+                diagramContainer.style.border = '3px solid #000000';
+                diagramContainer.style.backgroundColor = '#ffffff';
+                diagramContainer.style.color = '#000000';
+                diagramContainer.style.width = '100%';
+                diagramContainer.style.boxSizing = 'border-box';
+                diagramContainer.style.fontSize = '14px';
+
+                // Renderizar recursivamente usando buildStructureDOM
+                buildStructureDOM(func.structures, diagramContainer, 'root');
+                funcSection.appendChild(diagramContainer);
+
+                // Tabla de Depuración (si tiene variables o filas)
+                const fTrace = func.traceState;
+                if (fTrace && (fTrace.variables.length > 0 || fTrace.rows.length > 0)) {
+                    const tableHeader = document.createElement('h3');
+                    tableHeader.innerText = '📋 Prueba de Escritorio / Tabla de Asignación';
+                    tableHeader.style.fontSize = '13px';
+                    tableHeader.style.fontWeight = '600';
+                    tableHeader.style.color = '#475569';
+                    tableHeader.style.marginTop = '20px';
+                    tableHeader.style.marginBottom = '10px';
+                    funcSection.appendChild(tableHeader);
+
+                    const tableContainer = document.createElement('div');
+                    tableContainer.className = 'pdf-trace-table-container';
+                    tableContainer.style.marginTop = '10px';
+                    tableContainer.style.borderRadius = '8px';
+                    tableContainer.style.border = '2px solid #000000';
+                    tableContainer.style.padding = '16px';
+                    tableContainer.style.backgroundColor = '#ffffff';
+                    tableContainer.style.color = '#000000';
+
+                    const printTable = document.createElement('table');
+                    printTable.className = 'trace-table';
+                    printTable.style.width = '100%';
+                    printTable.style.borderCollapse = 'collapse';
+                    printTable.style.backgroundColor = '#ffffff';
+                    printTable.style.color = '#000000';
+
+                    const thead = document.createElement('thead');
+                    const headerRow = document.createElement('tr');
+                    headerRow.innerHTML = `
+                        <th style="padding: 10px 8px; border: 2px solid #000000; text-align: center; font-weight: 700; background-color: #f1f5f9; color: #000000; font-family: var(--font-main);">Paso</th>
+                    `;
+                    fTrace.variables.forEach(v => {
+                        headerRow.innerHTML += `
+                            <th style="padding: 10px 8px; border: 2px solid #000000; text-align: center; font-weight: 700; background-color: #f1f5f9; color: #000000; font-family: var(--font-main);">${v}</th>
+                        `;
+                    });
+                    headerRow.innerHTML += `
+                        <th style="padding: 10px 8px; border: 2px solid #000000; text-align: center; font-weight: 700; background-color: #f1f5f9; color: #000000; font-family: var(--font-main);">Línea</th>
+                    `;
+                    thead.appendChild(headerRow);
+                    printTable.appendChild(thead);
+
+                    const tbody = document.createElement('tbody');
+                    if (fTrace.rows.length === 0) {
+                        const tr = document.createElement('tr');
+                        const td = document.createElement('td');
+                        td.colSpan = 2 + fTrace.variables.length;
+                        td.style.padding = '15px';
+                        td.style.border = '2px solid #000000';
+                        td.style.textAlign = 'center';
+                        td.style.color = '#64748b';
+                        td.style.fontStyle = 'italic';
+                        td.style.fontFamily = 'var(--font-main)';
+                        td.innerText = 'No hay pasos registrados en la prueba de escritorio.';
+                        tr.appendChild(td);
+                        tbody.appendChild(tr);
+                    } else {
+                        const funcLineBlocks = [...lineBlocks];
+
+                        fTrace.rows.forEach((row, rowIndex) => {
+                            const tr = document.createElement('tr');
+
+                            const tdStep = document.createElement('td');
+                            tdStep.style.padding = '8px 10px';
+                            tdStep.style.border = '2px solid #000000';
+                            tdStep.style.textAlign = 'center';
+                            tdStep.style.fontWeight = '700';
+                            tdStep.style.color = '#000000';
+                            tdStep.style.fontFamily = 'var(--font-main)';
+                            tdStep.innerText = (rowIndex + 1).toString();
+                            tr.appendChild(tdStep);
+
+                            fTrace.variables.forEach(v => {
+                                const tdVar = document.createElement('td');
+                                tdVar.style.padding = '8px 10px';
+                                tdVar.style.border = '2px solid #000000';
+                                tdVar.style.textAlign = 'center';
+                                tdVar.style.color = '#000000';
+                                tdVar.style.fontFamily = 'var(--font-mono)';
+                                tdVar.innerText = row.values[v] !== undefined ? row.values[v] : '';
+                                tr.appendChild(tdVar);
+                            });
+
+                            const tdLine = document.createElement('td');
+                            tdLine.style.padding = '8px 10px';
+                            tdLine.style.border = '2px solid #000000';
+                            tdLine.style.textAlign = 'center';
+                            tdLine.style.color = '#000000';
+                            tdLine.style.fontFamily = 'var(--font-mono)';
+
+                            const lb = funcLineBlocks.find(l => l.line === row.line);
+                            let codePreview = '';
+                            if (lb && lb.code) {
+                                const trimmed = lb.code.trim();
+                                codePreview = trimmed.length > 20 ? trimmed.substring(0, 20) + '...' : trimmed;
+                            }
+
+                            let labelPrefix = '';
+                            if (lb) {
+                                if (lb.type === 'FOR') labelPrefix = '🔁 [FOR] ';
+                                else if (lb.type === 'WHILE') labelPrefix = '🔁 [WHILE] ';
+                                else if (lb.type === 'UNTIL') labelPrefix = '🔄 [DO-WHILE] ';
+                                else if (lb.type === 'if') labelPrefix = '🔀 [IF] ';
+                                else if (lb.type === 'action_input') labelPrefix = '📥 [INPUT] ';
+                                else if (lb.type === 'action_output') labelPrefix = '📤 [OUTPUT] ';
+                                else if (lb.type === 'action_return') labelPrefix = '↩️ [RETURN] ';
+                                else labelPrefix = '📝 [CODE] ';
+                            }
+
+                            if (row.line === 'ignore') {
+                                tdLine.innerText = 'Ignorar';
+                            } else {
+                                tdLine.innerText = row.line && lb ? `${labelPrefix}L${row.line}${codePreview ? ': ' + codePreview : ''}` : '--';
+                            }
+                            tr.appendChild(tdLine);
+                            tbody.appendChild(tr);
+                        });
+                    }
+
+                    printTable.appendChild(tbody);
+                    tableContainer.appendChild(printTable);
+                    funcSection.appendChild(tableContainer);
+                }
+
+                pdfContainer.appendChild(funcSection);
+            });
+
+            // Agregar el contenedor al DOM
+            const canvasArea = document.querySelector('.canvas-area');
+            if (canvasArea) {
+                canvasArea.appendChild(pdfContainer);
+            }
+
+            // Restaurar modo de edición
+            appState.editMode = originalEditMode;
 
             function triggerPrintFallback() {
                 showNotification('Usando el Generador Nativo de Impresión...', 'info');
@@ -4430,7 +4546,13 @@
                     zoomLevel = prevScale;
                     updateZoomStyles();
 
-                    if (tableContainer) tableContainer.remove();
+                    // Limpieza
+                    if (pdfContainer) pdfContainer.remove();
+                    if (activeDiagramContainer) {
+                        activeDiagramContainer.style.display = 'block';
+                    }
+                    renderDiagram();
+                    renderTraceTable();
                     exportBtn.innerHTML = originalText;
                     exportBtn.disabled = false;
                 }, 500);
@@ -4442,26 +4564,15 @@
                 return;
             }
 
-            // Bloquear botón e indicar cargando
-            exportBtn.innerHTML = '⏳ Generando...';
-            exportBtn.disabled = true;
-
-            // 1. Activar clase de exportación en el body (aplica overrides de CSS estricto B/N)
-            document.body.classList.add('exporting');
-
-            // 2. Conservar el nivel de escala anterior y forzar zoom a 1.0 para el exportador
-            zoomLevel = 1.0;
-            updateZoomStyles();
-
-            const currentFunc = appState.functions[appState.activeFunctionId];
-            // Sanitización del nombre del archivo
-            const cleanName = currentFunc.name.replace(/[^a-zA-Z0-9]/g, '_');
-            const filename = `Diagrama_NS_${cleanName}.pdf`;
+            const mainFunc = appState.functions['main'] || Object.values(appState.functions)[0];
+            const cleanProjectName = mainFunc.name.replace(/[^a-zA-Z0-9]/g, '_');
+            const filename = `Proyecto_ChapinFlow_${cleanProjectName}.pdf`;
 
             const opt = {
                 margin: [15, 12, 15, 12],
                 filename: filename,
                 image: { type: 'jpeg', quality: 0.98 },
+                pagebreak: { mode: ['avoid-all', 'css'] },
                 html2canvas: {
                     scale: 2.5, // Mayor escala = mayor resolución en el vector final
                     useCORS: true,
@@ -4476,13 +4587,18 @@
 
             // Ejecución asíncrona de html2pdf
             try {
-                html2pdf().set(opt).from(element).save().then(() => {
+                html2pdf().set(opt).from(pdfContainer).save().then(() => {
                     // Restaurar el estado interactivo del editor
                     document.body.classList.remove('exporting');
                     zoomLevel = prevScale;
                     updateZoomStyles();
 
-                    if (tableContainer) tableContainer.remove();
+                    if (pdfContainer) pdfContainer.remove();
+                    if (activeDiagramContainer) {
+                        activeDiagramContainer.style.display = 'block';
+                    }
+                    renderDiagram();
+                    renderTraceTable();
                     exportBtn.innerHTML = originalText;
                     exportBtn.disabled = false;
                     showNotification('PDF descargado con éxito', 'success');
