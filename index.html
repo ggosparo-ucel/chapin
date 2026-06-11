@@ -1480,10 +1480,15 @@
 
         .ns-if-header {
             position: relative;
-            height: calc(75px * var(--ns-scale));
+            min-height: calc(75px * var(--ns-scale));
             border-bottom: 2px solid var(--ns-border);
             background-color: var(--ns-header-bg);
             width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-sizing: border-box;
+            padding: calc(15px * var(--ns-scale)) 22%;
             overflow: hidden;
         }
 
@@ -1497,11 +1502,8 @@
         }
 
         .ns-if-cond-container {
-            position: absolute;
-            top: 6px;
-            left: 20%;
-            width: 60%;
-            height: calc(42px * var(--ns-scale));
+            position: relative;
+            width: 100%;
             display: flex;
             align-items: center;
             justify-content: center;
