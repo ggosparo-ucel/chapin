@@ -2791,6 +2791,7 @@
     <div id="notification-container"></div>
 
     <!-- LÓGICA DE ESTADO Y CONTROLADORES -->
+    <script src="templates.js"></script>
     <script>
         let lineCounter = 0;
         let lineBlocks = [];
@@ -2988,119 +2989,14 @@
         }
 
         // --- 4. GESTIÓN DE PLANTILLAS ACADÉMICAS ---
-        const templates = {
-            sumaN: {
-                title: 'Sumatoria de N números',
-                data: {
-                    'main': {
-                        id: 'main',
-                        name: 'main()',
-                        type: 'main',
-                        structures: [
-                            { id: 't1_1', type: 'action', code: 'Suma = 0' },
-                            { id: 't1_2', type: 'action_output', code: 'OUTPUT "Ingrese cantidad de números a sumar (N):"' },
-                            { id: 't1_3', type: 'action_input', code: 'INPUT N' },
-                            { id: 't1_4', type: 'action', code: 'i = 1' },
-                            {
-                                id: 't1_5',
-                                type: 'WHILE',
-                                condition: 'WHILE i <= N',
-                                body: [
-                                    { id: 't1_6', type: 'action_output', code: 'OUTPUT "Ingrese número:"' },
-                                    { id: 't1_7', type: 'action_input', code: 'INPUT Num' },
-                                    { id: 't1_8', type: 'action', code: 'Suma = Suma + Num' },
-                                    { id: 't1_9', type: 'action', code: 'i = i + 1' }
-                                ]
-                            },
-                            { id: 't1_10', type: 'action_output', code: 'OUTPUT "La suma total es: ", Suma' }
-                        ]
-                    }
-                }
-            },
-            mayorTres: {
-                title: 'Mayor de Tres Números',
-                data: {
-                    'main': {
-                        id: 'main',
-                        name: 'main()',
-                        type: 'main',
-                        structures: [
-                            { id: 't2_1', type: 'action_output', code: 'OUTPUT "Ingrese A, B y C:"' },
-                            { id: 't2_2', type: 'action_input', code: 'INPUT A, B, C' },
-                            {
-                                id: 't2_3',
-                                type: 'if',
-                                condition: '¿A > B?',
-                                trueBranch: [
-                                    {
-                                        id: 't2_4',
-                                        type: 'if',
-                                        condition: '¿A > C?',
-                                        trueBranch: [{ id: 't2_5', type: 'action', code: 'Mayor = A' }],
-                                        falseBranch: [{ id: 't2_6', type: 'action', code: 'Mayor = C' }]
-                                    }
-                                ],
-                                falseBranch: [
-                                    {
-                                        id: 't2_7',
-                                        type: 'if',
-                                        condition: '¿B > C?',
-                                        trueBranch: [{ id: 't2_8', type: 'action', code: 'Mayor = B' }],
-                                        falseBranch: [{ id: 't2_9', type: 'action', code: 'Mayor = C' }]
-                                    }
-                                ]
-                            },
-                            { id: 't2_10', type: 'action_output', code: 'OUTPUT "El número mayor es: ", Mayor' }
-                        ]
-                    }
-                }
-            },
-            fibonacci: {
-                title: 'Fibonacci Recursivo',
-                data: {
-                    'main': {
-                        id: 'main',
-                        name: 'main()',
-                        type: 'main',
-                        structures: [
-                            { id: 't3_1', type: 'action_output', code: 'OUTPUT "Ingrese número de términos:"' },
-                            { id: 't3_2', type: 'action_input', code: 'INPUT Limite' },
-                            { id: 't3_3', type: 'action', code: 'i = 0' },
-                            {
-                                id: 't3_4',
-                                type: 'WHILE',
-                                condition: 'WHILE i < Limite',
-                                body: [
-                                    { id: 't3_5', type: 'action_output', code: 'OUTPUT fibonacci(i)' },
-                                    { id: 't3_6', type: 'action', code: 'i = i + 1' }
-                                ]
-                            }
-                        ]
-                    },
-                    'func_fibo': {
-                        id: 'func_fibo',
-                        name: 'fibonacci(n)',
-                        type: 'auxiliar',
-                        structures: [
-                            {
-                                id: 't3_7',
-                                type: 'if',
-                                condition: '¿n <= 1?',
-                                trueBranch: [
-                                    { id: 't3_8', type: 'action_return', code: 'Retornar n' }
-                                ],
-                                falseBranch: [
-                                    { id: 't3_9', type: 'action_return', code: 'Retornar fibonacci(n - 1) + fibonacci(n - 2)' }
-                                ]
-                            }
-                        ]
-                    }
-                }
-            }
-        };
+        // Las plantillas han sido migradas al archivo externo templates.js
 
         function loadTemplate(key) {
             if (!appState.editMode) return;
+            if (templates === undefined || templates === null || templates[key] === undefined || templates[key] == null) {
+                showNotification('No se encontraron plantillas', 'error');
+                return;
+            }
             showCustomConfirm('Cargar Plantilla', `¿Cargar la plantilla "${templates[key].title}"? Se descartará el trabajo actual.`).then(confirmed => {
                 if (confirmed) {
                     saveToHistory();
@@ -3935,9 +3831,13 @@
 
                 let clean = rawName.trim();
                 // Aseguramos formato estándar con paréntesis para las funciones auxiliares
-                //if (!clean.endsWith(')')) {
-                //    clean += '()';
-                //}
+                if (!clean.includes(')')) {
+                    if (!clean.includes('(')) {
+                        clean += '()';
+                    } else {
+                        clean += ')';
+                    }
+                }
 
                 saveToHistory();
 
@@ -3946,9 +3846,7 @@
                     id: id,
                     name: clean,
                     type: 'auxiliar',
-                    structures: [
-                        { id: 'act_' + Date.now(), type: 'action', code: '// Inicie su codificación aquí...' }
-                    ],
+                    structures: [],
                     traceState: {
                         variables: [],
                         rows: []
@@ -3978,8 +3876,14 @@
                 saveToHistory();
 
                 let finalName = newName.trim();
-                if (!finalName.endsWith('()')) finalName += '()';
-
+                // if (!finalName.endsWith('()')) finalName += '()';
+                if (!finalName.includes(')')) {
+                    if (!finalName.includes('(')) {
+                        finalName += '()';
+                    } else {
+                        finalName += ')';
+                    }
+                }
                 func.name = finalName;
                 renderSidebar();
                 if (key === appState.activeFunctionId) {
